@@ -1,4 +1,5 @@
 a#brand.pull-left(href="/") assert:hub
 nav.pull-right
 	ul
-		li(ng-show="isAuthenticated == false"): a(href="#") Login
+		li(data-bind="visible: isAuthenticated"): a(href="#") Login
+		li(data-bind="visible: !isAuthenticated()"): a(href="#") Logout

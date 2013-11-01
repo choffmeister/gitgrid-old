@@ -1,4 +1,4 @@
-define ["jquery", "knockout", "HttpService"], ($, ko, http) ->
+define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, MainViewModel) ->
   class ViewManager
     constructor: () ->
       @templateCache = {}
@@ -7,6 +7,9 @@ define ["jquery", "knockout", "HttpService"], ($, ko, http) ->
       $(document).ready () =>
         @body = $("body")
         @content = $("#content")
+        @mainViewModel = new MainViewModel()
+        @mainViewModel.init()
+        ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
       @loadTemplate(templateName)

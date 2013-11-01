@@ -1,4 +1,4 @@
 define ["ViewModelBase"], (ViewModelBase) ->
-  class TestViewModel extends ViewModelBase
+  class DashboardViewModel extends ViewModelBase
     init: () =>
       @name = @observable("foo")

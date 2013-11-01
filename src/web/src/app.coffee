@@ -10,7 +10,8 @@ requirejs.config
     ApiService: "core/ApiService"
     ViewManager: "core/ViewManager"
     ViewModelBase: "viewmodels/ViewModelBase"
-    TestViewModel: "viewmodels/TestViewModel"
+    MainViewModel: "viewmodels/MainViewModel"
+    DashboardViewModel: "viewmodels/DashboardViewModel"
 
   shim:
     underscore:
@@ -18,7 +19,7 @@ requirejs.config
     bootstrap:
       deps: ["jquery"]
 
-requirejs ["ViewManager", "TestViewModel"], (ViewManager, TestViewModel) ->
+requirejs ["ViewManager", "DashboardViewModel"], (ViewManager, DashboardViewModel) ->
   viewManager = new ViewManager()
   viewManager.init()
-  viewManager.loadView("test", TestViewModel)
+  viewManager.loadView("dashboard", DashboardViewModel)
