@@ -26,6 +26,14 @@ module.exports = (grunt) ->
         ext: ".js"
         options:
           bare: true
+      test:
+        expand: true
+        cwd: "test"
+        src: ["**/*.coffee"]
+        dest: "#{targetDev}/test"
+        ext: ".js"
+        options:
+          bare: true
 
     jade:
       dev:
@@ -110,6 +118,14 @@ module.exports = (grunt) ->
           dest: "#{targetProd}/images"
         ]
 
+      test:
+        files: [
+          expand: true
+          cwd: "bower_components"
+          src: "**/*.js"
+          dest: "#{targetDev}/bower_components"
+        ]
+
     connect:
       proxies: [
         context: "/api"
@@ -144,10 +160,6 @@ module.exports = (grunt) ->
                 send(req, "_index.html").root("#{targetDev}/").on("error", error).pipe res
             ]
 
-    open:
-      dev:
-        url: "http://localhost:<%= connect.dev.options.port %>"
-
     watch:
       options:
         livereload: true
@@ -168,6 +180,14 @@ module.exports = (grunt) ->
         files: ["resources/images/**/*.*"]
         tasks: ["copy:dev"]
 
+    karma:
+      options:
+        singleRun: true
+        autoWatch: false
+        browsers: ["Chrome", "Firefox"]
+      unit:
+        configFile: "karma-unit.conf.js"
+
     clean:
       options: { force: true }
       dev: ["#{targetDev}/"]
@@ -176,6 +196,7 @@ module.exports = (grunt) ->
   require("matchdep").filterDev("grunt-*").forEach grunt.loadNpmTasks
   grunt.registerTask "dev-build", ["clean:dev", "coffee:dev", "jade:dev", "less:dev", "copy:dev"]
   grunt.registerTask "prod-build", ["dev-build", "clean:prod", "copy:prod", "requirejs:prod", "jade:prod", "less:prod"]
-  grunt.registerTask "dev", ["dev-build", "configureProxies", "open:dev", "connect:dev", "watch"]
-  grunt.registerTask "prod", ["prod-build"]
-  grunt.registerTask "default", ["dev"]
+  grunt.registerTask "test-build", ["dev-build", "coffee:test", "copy:test"]
+  grunt.registerTask "dev-server", ["dev-build", "configureProxies", "connect:dev"]
+  grunt.registerTask "test", ["test-build", "karma:unit"]
+  grunt.registerTask "default", ["dev-server", "watch"]
