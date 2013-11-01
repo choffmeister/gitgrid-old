@@ -8,6 +8,9 @@ requirejs.config
 
     HttpService: "core/HttpService"
     ApiService: "core/ApiService"
+    ViewManager: "core/ViewManager"
+    ViewModelBase: "viewmodels/ViewModelBase"
+    TestViewModel: "viewmodels/TestViewModel"
 
   shim:
     underscore:
@@ -15,14 +18,7 @@ requirejs.config
     bootstrap:
       deps: ["jquery"]
 
-requirejs ["jquery", "HttpService", "ApiService"], ($, http, api) ->
-  $(document).ready () ->
-    http.get("/foo/bar")
-      .done (result) ->
-        console.log "OK", result
-      .fail (error) ->
-        console.log "Error", error
-
-    api.get("foo")
-      .done (result) -> console.log result
-      .fail (error) -> console.log error
+requirejs ["ViewManager", "TestViewModel"], (ViewManager, TestViewModel) ->
+  viewManager = new ViewManager()
+  viewManager.init()
+  viewManager.loadView(TestViewModel, "test")
