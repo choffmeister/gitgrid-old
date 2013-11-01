@@ -1,0 +1,17 @@
+{
+  "name": "asserthub",
+  "version": "0.0.0",
+  "dependencies": {
+    "requirejs": "~2.1.9",
+    "jquery": "~2.0.3",
+    "underscore": "~1.5.2",
+    "knockout-dist": "~3.0.0",
+    "bootstrap": "~3.0.1",
+    "roboto-fontface": "~0.1.2"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ]
+}
