@@ -39,6 +39,14 @@ object GruntPlugin extends Plugin {
     }
   }
 
+  def gruntTestCommand = {
+    Command.command("gruntTest") { (state: State) =>
+      runGrunt("test")
+
+      state
+    }
+  }
+
   def gruntStartCommand = {
     Command.command("gruntStart") { (state: State) =>
       startGrunt("dev")
@@ -47,7 +55,7 @@ object GruntPlugin extends Plugin {
     }
   }
 
-    def gruntStopCommand = {
+  def gruntStopCommand = {
     Command.command("gruntStop") { (state: State) =>
       stopGrunt()
 
@@ -59,5 +67,5 @@ object GruntPlugin extends Plugin {
     runGrunt(task)
   }
 
-  override lazy val settings = Seq(commands ++= Seq(gruntRunCommand, gruntStartCommand, gruntStopCommand))
+  override lazy val settings = Seq(commands ++= Seq(gruntRunCommand, gruntTestCommand, gruntStartCommand, gruntStopCommand))
 }
