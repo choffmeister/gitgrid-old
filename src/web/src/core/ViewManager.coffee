@@ -8,15 +8,19 @@ define ["jquery", "knockout", "HttpService"], ($, ko, http) ->
         @body = $("body")
         @content = $("#content")
 
-    loadView: (viewModelType, templateName) =>
+    loadView: (templateName, viewModelType) =>
       @loadTemplate(templateName)
         .done (template) =>
-          viewModel = new viewModelType()
-          viewModel.init()
+          if viewModelType?
+            viewModel = new viewModelType()
+            viewModel.init()
 
-          @unapplyViewModel()
-          @content.html(template)
-          @applyViewModel(viewModel)
+            @unapplyViewModel()
+            @content.html(template)
+            @applyViewModel(viewModel)
+          else
+            @unapplyViewModel()
+            @content.html(template)
         .fail (error) =>
           console.log error
           window.alert "Error while loading view template"

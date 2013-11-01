@@ -21,4 +21,4 @@ requirejs.config
 requirejs ["ViewManager", "TestViewModel"], (ViewManager, TestViewModel) ->
   viewManager = new ViewManager()
   viewManager.init()
-  viewManager.loadView(TestViewModel, "test")
+  viewManager.loadView("test", TestViewModel)
