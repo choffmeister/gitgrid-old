@@ -1,0 +1,2 @@
+define [], () ->
+  logLevel: 5

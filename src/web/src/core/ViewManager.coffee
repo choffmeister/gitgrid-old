@@ -1,4 +1,4 @@
-define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, MainViewModel) ->
+define ["jquery", "knockout", "Logger", "HttpService", "MainViewModel"], ($, ko, log, http, MainViewModel) ->
   class ViewManager
     constructor: () ->
       @templateCache = {}
@@ -14,6 +14,7 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
         ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
+      log.debug("Load view", templateName, viewModelType)
       @loading = true
       newViewModel = if viewModelType? then new viewModelType() else null
 
@@ -28,6 +29,7 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
           @loading = false
 
     initViewModel: (viewModel) =>
+      log.debug("Init view model", viewModel)
       if viewModel?
         try
           viewModel.init()
@@ -37,6 +39,7 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
         $.Deferred().resolve().promise()
 
     deinitViewModel: (viewModel) =>
+      log.debug("Deinit view model", viewModel)
       if viewModel?
         try
           viewModel.deinit()
@@ -46,11 +49,13 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
         $.Deferred().resolve().promise()
 
     applyViewModel: (viewModel) =>
+      log.debug("Apply view model", viewModel)
       if viewModel?
         ko.applyBindings(viewModel, @content.get(0))
         @viewModel = viewModel
 
     unapplyViewModel: () =>
+      log.debug("Unapply view model", @viewModel)
       @content.find("*").each () ->
         $(this).unbind()
         ko.removeNode(this)
@@ -58,6 +63,7 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
       @viewModel = null
 
     loadTemplate: (templateName) =>
+      log.debug("Load template #{templateName}")
       deferred = $.Deferred()
 
       template = @templateCache[templateName]

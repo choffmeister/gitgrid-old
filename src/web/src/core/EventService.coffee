@@ -1,4 +1,4 @@
-define ["jquery"], ($) ->
+define ["jquery", "Logger"], ($, log) ->
   class EventService
     constructor: () ->
       @listeners = {}
@@ -36,8 +36,7 @@ define ["jquery"], ($) ->
       fqen = "#{namespace}:#{name}"
       fqenMulti = "#{namespace}:*"
 
-      # TODO: remove
-      console.log fqen, data if name.substr(0,4) != 'tick'
+      log.trace("Event #{fqen}", data) if name.substr(0,4) != 'tick'
 
       listeners = @listeners[fqen] ? []
       for listener in listeners

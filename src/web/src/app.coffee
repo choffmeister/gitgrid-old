@@ -6,6 +6,9 @@ requirejs.config
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
 
+    config: "config"
+
+    Logger: "core/Logger"
     EventService: "core/EventService"
     HttpService: "core/HttpService"
     ApiService: "core/ApiService"

@@ -1,10 +1,11 @@
-define ["jquery"], ($) ->
+define ["jquery", "Logger"], ($, log) ->
   class HttpService
     get: (url, options) -> @request("GET", url, null, options)
     post: (url, data, options) -> @request("POST", url, data, options)
     put: (url, data, options) -> @request("PUT", url, data, options)
     delete: (url, options) -> @request("DELETE", url, null, options)
     request: (method, url, data, options) ->
+      log.debug("Request #{method} #{url}", data, options)
       deferred = $.Deferred();
       options = {} if not options?
 
