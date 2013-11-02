@@ -1,5 +1,5 @@
 define ["config"], (config) ->
-  logLevel = config.logLevel
+  logLevel = config.logging.verbosity
   levelMap = ["FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"]
 
   class LoggerService
