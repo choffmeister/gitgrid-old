@@ -10,18 +10,25 @@ requirejs.config
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
 
-    Logger: "core/Logger"
+    config: "config"
+
+    LoggerService: "core/LoggerService"
     EventService: "core/EventService"
     HttpService: "core/HttpService"
     ApiService: "core/ApiService"
-    ViewManager: "core/ViewManager"
+    ViewManagerService: "core/ViewManagerService"
+    RouterService: "core/RouterService"
     ViewModelBase: "viewmodels/ViewModelBase"
+    DialogViewModelBase: "viewmodels/DialogViewModelBase"
     MainViewModel: "viewmodels/MainViewModel"
+    LoginDialogViewModel: "viewmodels/LoginDialogViewModel"
     DashboardViewModel: "viewmodels/DashboardViewModel"
 
   shim:
     underscore:
       exports: "_"
+    history:
+      exports: "History"
     bootstrap:
       deps: ["jquery"]
 
