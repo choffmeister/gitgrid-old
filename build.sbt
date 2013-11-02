@@ -16,14 +16,14 @@ libraryDependencies ++= {
   val akkaVersion = "2.2.3"
   val sprayVersion = "1.2-RC2"
   Seq(
-    "io.spray" % "spray-can" % sprayVersion,
-    "io.spray" % "spray-testkit" % sprayVersion,
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+    "io.spray" % "spray-can" % sprayVersion,
+    "io.spray" % "spray-testkit" % sprayVersion,
     "org.squeryl" %% "squeryl" % "0.9.5-6",
+    "com.h2database" % "h2" % "1.2.127",
     "junit" % "junit" % "4.11" % "test",
-    "com.novocode" % "junit-interface" % "0.10" % "test",
-    "com.h2database" % "h2" % "1.2.127" % "test"
+    "com.novocode" % "junit-interface" % "0.10" % "test"
   )
 }
 

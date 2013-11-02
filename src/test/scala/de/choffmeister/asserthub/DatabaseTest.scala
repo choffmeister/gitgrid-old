@@ -1,22 +1,24 @@
 package de.choffmeister.asserthub
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import org.squeryl.PrimitiveTypeMode.transaction
-import org.squeryl.adapters.H2Adapter
+import org.junit.Assert._
+import org.junit._
+import org.squeryl.PrimitiveTypeMode._
 
-class DatabaseTest {
+class DatabaseTest extends DatabaseAwareTest {
   @Test def test() {
-    Database.createFactory(new H2Adapter(), "org.h2.Driver", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
-
+    def createUser(i: Int) = new User(s"user${i}", s"user${i}@invalid.domain.tld", s"First${i}", s"Last${i}")
+    
     transaction {
+      Database.drop
       Database.create
 
-      val users = for (i <- 1 to 5) yield
-        Database.users.insert(new User("user" + i, "user" + i + "@invalid.domain.tld", "First" + i, "Last" + i))
+      val users = (1 to 5).map(i => Database.users.insert(createUser(i)))
 
-      for (i <- 1 to 5)
-        assertEquals(i, users(i - 1).id)
+      // assert that the return User objects have set their id properly
+      assertEquals(1 to 5, users.map(_.id))
+        
+      // assert that the users can be fetched from the database
+      assertEquals((1 to 5).map(i => s"user${i}"), (1 to 5).map(i => Database.users.where(u => u.id === i).single.userName))
     }
   }
 }
