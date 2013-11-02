@@ -1,4 +1,4 @@
-define ["jquery", "knockout", "LoggerService", "HttpService", "MainViewModel"], ($, ko, log, http, MainViewModel) ->
+define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "MainViewModel"], ($, bs, ko, log, http, MainViewModel) ->
   class ViewManagerService
     constructor: () ->
       @templateCache = {}
@@ -9,24 +9,67 @@ define ["jquery", "knockout", "LoggerService", "HttpService", "MainViewModel"], 
       $(document).ready () =>
         @body = $("body")
         @content = $("#content")
+        @dialogs = $("#dialogs")
         @mainViewModel = new MainViewModel()
-        @mainViewModel.init()
+        @mainViewModel.init(this)
         ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
       log.debug("Load view", templateName, viewModelType)
       @loading = true
+
+      # instantiate view model if type was specified
       newViewModel = if viewModelType? then new viewModelType() else null
 
       $.when(@loadTemplate(templateName), @initViewModel(newViewModel), @deinitViewModel(@viewModel))
         .done (template) =>
-          @unapplyViewModel()
+          # unapply old view model, inject template into DOM and apply new view model
+          @unapplyViewModel(@content)
           @content.html(template)
-          @applyViewModel(newViewModel)
+          @applyViewModel(newViewModel, @content)
+
         .fail (err) =>
-          console.log(err.responseText)
+          log.error("Error while loading view", err)
+
         .always () =>
           @loading = false
+
+    createDialogView: (modal, templateName, viewModelType) =>
+      log.debug("Create dialog view", templateName, viewModelType)
+
+      # instantiate view model if type was specified
+      dialogViewModel = if viewModelType? then new viewModelType() else null
+
+      # load template and initialize view model
+      $.when(@loadTemplate(templateName), @initViewModel(dialogViewModel))
+        .done (template) =>
+          # wrap dialog template and append to DOM
+          dialog = $(template)
+          wrapper = $("<div></div>").append(dialog)
+          @dialogs.append(wrapper)
+
+          # apply view model
+          @applyViewModel(dialogViewModel, dialog)
+
+          # show dialog
+          dialog.modal({ backdrop: modal })
+
+          # register to view models result promise and hide dialog if promise is resolved or rejected
+          if dialogViewModel?
+            dialogViewModel.result().always () =>
+              dialog.modal("hide")
+
+          # register to dialogs hide event and remove dialog from DOM after closing
+          dialog.on "hidden.bs.modal", () =>
+            @unapplyViewModel(dialog)
+            wrapper.remove()
+
+          # register to dialogs show event and notify view model when the view is ready and in place
+          dialog.on "shown.bs.modal", () =>
+            dialogViewModel.visible()
+
+        .fail (err) =>
+          log.error("Error while creating dialog view", err)
 
     initViewModel: (viewModel) =>
       log.debug("Init view model", viewModel)
@@ -48,18 +91,18 @@ define ["jquery", "knockout", "LoggerService", "HttpService", "MainViewModel"], 
       else
         $.Deferred().resolve().promise()
 
-    applyViewModel: (viewModel) =>
+    applyViewModel: (viewModel, wrapper) =>
       log.debug("Apply view model", viewModel)
       if viewModel?
-        ko.applyBindings(viewModel, @content.get(0))
+        ko.applyBindings(viewModel, wrapper.get(0))
         @viewModel = viewModel
 
-    unapplyViewModel: () =>
+    unapplyViewModel: (wrapper) =>
       log.debug("Unapply view model", @viewModel)
-      @content.find("*").each () ->
+      wrapper.find("*").each () ->
         $(this).unbind()
         ko.removeNode(this)
-      ko.cleanNode(@content.get(0))
+      ko.cleanNode(wrapper.get(0))
       @viewModel = null
 
     loadTemplate: (templateName) =>

@@ -15,7 +15,9 @@ requirejs.config
     ViewManagerService: "core/ViewManagerService"
     RouterService: "core/RouterService"
     ViewModelBase: "viewmodels/ViewModelBase"
+    DialogViewModelBase: "viewmodels/DialogViewModelBase"
     MainViewModel: "viewmodels/MainViewModel"
+    LoginDialogViewModel: "viewmodels/LoginDialogViewModel"
     DashboardViewModel: "viewmodels/DashboardViewModel"
 
   shim:
