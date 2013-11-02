@@ -1,10 +1,14 @@
 package de.choffmeister.asserthub
 
-import akka.actor.{ ActorSystem, Props }
-import akka.io.IO
-import spray.can.Http
-import org.squeryl.PrimitiveTypeMode.transaction
 import org.squeryl.adapters.H2Adapter
+
+import akka.actor.ActorSystem
+import akka.actor.Props
+import akka.actor.actorRef2Scala
+import akka.io.IO
+import de.choffmeister.asserthub.models._
+import de.choffmeister.asserthub.models.Dsl._
+import spray.can.Http
 
 object Application extends App {
   // bootstrap database

@@ -1,8 +1,9 @@
-package de.choffmeister.asserthub
+package de.choffmeister.asserthub.models
 
 import org.junit.Assert._
 import org.junit._
-import org.squeryl.PrimitiveTypeMode._
+import de.choffmeister.asserthub.models.Dsl._
+import de.choffmeister.asserthub.DatabaseAwareTest
 
 class DatabaseTest extends DatabaseAwareTest {
   @Test def test() {

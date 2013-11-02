@@ -1,9 +1,9 @@
 package de.choffmeister.asserthub.managers
 
-import de.choffmeister.asserthub.Database
-import de.choffmeister.asserthub.User
-import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.Query
+
+import de.choffmeister.asserthub.models._
+import de.choffmeister.asserthub.models.Dsl._
 
 object UserManager {
   /**
@@ -16,7 +16,7 @@ object UserManager {
    */
   def authenticate(userName: String, password: String): Option[User] = {
     // search for user with matching name
-    val user = singleOrNone(Database.users.where(u => u.userName === userName.toLowerCase()))
+    val user = Database.users.where(u => u.userName === userName.toLowerCase()).singleOption
     if (user.isDefined) {
       // check if password matches
       if (user.get.passwordHash == password) {
@@ -25,11 +25,5 @@ object UserManager {
     }
     
     None
-  }
-  
-  private def singleOrNone[R](query: Query[R]): Option[R] = {
-    val cappedList = query.take(1).toList
-    
-    if (cappedList.length == 1) Some(cappedList(0)) else None
   }
 }
