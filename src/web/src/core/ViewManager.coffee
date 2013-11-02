@@ -2,6 +2,8 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
   class ViewManager
     constructor: () ->
       @templateCache = {}
+      @viewModel = null
+      @loading = false
 
     init: () =>
       $(document).ready () =>
@@ -12,30 +14,48 @@ define ["jquery", "knockout", "HttpService", "MainViewModel"], ($, ko, http, Mai
         ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
-      @loadTemplate(templateName)
-        .done (template) =>
-          if viewModelType?
-            viewModel = new viewModelType()
-            viewModel.init()
+      @loading = true
+      newViewModel = if viewModelType? then new viewModelType() else null
 
-            @unapplyViewModel()
-            @content.html(template)
-            @applyViewModel(viewModel)
-          else
-            @unapplyViewModel()
-            @content.html(template)
-        .fail (error) =>
-          console.log error
-          window.alert "Error while loading view template"
+      $.when(@loadTemplate(templateName), @initViewModel(newViewModel), @deinitViewModel(@viewModel))
+        .done (template) =>
+          @unapplyViewModel()
+          @content.html(template)
+          @applyViewModel(newViewModel)
+        .fail (err) =>
+          console.log(err.responseText)
+        .always () =>
+          @loading = false
+
+    initViewModel: (viewModel) =>
+      if viewModel?
+        try
+          viewModel.init()
+        catch ex
+          $.Deferred().reject(ex).promise()
+      else
+        $.Deferred().resolve().promise()
+
+    deinitViewModel: (viewModel) =>
+      if viewModel?
+        try
+          viewModel.deinit()
+        catch ex
+          $.Deferred().reject(ex).promise()
+      else
+        $.Deferred().resolve().promise()
 
     applyViewModel: (viewModel) =>
-      ko.applyBindings(viewModel, @content.get(0))
+      if viewModel?
+        ko.applyBindings(viewModel, @content.get(0))
+        @viewModel = viewModel
 
     unapplyViewModel: () =>
       @content.find("*").each () ->
         $(this).unbind()
         ko.removeNode(this)
       ko.cleanNode(@content.get(0))
+      @viewModel = null
 
     loadTemplate: (templateName) =>
       deferred = $.Deferred()
