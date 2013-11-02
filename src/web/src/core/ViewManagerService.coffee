@@ -6,13 +6,12 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
       @loading = false
 
     init: () =>
-      $(document).ready () =>
-        @body = $("body")
-        @content = $("#content")
-        @dialogs = $("#dialogs")
-        @mainViewModel = new MainViewModel()
-        @mainViewModel.init(this)
-        ko.applyBindings(@mainViewModel, @body.get(0))
+      @body = $("body")
+      @content = $("#content")
+      @dialogs = $("#dialogs")
+      @mainViewModel = new MainViewModel()
+      @mainViewModel.init(this)
+      ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
       log.debug("Load view", templateName, viewModelType)

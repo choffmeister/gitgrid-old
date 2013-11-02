@@ -3,6 +3,7 @@ requirejs.config
   paths:
     jquery: "../bower_components/jquery/jquery"
     underscore: "../bower_components/underscore/underscore"
+    history: "../bower_components/history.js/scripts/bundled/html4+html5/jquery.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
 
@@ -23,13 +24,16 @@ requirejs.config
   shim:
     underscore:
       exports: "_"
+    history:
+      exports: "History"
     bootstrap:
       deps: ["jquery"]
 
-requirejs ["LoggerService", "ViewManagerService", "RouterService", "DashboardViewModel"], (log, viewManager, router, DashboardViewModel) ->
-  log.info("Initializing view manager")
-  viewManager.init()
-  viewManager.loadView("dashboard", DashboardViewModel)
+requirejs ["jquery", "LoggerService", "ViewManagerService", "RouterService", "DashboardViewModel"], ($, log, viewManager, router, DashboardViewModel) ->
+  $(document).ready () ->
+    log.info("Initializing view manager")
+    viewManager.init()
+    viewManager.loadView("dashboard", DashboardViewModel)
 
-  log.info("Initializing router")
-  router.init()
+    log.info("Initializing router")
+    router.init()
