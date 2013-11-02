@@ -1,5 +1,5 @@
-define ["Logger"], (log) ->
-  class Router
+define ["LoggerService"], (log) ->
+  class RouterService
     init: () =>
       @registerLinkInterceptor()
 
@@ -9,3 +9,5 @@ define ["Logger"], (log) ->
     linkInterceptor: (event) =>
       event.preventDefault()
       log.info("Intercepted link click", event)
+
+  return new RouterService()

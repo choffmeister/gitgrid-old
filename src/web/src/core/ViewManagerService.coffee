@@ -1,5 +1,5 @@
-define ["jquery", "knockout", "Logger", "HttpService", "MainViewModel"], ($, ko, log, http, MainViewModel) ->
-  class ViewManager
+define ["jquery", "knockout", "LoggerService", "HttpService", "MainViewModel"], ($, ko, log, http, MainViewModel) ->
+  class ViewManagerService
     constructor: () ->
       @templateCache = {}
       @viewModel = null
@@ -78,3 +78,5 @@ define ["jquery", "knockout", "Logger", "HttpService", "MainViewModel"], ($, ko,
         deferred.resolve(template)
 
       return deferred
+
+  return new ViewManagerService()

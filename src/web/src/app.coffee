@@ -8,12 +8,12 @@ requirejs.config
 
     config: "config"
 
-    Logger: "core/Logger"
+    LoggerService: "core/LoggerService"
     EventService: "core/EventService"
     HttpService: "core/HttpService"
     ApiService: "core/ApiService"
-    ViewManager: "core/ViewManager"
-    Router: "core/Router"
+    ViewManagerService: "core/ViewManagerService"
+    RouterService: "core/RouterService"
     ViewModelBase: "viewmodels/ViewModelBase"
     MainViewModel: "viewmodels/MainViewModel"
     DashboardViewModel: "viewmodels/DashboardViewModel"
@@ -24,12 +24,10 @@ requirejs.config
     bootstrap:
       deps: ["jquery"]
 
-requirejs ["Logger", "ViewManager", "Router", "DashboardViewModel"], (log, ViewManager, Router, DashboardViewModel) ->
+requirejs ["LoggerService", "ViewManagerService", "RouterService", "DashboardViewModel"], (log, viewManager, router, DashboardViewModel) ->
   log.info("Initializing view manager")
-  viewManager = new ViewManager()
   viewManager.init()
   viewManager.loadView("dashboard", DashboardViewModel)
 
   log.info("Initializing router")
-  router = new Router()
   router.init()

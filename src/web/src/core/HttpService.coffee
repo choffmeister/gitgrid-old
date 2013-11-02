@@ -1,4 +1,4 @@
-define ["jquery", "Logger"], ($, log) ->
+define ["jquery", "LoggerService"], ($, log) ->
   class HttpService
     get: (url, options) -> @request("GET", url, null, options)
     post: (url, data, options) -> @request("POST", url, data, options)
