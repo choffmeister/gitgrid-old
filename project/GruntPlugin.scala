@@ -10,7 +10,7 @@ object GruntPlugin extends Plugin {
   private lazy val webDir = new java.io.File("src/web")
 
   private def runGrunt(task: String) = {
-    val command = if (task.length > 0) "grunt" :: task :: Nil else "grunt" :: Nil
+    val command = "grunt" :: task :: Nil
     val returnValue = Process(command, webDir) !
 
     if (returnValue != 0) {
@@ -34,7 +34,7 @@ object GruntPlugin extends Plugin {
 
   def gruntCommand = {
     Command.command("grunt") { (state: State) =>
-      runGrunt("")
+      runGrunt("default")
 
       state
     }
@@ -58,7 +58,7 @@ object GruntPlugin extends Plugin {
 
   def gruntStartCommand = {
     Command.command("gruntStart") { (state: State) =>
-      startGrunt("dev")
+      startGrunt("default")
 
       state
     }
