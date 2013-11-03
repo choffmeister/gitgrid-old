@@ -19,6 +19,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
     "io.spray" % "spray-can" % sprayVersion,
+    "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" % "spray-testkit" % sprayVersion,
     "org.squeryl" %% "squeryl" % "0.9.6-RC1",
     "com.h2database" % "h2" % "1.2.127",

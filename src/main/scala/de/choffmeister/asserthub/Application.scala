@@ -25,7 +25,7 @@ object Application extends App {
   // start webservice
   implicit val system = ActorSystem("asserthub")
 
-  val service = system.actorOf(Props[WebService], "webservice")
+  val service = system.actorOf(Props[WebServiceActor], "webservice")
 
   IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
 }
