@@ -7,7 +7,7 @@ import de.choffmeister.asserthub.DatabaseAwareTest
 
 class DatabaseTest extends DatabaseAwareTest {
   @Test def test() {
-    def createUser(i: Int) = new User(s"user${i}", s"user${i}@invalid.domain.tld", s"First${i}", s"Last${i}")
+    def createUser(i: Int) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", "pass")
     
     transaction {
       Database.drop

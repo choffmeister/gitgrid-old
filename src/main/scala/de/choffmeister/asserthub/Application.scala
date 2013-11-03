@@ -8,6 +8,8 @@ import akka.actor.actorRef2Scala
 import akka.io.IO
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
+import de.choffmeister.asserthub.managers.UserManager
+
 import spray.can.Http
 
 object Application extends App {
@@ -17,7 +19,7 @@ object Application extends App {
   transaction {
     Database.create
 
-    val users = for (i <- 1 to 5) yield Database.users.insert(new User("user" + i, "user" + i + "@invalid.domain.tld", "First" + i, "Last" + i))
+    val users = (1 to 5).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
   }
 
   // start webservice

@@ -8,7 +8,7 @@ import de.choffmeister.asserthub.DatabaseAwareTest
 
 class UserManagerTest extends DatabaseAwareTest {
   @Test def testAllUsers() {
-    def createUser(i: Int) = new User(s"user${i}", s"user${i}@invalid.domain.tld", s"First${i}", s"Last${i}")
+    def createUser(i: Int) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"First${i}", s"Last${i}")
     
     transaction {
       Database.drop
@@ -18,6 +18,21 @@ class UserManagerTest extends DatabaseAwareTest {
       val usersFromDb = UserManager.allUsers
     
       assertEquals(1 to 5, usersFromDb.map(_.id))
+    }
+  }
+  
+  @Test def testCreateUser() {
+    transaction {
+      Database.drop
+      Database.create
+      
+      assertEquals(0, UserManager.allUsers.length)
+      UserManager.createUser("user1", "mail1", "pass1")
+      assertEquals(1, UserManager.allUsers.length)
+      UserManager.createUser("user2", "mail2", "pass2")
+      assertEquals(2, UserManager.allUsers.length)
+      
+      assertEquals(1 to 2, UserManager.allUsers.map(_.id))
     }
   }
   
