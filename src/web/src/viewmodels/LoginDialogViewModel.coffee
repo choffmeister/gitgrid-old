@@ -43,4 +43,4 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
     authenticate: (userName, password) =>
       deferred = $.Deferred()
       deferred.resolve(userName == password)
-      return deferred
+      return deferred.promise()

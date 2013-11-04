@@ -134,6 +134,6 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
       else
         deferred.resolve(template)
 
-      return deferred
+      return deferred.promise()
 
   return new ViewManagerService()
