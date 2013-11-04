@@ -10,6 +10,6 @@ define ["config"], (config) ->
     error: (message, args...) => @message.apply(this, [1, message].concat(args))
     fatal: (message, args...) => @message.apply(this, [0, message].concat(args))
     message: (level, message, args...) =>
-      console.log.apply(this, ["[#{levelMap[level]}] #{message}"].concat(args)) if level <= logLevel
+      console.log.apply(console, ["[#{levelMap[level]}] #{message}"].concat(args)) if level <= logLevel
 
   return new LoggerService()
