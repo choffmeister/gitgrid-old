@@ -6,8 +6,8 @@ mixin dialog-form(title, submitlabel, submitbinding)
                     .modal-header
                         button.close(type="button", aria-hidden="true", data-bind="click: cancel", data-dismiss="modal") &times;
                         h4.modal-title= title
-                .modal-body
-                    block
-                .modal-footer
-                    button.btn.btn-primary(type="submit", data-bind="click: #{submitbinding}")= submitlabel
-                    button.btn.btn-default(type="button", data-dismiss="modal") Cancel
+                    .modal-body
+                        block
+                    .modal-footer
+                        button.btn.btn-primary(type="submit", data-bind="click: #{submitbinding}")= submitlabel
+                        button.btn.btn-default(type="button", data-dismiss="modal") Cancel
