@@ -1,6 +1,7 @@
 define ["config"], (config) ->
   logLevel = config.logging.verbosity
   levelMap = ["FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"]
+  consoleLevelMap = [console.error, console.error, console.warn, console.info, console.log, console.log]
 
   class LoggerService
     trace: (message, args...) => @message.apply(this, [5, message].concat(args))
@@ -10,6 +11,6 @@ define ["config"], (config) ->
     error: (message, args...) => @message.apply(this, [1, message].concat(args))
     fatal: (message, args...) => @message.apply(this, [0, message].concat(args))
     message: (level, message, args...) =>
-      console.log.apply(console, ["[#{levelMap[level]}] #{message}"].concat(args)) if level <= logLevel
+      consoleLevelMap[level].apply(console, ["[#{levelMap[level]}] #{message}"].concat(args)) if level <= logLevel
 
   return new LoggerService()
