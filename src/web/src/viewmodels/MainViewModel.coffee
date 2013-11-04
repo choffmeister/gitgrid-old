@@ -8,7 +8,7 @@ define ["EventService", "ViewModelBase", "LoginDialogViewModel"], (events, ViewM
       @done()
 
     login: () =>
-      @viewManager.createDialogView(true, "logindialog", LoginDialogViewModel).done (result) =>
+      @viewManager.loadDialogView(true, "logindialog", LoginDialogViewModel).done (result) =>
         @isAuthenticated(true) if result is true
 
     logout: () =>

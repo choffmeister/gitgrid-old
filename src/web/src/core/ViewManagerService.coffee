@@ -14,27 +14,36 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
       ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
-      log.debug("Load view", templateName, viewModelType)
-      @loading = true
+      if @loading is false
+        log.debug("Load view", templateName, viewModelType)
+        @loading = true
 
-      # instantiate view model if type was specified
-      newViewModel = if viewModelType? then new viewModelType() else null
+        # instantiate view model if type was specified
+        oldViewModel = @viewModel
+        newViewModel = if viewModelType? then new viewModelType() else null
 
-      $.when(@loadTemplate(templateName), @initViewModel(newViewModel), @deinitViewModel(@viewModel))
-        .done (template) =>
-          # unapply old view model, inject template into DOM and apply new view model
-          @unapplyViewModel(@content)
-          @content.html(template)
-          @applyViewModel(newViewModel, @content)
+        $.when(@loadTemplate(templateName), @initViewModel(newViewModel))
+          .done (template) =>
+            # swap views
+            oldViewModel.deactivate() if oldViewModel?
+            @unapplyViewModel(oldViewModel, @content)
+            @content.html(template)
+            @applyViewModel(newViewModel, @content)
+            newViewModel.activate() if newViewModel?
 
-        .fail (err) =>
-          log.error("Error while loading view", err)
+            @viewModel = newViewModel
+            @deinitViewModel(oldViewModel)
 
-        .always () =>
-          @loading = false
+          .fail (err) =>
+            log.error("Error while loading view", err)
 
-    createDialogView: (modal, templateName, viewModelType) =>
-      log.debug("Create dialog view", templateName, viewModelType)
+          .always () =>
+            @loading = false
+      else
+        log.error("Already loading a view")
+
+    loadDialogView: (modal, templateName, viewModelType) =>
+      log.debug("Load dialog view", templateName, viewModelType)
 
       # instantiate view model if type was specified
       dialogViewModel = if viewModelType? then new viewModelType() else null
@@ -60,12 +69,13 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
 
           # register to dialogs hide event and remove dialog from DOM after closing
           dialog.on "hidden.bs.modal", () =>
-            @unapplyViewModel(dialog)
+            dialogViewModel.deactivate()
+            @unapplyViewModel(dialog, wrapper)
             wrapper.remove()
 
           # register to dialogs show event and notify view model when the view is ready and in place
           dialog.on "shown.bs.modal", () =>
-            dialogViewModel.visible()
+            dialogViewModel.activate()
 
         .fail (err) =>
           log.error("Error while creating dialog view", err)
@@ -92,17 +102,11 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
 
     applyViewModel: (viewModel, wrapper) =>
       log.debug("Apply view model", viewModel)
-      if viewModel?
-        ko.applyBindings(viewModel, wrapper.get(0))
-        @viewModel = viewModel
+      ko.applyBindings(viewModel, wrapper.get(0))
 
-    unapplyViewModel: (wrapper) =>
+    unapplyViewModel: (viewModel, wrapper) =>
       log.debug("Unapply view model", @viewModel)
-      wrapper.find("*").each () ->
-        $(this).unbind()
-        ko.removeNode(this)
       ko.cleanNode(wrapper.get(0))
-      @viewModel = null
 
     loadTemplate: (templateName) =>
       log.debug("Load template #{templateName}")

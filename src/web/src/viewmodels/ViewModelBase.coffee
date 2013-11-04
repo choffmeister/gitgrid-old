@@ -1,14 +1,16 @@
 define ["jquery", "knockout", "EventService"], ($, ko, events) ->
   class ViewModelBase
-    # called from the ViewManager before (eventually) applying the view
-    # must return a promise to indicate when initialization is done
+    # called from the ViewManager after creating the view model
     init: () => @done()
 
-    # called from the ViewManager before (eventually) unapplying the view
-    # here is the place to persist remaining data to the server
-    # note, that calling this method does not mean that the view model is acutally unloaded
-    # must return a promise to indicate when deinitialization is done
+    # called from the ViewManager before releasing the view model
     deinit: () => @done()
+
+    # called when the view model has come into view of the user
+    activate: () =>
+
+    # called before the view model goes out of view of the user
+    deactivate: () =>
 
     # knockout helper methods
     observable: (value) -> ko.observable(value)

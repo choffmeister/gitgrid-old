@@ -1,4 +1,4 @@
-define ["DialogViewModelBase"], (DialogViewModelBase) ->
+define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
   class LoginDialogViewModel extends DialogViewModelBase
     init: () =>
       @busy = @observable(false)
@@ -8,16 +8,39 @@ define ["DialogViewModelBase"], (DialogViewModelBase) ->
       @message = @observable(null)
       @done()
 
-    visible: () =>
-      @focus("userName")
+    activate: () =>
+      @prepare()
+      @done()
+
+    deactivate: () =>
+      @prepare()
+      @done()
+
+    prepare: () =>
+      @password("")
+      @busy(false)
+      @focus(null)
+      @focus(if not @userName() then "userName" else "password")
 
     login: () =>
       @busy(true)
-      window.setTimeout () =>
-        window.alert "#{@userName()} -> #{@password()}"
-        @busy(false)
-        @password("")
-        @focus(null)
-        @focus(if not @userName() then "userName" else "password")
-      , 1000
 
+      if @userName() and @password()
+        @authenticate(@userName(), @password())
+          .done (result) =>
+            if result is true
+              @close(true)
+            else
+              @message({ style: "warning", message: "User name or password incorrect!" })
+              @prepare()
+          .fail (err) =>
+            @message({ style: "danger", message: "An error occured while trying to authenticate!" })
+            @prepare()
+      else
+        @message({ style: "info", message: "Please enter both, your user name and your password." })
+        @prepare()
+
+    authenticate: (userName, password) =>
+      deferred = $.Deferred()
+      deferred.resolve(userName == password)
+      return deferred
