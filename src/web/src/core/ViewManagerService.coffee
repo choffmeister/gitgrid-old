@@ -44,6 +44,7 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
 
     loadDialogView: (modal, templateName, viewModelType) =>
       log.debug("Load dialog view", templateName, viewModelType)
+      deferred = $.Deferred()
 
       # instantiate view model if type was specified
       dialogViewModel = if viewModelType? then new viewModelType() else null
@@ -77,8 +78,18 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
           dialog.on "shown.bs.modal", () =>
             dialogViewModel.activate()
 
+          if dialogViewModel?
+            dialogViewModel.result()
+              .done((res) -> deferred.resolve(res))
+              .fail((err) -> deferred.reject(err))
+          else
+            dialog.on "hidden.bs.modal", () -> deferred.resolve()
+
         .fail (err) =>
           log.error("Error while creating dialog view", err)
+          deferred.reject(err)
+
+      return deferred.promise()
 
     initViewModel: (viewModel) =>
       log.debug("Init view model", viewModel)
