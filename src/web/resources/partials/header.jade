@@ -1,5 +1,36 @@
-a#brand.pull-left(href="/") assert:hub
-nav.pull-right
-    ul
-        li(data-bind="visible: !isAuthenticated()"): a(href="#", data-bind="click: login") Login
-        li(data-bind="visible: isAuthenticated()"): a(href="#", data-bind="click: logout") Logout
+nav.navbar.navbar-default.navbar-fixed-top(role="navigation")
+    .navbar-header
+        button.navbar-toggle(type="button", data-toggle="collapse", data-target="#bs-example-navbar-collapse-1")
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+        a.navbar-brand(href="/") assert:hub
+    #bs-example-navbar-collapse-1.collapse.navbar-collapse
+        ul.nav.navbar-nav
+            li.active: a(href="#") Link
+            li: a(href="#") Link
+            li.dropdown
+                a.dropdown-toggle(href="#", data-toggle="dropdown")
+                    | Dropdown
+                    b.caret
+                ul.dropdown-menu
+                    li: a(href="#") Action
+                    li: a(href="#") Another action
+                    li: a(href="#") Something else here
+                    li.divider
+                    li: a(href="#") Separated link
+                    li.divider
+                    li: a(href="#") One more separated link
+        ul.nav.navbar-nav.navbar-right
+            li(data-bind="visible: !isAuthenticated()"): a(href="#", data-bind="click: login") Login
+            li(data-bind="visible: isAuthenticated()").dropdown
+                a.dropdown-toggle(href="#", data-toggle="dropdown")
+                    | Logout
+                    b.caret
+                ul.dropdown-menu
+                    li: a(href="#") Action
+                    li: a(href="#") Another action
+                    li: a(href="#") Something else here
+                    li.divider
+                    li:  a(href="#") Separated link
