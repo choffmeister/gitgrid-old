@@ -13,6 +13,7 @@ requirejs.config
     EventService: "core/EventService"
     HttpService: "core/HttpService"
     ApiService: "core/ApiService"
+    SlideVisibleBinding: "utils/SlideVisibleBinding"
     ViewManagerService: "core/ViewManagerService"
     RouterService: "core/RouterService"
     ViewModelBase: "viewmodels/ViewModelBase"
@@ -29,7 +30,15 @@ requirejs.config
     bootstrap:
       deps: ["jquery"]
 
-requirejs ["jquery", "LoggerService", "ViewManagerService", "RouterService", "DashboardViewModel"], ($, log, viewManager, router, DashboardViewModel) ->
+requirejs [
+  "jquery"
+  "knockout"
+  "LoggerService"
+  "ViewManagerService"
+  "RouterService"
+  "SlideVisibleBinding"
+  "DashboardViewModel"
+], ($, ko, log, viewManager, router, SlideVisibleBinding, DashboardViewModel) ->
   $(document).ready () ->
     log.info("Initializing view manager")
     viewManager.init()

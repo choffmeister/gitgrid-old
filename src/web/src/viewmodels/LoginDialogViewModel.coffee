@@ -5,7 +5,10 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
       @focus = @observable(null)
       @userName = @observable("")
       @password = @observable("")
-      @message = @observable(null)
+      @message =
+        visible: @observable(false)
+        style: @observable(null)
+        text: @observable(null)
       @done()
 
     activate: () =>
@@ -22,6 +25,11 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
       @focus(null)
       @focus(if not @userName() then "userName" else "password")
 
+    showMessage: (style, text) ->
+      @message.style(style)
+      @message.text(text)
+      @message.visible(!@message.visible())
+
     login: () =>
       @busy(true)
 
@@ -31,13 +39,13 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
             if result is true
               @close(true)
             else
-              @message({ style: "warning", message: "User name or password incorrect!" })
+              @showMessage("warning", "User name or password incorrect!")
               @prepare()
           .fail (err) =>
-            @message({ style: "danger", message: "An error occured while trying to authenticate!" })
+            @showMessage.style("danger", "An error occured while trying to authenticate!")
             @prepare()
       else
-        @message({ style: "info", message: "Please enter both, your user name and your password." })
+        @showMessage("info", "Please enter both, your user name and your password.")
         @prepare()
 
     authenticate: (userName, password) =>
