@@ -5,11 +5,16 @@ import org.squeryl.Query
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
 
-object UserManager {
-  /**
-   * Returns list of all users ordered by their IDs.
-   */
-  def allUsers: List[User] = inTransaction(from(Database.users)(u => select(u) orderBy(u.id asc)).toList)
+object UserManager extends EntityRepository[User] {
+  def all: List[User] = inTransaction(from(Database.users)(u => select(u) orderBy(u.id asc)).toList)
+  
+  def find(id: Long): Option[User] = inTransaction(Database.users.where(u => u.id === id).singleOption)
+  
+  def insert(user: User): User = inTransaction(Database.users.insert(user))
+    
+  def update(user: User): Unit = inTransaction(Database.users.update(user))
+  
+  def delete(id: Long): Unit = inTransaction(Database.users.deleteWhere(u => u.id === id))
   
   /**
    * Creates a new user and persists it to the database.
@@ -17,7 +22,7 @@ object UserManager {
   def createUser(userName: String, email: String, password: String, hashAlgorithm: String = "plain"): User = {
     hashAlgorithm match {
       case "plain" =>
-        Database.users.insert(new User(0L, userName, email, password, "", "plain"))
+        insert(new User(0L, userName, email, password, "", "plain"))
       case x =>
         throw new Exception(s"Unknown hash algorithm ${x}")
     }
