@@ -86,7 +86,7 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
             dialog.on "hidden.bs.modal", () -> deferred.resolve()
 
         .fail (err) =>
-          log.error("Error while creating dialog view", err)
+          log.error("Error while creating dialog view:\n#{err.toString()}", err)
           deferred.reject(err)
 
       return deferred.promise()
