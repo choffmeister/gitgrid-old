@@ -21,8 +21,10 @@ libraryDependencies ++= {
     "io.spray" % "spray-can" % sprayVersion,
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" % "spray-testkit" % sprayVersion,
+    "io.spray" %% "spray-json" % "1.2.5",
     "org.squeryl" %% "squeryl" % "0.9.6-RC1",
     "com.h2database" % "h2" % "1.2.127",
+    "mysql" % "mysql-connector-java" % "5.1.12",
     "junit" % "junit" % "4.11" % "test",
     "com.novocode" % "junit-interface" % "0.10" % "test"
   )

@@ -14,67 +14,22 @@ import scala.reflect.ClassTag
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
+import de.choffmeister.asserthub.models.User
+import spray.json._
+import de.choffmeister.asserthub.JsonProtocol._
+import spray.httpx.SprayJsonSupport._
+import StatusCodes._
 
 class WebServiceActor extends Actor with WebService {
-  // the HttpService trait defines only one abstract member, which
-  // connects the services environment to the enclosing actor or test
   def actorRefFactory = context
-
-  // this actor only runs our route, but you could add
-  // other things here, like request stream processing
-  // or timeout handling
   def receive = runRoute(route)
 }
 
-abstract class RestResourceAction
-case class List() extends RestResourceAction
-case class Create() extends RestResourceAction
-case class Retrieve(id: Long) extends RestResourceAction
-case class Update(id: Long) extends RestResourceAction
-case class Delete(id: Long) extends RestResourceAction
-
-class RestActor extends Actor with ActorLogging {
-  def receive = {
-    case x =>
-      log.info(x.toString())
-      sender ! "Hello"
-  }
-}
-
 trait WebService extends HttpService {
-  import ExecutionContext.Implicits.global
-  
   implicit val timeout = Timeout(5 seconds)
+  implicit def executionContext = actorRefFactory.dispatcher
   
-  def actorRefFactory: ActorContext
-
-  def restRoute[A <: Actor : ClassTag, B : ClassTag](name: String): Route =
-    path(name) {
-      get {
-        val actor = actorRefFactory.actorOf(Props[A])
-        val future = actor ? List()
-        complete(future.map(r => r.toString()))
-        //complete(s"GET ${name}")
-      } ~
-      post {
-        complete(s"POST ${name}")
-      } 
-    } ~
-    pathPrefix(name) {
-      path(LongNumber) { id =>
-        get {
-          complete(s"GET ${name}#${id}")
-        } ~
-        put {
-          complete(s"PUT ${name}#${id}")
-        } ~
-        delete {
-          complete(s"DELETE ${name}#${id}")
-        }
-      }
-    }
-
-  val route =
+  lazy val route =
     pathPrefix("api") {
       path("ping") {
         get {
@@ -92,6 +47,51 @@ trait WebService extends HttpService {
           }
         }
       } ~
-      restRoute[RestActor, User]("users")
+      restRoute("users")
     }
+
+  def restRoute(name: String): Route = {
+    val list = path(name) & get
+    val retrieve = path(name / LongNumber) & get
+    val create = path(name) & post
+    val update = path(name / LongNumber) & put
+    val remove = path(name / LongNumber) & delete
+    
+    list {
+      complete {
+        val users = UserManager.all
+        users
+      }
+    } ~
+    retrieve { id =>
+      complete {
+        val user = UserManager.find(id)
+        user
+      }
+    } ~
+    create { 
+      entity(as[User]) { user =>
+        complete {
+          val persistedUser = UserManager.insert(user)
+          persistedUser
+        }
+      }
+    } ~
+    update { id =>
+      entity(as[User]) { user =>
+        complete {
+          if (user.id == id) {
+            UserManager.update(user)
+            user
+          } else BadRequest
+        }
+      }
+    } ~
+    remove { id =>
+      complete {
+        UserManager.delete(id)
+        "Delete #" + id
+      }
+    }
+  }
 }
