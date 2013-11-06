@@ -3,6 +3,6 @@ include ../mixins/inputelements
 
 +dialog-form("Login", "Login", "login")
     div(data-bind="slideVisible: message.visible")
-        .alert(data-bind="text: message.text, css: 'alert-' + message.style()")
+        .alert.alert-transition(data-bind="text: message.text, css: 'alert-' + message.style()")
     +input-text("userName", "User name", "Your user name")(data-bind="value: userName, disable: busy, hasFocus: focus() == 'userName'")
     +input-password("password", "Password", "Your password")(data-bind="value: password, disable: busy, hasFocus: focus() == 'password'")

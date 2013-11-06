@@ -28,7 +28,7 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
     showMessage: (style, text) ->
       @message.style(style)
       @message.text(text)
-      @message.visible(!@message.visible())
+      @message.visible(true)
 
     login: () =>
       @busy(true)

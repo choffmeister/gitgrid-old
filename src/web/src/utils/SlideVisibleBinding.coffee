@@ -1,10 +1,12 @@
 define ["jquery", "knockout"], ($, ko) ->
   getAutoHeight = (element) ->
+    width = $(element).width()
     clone = $(element).clone()
       .css({
         "position": "absolute"
         "visibility": "hidden"
         "height": "auto"
+        "width": "#{width}px"
         "max-height": "9999px"
       })
       .addClass("slideClone")
