@@ -31,26 +31,36 @@ trait WebService extends HttpService {
   
   lazy val route =
     pathPrefix("api") {
-      path("ping") {
-        get {
-          respondWithMediaType(`text/html`) {
+      pathPrefix("auth") {
+        path("login") {
+          post {
+            entity(as[(String, String)]) { e =>
+              complete {
+                val user = UserManager.authenticate(e._1, e._2)
+                user
+              }
+            }
+          }
+        } ~
+        path("logout") {
+          post {
             complete {
-              <html>
-                <head>
-                  <title>ping</title>
-                </head>
-                <body>
-                  <h1>pong</h1>
-                </body>
-              </html>
+              "logout"
+            }
+          }
+        } ~
+        path("state") {
+          get {
+            complete {
+              "state"
             }
           }
         }
       } ~
-      restRoute("users")
+      createRestRoutes("users")
     }
 
-  def restRoute(name: String): Route = {
+  def createRestRoutes(name: String): Route = {
     val list = path(name) & get
     val retrieve = path(name / LongNumber) & get
     val create = path(name) & post

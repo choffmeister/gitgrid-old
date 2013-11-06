@@ -13,6 +13,68 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
   def actorRefFactory = system
 
   "WebService" should {
+    "accept valid login credentials" in new WithDatabase {
+      transaction {
+        db.drop
+        db.create
+        val users = (1 to 5).map(i => db.users.insert(createUser(i)))
+    
+        Post("/api/auth/login", ("user1", "pass1")) ~> route ~> check {
+          val res = responseAs[Option[User]]
+          
+          res.isDefined === true
+          res.get.id === 1
+          res.get.userName == "user1"
+        }
+        
+        Post("/api/auth/login", ("user2", "pass2")) ~> route ~> check {
+          val res = responseAs[Option[User]]
+          
+          res.isDefined === true
+          res.get.id === 2
+          res.get.userName == "user2"
+        }
+      }
+    }
+    
+    "reject invalid login credentials" in new WithDatabase {
+      transaction {
+        db.drop
+        db.create
+        val users = (1 to 5).map(i => db.users.insert(createUser(i)))
+    
+        Post("/api/auth/login", ("user1", "pass2")) ~> route ~> check {
+          val res = responseAs[Option[User]]
+          
+          res.isDefined === false
+        }
+                
+        Post("/api/auth/login", ("user2", "pass1")) ~> route ~> check {
+          val res = responseAs[Option[User]]
+          
+          res.isDefined === false
+        }
+        
+        Post("/api/auth/login", ("unknown", "pass")) ~> route ~> check {
+          val res = responseAs[Option[User]]
+          
+          res.isDefined === false
+        }
+      }
+    }
+    
+    "handle auth logout requests" in {
+      Post("/api/auth/logout") ~> route ~> check {
+        responseAs[String] === "logout"
+      }
+    }
+    
+    "handle auth state requests" in {
+      Get("/api/auth/state") ~> route ~> check {
+        responseAs[String] === "state"
+      }
+    }
+    
     "list users" in new WithDatabase {
       transaction {
         Database.drop
@@ -89,5 +151,5 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
     }
   }
   
-  def createUser(i: Long) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"First${i}", s"Last${i}")
+  def createUser(i: Long) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}", "", "plain", s"First${i}", s"Last${i}")
 }
