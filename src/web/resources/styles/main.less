@@ -70,3 +70,8 @@ nav {
     margin-top: @content-margin;
     margin-bottom: @content-margin;
 }
+
+.alert-transition {
+    @duration: 0.4s;
+    .transition(background-color @duration ease-in-out, border-color @duration ease-in-out, color @duration ease-in-out);
+}
