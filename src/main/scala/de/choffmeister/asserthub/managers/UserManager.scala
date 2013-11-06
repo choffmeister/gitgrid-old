@@ -32,15 +32,17 @@ object UserManager extends EntityRepository[User] {
    * Returns the User object if credentials are valid or else None.
    */
   def authenticate(userName: String, password: String): Option[User] = {
-    // search for user with matching name
-    val user = Database.users.where(u => u.userName === userName.toLowerCase()).singleOption
-    if (user.isDefined) {
-      // check if password matches
-      if (user.get.passwordHash == password) {
-        return user
+    inTransaction {
+      // search for user with matching name
+      val user = Database.users.where(u => u.userName === userName.toLowerCase()).singleOption
+      if (user.isDefined) {
+        // check if password matches
+        if (user.get.passwordHash == password) {
+          return user
+        }
       }
-    }
     
-    None
+      None
+    }
   }
 }
