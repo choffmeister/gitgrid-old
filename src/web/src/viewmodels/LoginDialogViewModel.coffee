@@ -1,4 +1,4 @@
-define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
+define ["jquery", "LoggerService", "ApiService", "DialogViewModelBase"], ($, log, api, DialogViewModelBase) ->
   class LoginDialogViewModel extends DialogViewModelBase
     init: () =>
       @busy = @observable(false)
@@ -42,7 +42,7 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
               @showMessage("warning", "User name or password incorrect!")
               @prepare()
           .fail (err) =>
-            @showMessage.style("danger", "An error occured while trying to authenticate!")
+            @showMessage("danger", "An error occured while trying to authenticate!")
             @prepare()
       else
         @showMessage("info", "Please enter both, your user name and your password.")
@@ -50,5 +50,15 @@ define ["jquery", "DialogViewModelBase"], ($, DialogViewModelBase) ->
 
     authenticate: (userName, password) =>
       deferred = $.Deferred()
-      deferred.resolve(userName == password)
+
+      api.post("/auth/login", [userName, password])
+        .done (res) ->
+          deferred.resolve(true)
+        .fail (err) ->
+          switch err.status
+            when 401 then deferred.resolve(false)
+            else
+              log.error("Error while trying to authenticate: #{err.responseText}", err)
+              deferred.reject()
+
       return deferred.promise()

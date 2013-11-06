@@ -37,7 +37,10 @@ trait WebService extends HttpService {
             entity(as[(String, String)]) { e =>
               complete {
                 val user = UserManager.authenticate(e._1, e._2)
-                user
+                user match {
+                  case Some(u) => Some(u)
+                  case _ => Unauthorized
+                }
               }
             }
           }

@@ -44,21 +44,15 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         val users = (1 to 5).map(i => db.users.insert(createUser(i)))
     
         Post("/api/auth/login", ("user1", "pass2")) ~> route ~> check {
-          val res = responseAs[Option[User]]
-          
-          res.isDefined === false
+          status === Unauthorized
         }
                 
         Post("/api/auth/login", ("user2", "pass1")) ~> route ~> check {
-          val res = responseAs[Option[User]]
-          
-          res.isDefined === false
+          status === Unauthorized
         }
         
         Post("/api/auth/login", ("unknown", "pass")) ~> route ~> check {
-          val res = responseAs[Option[User]]
-          
-          res.isDefined === false
+          status === Unauthorized
         }
       }
     }
