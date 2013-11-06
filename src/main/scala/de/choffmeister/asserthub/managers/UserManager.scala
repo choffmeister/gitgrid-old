@@ -8,7 +8,7 @@ import de.choffmeister.asserthub.models.Dsl._
 object UserManager extends EntityRepository[User] {
   def all: List[User] = inTransaction(from(Database.users)(u => select(u) orderBy(u.id asc)).toList)
   
-  def find(id: Long): Option[User] = inTransaction(Database.users.where(u => u.id === id).singleOption)
+  def find(id: Long): Option[User] = inTransaction(Database.users.lookup(id))
   
   def insert(user: User): User = inTransaction(Database.users.insert(user))
     

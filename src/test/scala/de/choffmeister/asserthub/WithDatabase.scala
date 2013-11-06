@@ -1,20 +1,29 @@
 package de.choffmeister.asserthub
 
 import java.sql.DriverManager
-
 import org.junit.After
 import org.junit.Before
 import org.squeryl.Session
 import org.squeryl.SessionFactory
 import org.squeryl.adapters.H2Adapter
+import org.specs2.mutable.BeforeAfter
+import org.specs2.specification.Scope
+import de.choffmeister.asserthub.models.Database
 
 /**
  * Registers a database session factory that creates a temporary H2
  * in memory database. The database name contains the current thread
- * ID and hence every JUnit test has its own database.
+ * ID and hence two specs2 scopes cannot run on the same database in
+ * parallel.
  */
-trait DatabaseAwareTest {
-  @Before def before() {
+trait WithDatabase extends Scope {
+  import de.choffmeister.asserthub.models.Dsl._
+
+  val db = Database
+  
+  setSessionFactory()
+  
+  def setSessionFactory() = {
     Class.forName("org.h2.Driver")
 
     SessionFactory.concreteFactory = Some(() => {
