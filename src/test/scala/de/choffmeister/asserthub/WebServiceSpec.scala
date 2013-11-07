@@ -4,7 +4,6 @@ import org.specs2.mutable._
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl.transaction
 import de.choffmeister.asserthub.JsonProtocol._
-import spray.httpx.SprayJsonSupport._
 import spray.testkit._
 import spray.http._
 import spray.routing.AuthenticationFailedRejection

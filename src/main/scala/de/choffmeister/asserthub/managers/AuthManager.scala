@@ -1,9 +1,7 @@
 package de.choffmeister.asserthub.managers
 
 import java.security.SecureRandom
-import scala.annotation.migration
 import scala.collection.mutable.Map
-import scala.math.Ordered.orderingToOrdered
 import org.apache.commons.codec.binary.Base64
 import de.choffmeister.asserthub.models.User
 import spray.http.DateTime

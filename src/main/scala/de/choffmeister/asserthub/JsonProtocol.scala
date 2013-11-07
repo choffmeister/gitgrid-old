@@ -1,9 +1,10 @@
 package de.choffmeister.asserthub
 
-import de.choffmeister.asserthub.models.User
+import de.choffmeister.asserthub.models._
+import spray.httpx._
 import spray.json._
 
-object JsonProtocol extends DefaultJsonProtocol {
+object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object UserJsonFormat extends RootJsonFormat[User] {
     def write(u: User) =
       JsObject(Map(

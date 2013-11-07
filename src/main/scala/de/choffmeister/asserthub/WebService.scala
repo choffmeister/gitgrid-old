@@ -1,23 +1,14 @@
 package de.choffmeister.asserthub
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import akka.actor.Actor
-import akka.actor.ActorContext
-import akka.actor.ActorLogging
-import akka.pattern.ask
+import akka.actor._
 import akka.util.Timeout
 import de.choffmeister.asserthub.JsonProtocol._
 import de.choffmeister.asserthub.managers._
 import de.choffmeister.asserthub.models._
-import shapeless.HNil
 import spray.http._
-import spray.http.MediaTypes._
 import spray.http.StatusCodes._
-import spray.httpx.SprayJsonSupport._
 import spray.routing._
-import spray.routing.AuthenticationFailedRejection._
-import spray.routing.authentication.HttpAuthenticator
 
 class WebServiceActor extends Actor with WebService {
   def actorRefFactory = context
@@ -52,8 +43,8 @@ trait WebService extends HttpService {
           }
         } ~
         path("state") {
-          authManager.authCookieForce { user =>
-            get {
+          get {
+            authManager.authCookieForce { user =>
               complete(user)
             }
           }
