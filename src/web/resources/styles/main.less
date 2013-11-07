@@ -75,3 +75,20 @@ nav {
     @duration: 0.4s;
     .transition(background-color @duration ease-in-out, border-color @duration ease-in-out, color @duration ease-in-out);
 }
+
+#busy {
+    @duration: 0.1s;
+
+    .fullscreen(10000);
+    .transition(visibility 0s linear @duration, opacity @duration linear);
+    background-color: #000000;
+
+    visibility: hidden;
+    opacity: 0;
+}
+
+#busy.active {
+    transition-delay: 0s;
+    visibility: visible;
+    opacity: 0.5;
+}

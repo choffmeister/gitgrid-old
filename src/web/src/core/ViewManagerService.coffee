@@ -1,4 +1,4 @@
-define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "MainViewModel"], ($, bs, ko, log, http, MainViewModel) ->
+define ["jquery", "bootstrap", "knockout", "LoggerService", "EventService", "HttpService", "MainViewModel"], ($, bs, ko, log, events, http, MainViewModel) ->
   class ViewManagerService
     constructor: () ->
       @templateCache = {}
@@ -17,6 +17,7 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
       if @loading is false
         log.debug("Load view", templateName, viewModelType)
         @loading = true
+        events.emit("viewmanager", "loadingview", true)
 
         # instantiate view model if type was specified
         oldViewModel = @viewModel
@@ -39,6 +40,7 @@ define ["jquery", "bootstrap", "knockout", "LoggerService", "HttpService", "Main
 
           .always () =>
             @loading = false
+            events.emit("viewmanager", "loadingview", false)
       else
         log.error("Already loading a view")
 

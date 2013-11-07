@@ -1,4 +1,4 @@
-define ["jquery", "history", "LoggerService"], ($, history, log) ->
+define ["jquery", "history", "LoggerService", "ViewManagerService", "DashboardViewModel"], ($, history, log, vm, DashboardViewModel) ->
   class RouterService
     init: () =>
       @registerLinkInterceptor()
@@ -17,6 +17,7 @@ define ["jquery", "history", "LoggerService"], ($, history, log) ->
         event.preventDefault()
         log.info("Intercepted link click to #{url}", event)
         history.pushState(null, null, url)
+        vm.loadView("dashboard", DashboardViewModel) if url is "/"
 
     historyInterceptor: () =>
       state = history.getState()

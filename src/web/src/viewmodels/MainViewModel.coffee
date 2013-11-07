@@ -1,10 +1,12 @@
-define ["EventService", "ViewModelBase", "LoginDialogViewModel"], (events, ViewModelBase, LoginDialogViewModel) ->
+define ["ViewModelBase", "LoginDialogViewModel"], (ViewModelBase, LoginDialogViewModel) ->
   class MainViewModel extends ViewModelBase
     init: (viewManager) =>
       @viewManager = viewManager
       @isAuthenticated = @observable(false)
       @messages = @observableArray([])
-      events.listen("messages", "*", (message) => @messages.push(message))
+      @busy = @observable(false)
+      @listenEvent("messages", "*", (message) => @messages.push(message))
+      @listenEvent("viewmanager", "loadingview", (loading) => @busy(loading))
       @done()
 
     login: () =>
