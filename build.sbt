@@ -16,6 +16,7 @@ libraryDependencies ++= {
   val akkaVersion = "2.2.3"
   val sprayVersion = "1.2-RC2"
   Seq(
+    "commons-codec" % "commons-codec" % "1.8",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
     "io.spray" % "spray-can" % sprayVersion,
