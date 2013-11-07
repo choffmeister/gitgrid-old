@@ -1,10 +1,15 @@
 package de.choffmeister.asserthub.managers
 
 import java.security.SecureRandom
+
+import scala.annotation.migration
 import scala.collection.mutable.Map
+import scala.math.Ordered.orderingToOrdered
+
+import org.apache.commons.codec.binary.Base64
+
 import de.choffmeister.asserthub.models.User
 import spray.http.DateTime
-import org.apache.commons.codec.binary.Base64
 
 case class Session(id: String, userId: Long, expires: Option[DateTime])
 case class AuthenticationPass(user: User, session: Session)
@@ -22,25 +27,28 @@ class AuthManager {
     }
   }
   
-  def authenticate(sessionId: String): Option[AuthenticationPass] = {
-    if (sessions.contains(sessionId)) {
-      val session = sessions(sessionId)
-      val user = UserManager.find(session.userId)
-      
-      user match {
-        case Some(u) => Some(AuthenticationPass(u, session))
-        case _ => None
-      }
-    }
-    else None
-  }
-  
   def createSession(userId: Long, expires: Option[DateTime]): Session = {
     val sessionId = generateSessionId()
     val session = Session(sessionId, userId, expires)
     sessions(sessionId) = session
     
     session
+  }
+  
+  def loadSession(sessionId: String, now: Option[DateTime] = None): Option[AuthenticationPass] = {
+    if (sessions.contains(sessionId)) {
+      val session = sessions(sessionId)
+      
+      if (!session.expires.isDefined || session.expires > now.orElse(Some(DateTime.now))) {
+        val user = UserManager.find(session.userId)
+      
+        user match {
+          case Some(u) => Some(AuthenticationPass(u, session))
+          case _ => None
+        }
+      } else None
+    }
+    else None
   }
   
   def cleanSessions(dt: Some[DateTime]): Unit = {
