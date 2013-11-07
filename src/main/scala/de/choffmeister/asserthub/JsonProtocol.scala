@@ -1,6 +1,5 @@
 package de.choffmeister.asserthub
 
-import spray.json.DefaultJsonProtocol
 import de.choffmeister.asserthub.models.User
 import spray.json._
 

@@ -6,10 +6,9 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.actor.actorRef2Scala
 import akka.io.IO
+import de.choffmeister.asserthub.managers._
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
-import de.choffmeister.asserthub.managers.UserManager
-
 import spray.can.Http
 
 object Application extends App {

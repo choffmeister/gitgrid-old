@@ -1,13 +1,12 @@
 package de.choffmeister.asserthub
 
 import java.sql.DriverManager
-import org.junit.After
-import org.junit.Before
+
+import org.specs2.specification.Scope
 import org.squeryl.Session
 import org.squeryl.SessionFactory
 import org.squeryl.adapters.H2Adapter
-import org.specs2.mutable.BeforeAfter
-import org.specs2.specification.Scope
+
 import de.choffmeister.asserthub.models.Database
 
 /**

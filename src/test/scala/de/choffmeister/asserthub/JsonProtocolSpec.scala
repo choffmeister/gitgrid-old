@@ -1,9 +1,10 @@
 package de.choffmeister.asserthub
 
-import org.specs2.mutable.SpecificationWithJUnit
-import de.choffmeister.asserthub.models.User
-import spray.json._
+import org.specs2.mutable._
+
 import de.choffmeister.asserthub.JsonProtocol._
+import de.choffmeister.asserthub.models._
+import spray.json._
 
 class JsonProtocolSpec extends SpecificationWithJUnit { 
   "JsonProtocol" should {

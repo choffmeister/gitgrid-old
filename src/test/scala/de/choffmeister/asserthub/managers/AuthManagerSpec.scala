@@ -1,10 +1,10 @@
 package de.choffmeister.asserthub.managers
 
 import org.specs2.mutable._
-import spray.http.DateTime
-import org.specs2.specification.Scope
+
 import de.choffmeister.asserthub.WithDatabase
 import de.choffmeister.asserthub.models.Dsl.transaction
+import spray.http.DateTime
 
 class AuthManagerSpec extends SpecificationWithJUnit {
   val now = DateTime(2013, 1, 1, 12, 0, 0)

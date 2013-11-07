@@ -1,9 +1,10 @@
 package de.choffmeister.asserthub.managers
 
-import org.specs2.mutable.SpecificationWithJUnit
-import de.choffmeister.asserthub.models._
-import de.choffmeister.asserthub.models.Dsl.transaction
+import org.specs2.mutable._
+
 import de.choffmeister.asserthub.WithDatabase
+import de.choffmeister.asserthub.models.Dsl.transaction
+import de.choffmeister.asserthub.models.User
 
 class UserManagerSpec extends SpecificationWithJUnit {
   def createUser(i: Int) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"First${i}", s"Last${i}")

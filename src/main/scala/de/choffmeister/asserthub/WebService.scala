@@ -1,41 +1,23 @@
 package de.choffmeister.asserthub
 
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import akka.actor.Props
-import akka.pattern.ask
-import spray.routing._
-import spray.http._
-import MediaTypes._
-import de.choffmeister.asserthub.managers.UserManager
-import de.choffmeister.asserthub.models.User
-import akka.actor.ActorContext
-import scala.reflect.ClassTag
-import akka.util.Timeout
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
-import de.choffmeister.asserthub.models.User
-import spray.json._
+import akka.actor.Actor
+import akka.actor.ActorContext
+import akka.actor.ActorLogging
+import akka.pattern.ask
+import akka.util.Timeout
 import de.choffmeister.asserthub.JsonProtocol._
-import spray.httpx.SprayJsonSupport._
-import StatusCodes._
-import de.choffmeister.asserthub.managers.AuthManager
-import AuthenticationFailedRejection._
-import de.choffmeister.asserthub.managers.AuthenticationPass
+import de.choffmeister.asserthub.managers._
+import de.choffmeister.asserthub.models._
 import shapeless.HNil
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import spray.http.BasicHttpCredentials
-import spray.http.HttpChallenge
-import spray.http.HttpCredentials
-import spray.http.HttpHeaders.`WWW-Authenticate`
-import spray.http.HttpRequest
-import spray.routing.RequestContext
+import spray.http._
+import spray.http.MediaTypes._
+import spray.http.StatusCodes._
+import spray.httpx.SprayJsonSupport._
+import spray.routing._
+import spray.routing.AuthenticationFailedRejection._
 import spray.routing.authentication.HttpAuthenticator
-import spray.routing.authentication.UserPass
-import spray.http.HttpCookie
-import spray.http.DateTime
-import spray.routing.Directive1
 
 class WebServiceActor extends Actor with WebService {
   def actorRefFactory = context
