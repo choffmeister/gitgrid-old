@@ -19,6 +19,22 @@ import spray.json._
 import de.choffmeister.asserthub.JsonProtocol._
 import spray.httpx.SprayJsonSupport._
 import StatusCodes._
+import de.choffmeister.asserthub.managers.AuthManager
+import AuthenticationFailedRejection._
+import de.choffmeister.asserthub.managers.AuthenticationPass
+import shapeless.HNil
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import spray.http.BasicHttpCredentials
+import spray.http.HttpChallenge
+import spray.http.HttpCredentials
+import spray.http.HttpHeaders.`WWW-Authenticate`
+import spray.http.HttpRequest
+import spray.routing.RequestContext
+import spray.routing.authentication.HttpAuthenticator
+import spray.routing.authentication.UserPass
+import spray.http.HttpCookie
+import spray.http.DateTime
 
 class WebServiceActor extends Actor with WebService {
   def actorRefFactory = context
@@ -28,18 +44,18 @@ class WebServiceActor extends Actor with WebService {
 trait WebService extends HttpService {
   implicit val timeout = Timeout(5 seconds)
   implicit def executionContext = actorRefFactory.dispatcher
-  
-  lazy val route =
+  implicit def authManager = new AuthManager()
+  implicit def authService = new AuthService()
+
+  val route =
     pathPrefix("api") {
       pathPrefix("auth") {
         path("login") {
           post {
-            entity(as[(String, String)]) { e =>
-              complete {
-                val user = UserManager.authenticate(e._1, e._2)
-                user match {
-                  case Some(u) => Some(u)
-                  case _ => Unauthorized
+            authenticate[AuthenticationPass](authService) { pass =>
+              setCookie(HttpCookie("asserthub-sid", pass.session.id, pass.session.expires)) {
+                complete {
+                  pass.user
                 }
               }
             }
@@ -47,8 +63,10 @@ trait WebService extends HttpService {
         } ~
         path("logout") {
           post {
-            complete {
-              "logout"
+            deleteCookie("asserthub-sid") {
+              complete {
+                "logout"
+              }
             }
           }
         } ~

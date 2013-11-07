@@ -8,10 +8,11 @@ import spray.httpx.SprayJsonSupport._
 import spray.testkit._
 import spray.http._
 import StatusCodes._
+import spray.routing.AuthenticationFailedRejection
 
 class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with WebService {
   def actorRefFactory = system
-
+  
   "WebService" should {
     "accept valid login credentials" in new WithDatabase {
       transaction {
@@ -19,20 +20,20 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         db.create
         val users = (1 to 5).map(i => db.users.insert(createUser(i)))
     
-        Post("/api/auth/login", ("user1", "pass1")) ~> route ~> check {
-          val res = responseAs[Option[User]]
+        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user1", "pass1")) ~> route ~> check {
+          val res = responseAs[User]
           
-          res.isDefined === true
-          res.get.id === 1
-          res.get.userName == "user1"
+          res.id === 1
+          res.userName == "user1"
+            
+          headers.find(h => h.name.toLowerCase == "set-cookie") must beSome
         }
         
-        Post("/api/auth/login", ("user2", "pass2")) ~> route ~> check {
-          val res = responseAs[Option[User]]
+        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user2", "pass2")) ~> route ~> check {
+          val res = responseAs[User]
           
-          res.isDefined === true
-          res.get.id === 2
-          res.get.userName == "user2"
+          res.id === 2
+          res.userName == "user2"
         }
       }
     }
@@ -43,16 +44,20 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         db.create
         val users = (1 to 5).map(i => db.users.insert(createUser(i)))
     
-        Post("/api/auth/login", ("user1", "pass2")) ~> route ~> check {
-          status === Unauthorized
-        }
-                
-        Post("/api/auth/login", ("user2", "pass1")) ~> route ~> check {
-          status === Unauthorized
+        Post("/api/auth/login") ~> route ~> check {
+          rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
         
-        Post("/api/auth/login", ("unknown", "pass")) ~> route ~> check {
-          status === Unauthorized
+        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user1", "pass2")) ~> route ~> check {
+          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+        }
+                
+        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user2", "pass1")) ~> route ~> check {
+          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+        }
+        
+        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("unknown", "pass")) ~> route ~> check {
+          rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
       }
     }
