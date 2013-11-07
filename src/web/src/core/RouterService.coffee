@@ -1,4 +1,4 @@
-define ["jquery", "history", "LoggerService", "ViewManagerService", "DashboardViewModel"], ($, history, log, vm, DashboardViewModel) ->
+define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, log, vm, DashboardViewModel) ->
   class RouterService
     init: () =>
       @registerLinkInterceptor()

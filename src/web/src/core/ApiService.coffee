@@ -1,4 +1,4 @@
-define ["config", "HttpService"], (config, http) ->
+define ["config", "http"], (config, http) ->
   baseUrl = config.api.baseUrl
   options =
     dataType: "json"

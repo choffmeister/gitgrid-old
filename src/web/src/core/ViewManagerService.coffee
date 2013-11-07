@@ -1,4 +1,4 @@
-define ["jquery", "bootstrap", "knockout", "LoggerService", "EventService", "HttpService", "MainViewModel"], ($, bs, ko, log, events, http, MainViewModel) ->
+define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewModel"], ($, bs, ko, log, events, http, MainViewModel) ->
   class ViewManagerService
     constructor: () ->
       @templateCache = {}

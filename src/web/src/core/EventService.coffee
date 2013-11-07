@@ -1,4 +1,4 @@
-define ["jquery", "LoggerService"], ($, log) ->
+define ["jquery", "log"], ($, log) ->
   class EventService
     constructor: () ->
       @listeners = {}

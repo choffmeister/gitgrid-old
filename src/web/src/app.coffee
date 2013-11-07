@@ -1,21 +1,26 @@
 requirejs.config
   baseUrl: "/src"
   paths:
+    # external libraries
     jquery: "../bower_components/jquery/jquery"
     underscore: "../bower_components/underscore/underscore"
     history: "../bower_components/history.js/scripts/bundled/html4+html5/jquery.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
 
+    # configuration
     config: "config"
 
-    LoggerService: "core/LoggerService"
-    EventService: "core/EventService"
-    HttpService: "core/HttpService"
-    ApiService: "core/ApiService"
+    # services
+    log: "core/LoggerService"
+    events: "core/EventService"
+    http: "core/HttpService"
+    api: "core/ApiService"
+    router: "core/RouterService"
+    vm: "core/ViewManagerService"
+
+    # misc
     SlideVisibleBinding: "utils/SlideVisibleBinding"
-    ViewManagerService: "core/ViewManagerService"
-    RouterService: "core/RouterService"
     ViewModelBase: "viewmodels/ViewModelBase"
     DialogViewModelBase: "viewmodels/DialogViewModelBase"
     MainViewModel: "viewmodels/MainViewModel"
@@ -33,16 +38,16 @@ requirejs.config
 requirejs [
   "jquery"
   "knockout"
-  "LoggerService"
-  "ViewManagerService"
-  "RouterService"
+  "log"
+  "vm"
+  "router"
   "SlideVisibleBinding"
   "DashboardViewModel"
-], ($, ko, log, viewManager, router, SlideVisibleBinding, DashboardViewModel) ->
+], ($, ko, log, vm, router, SlideVisibleBinding, DashboardViewModel) ->
   $(document).ready () ->
     log.info("Initializing view manager")
-    viewManager.init()
-    viewManager.loadView("dashboard", DashboardViewModel)
+    vm.init()
+    vm.loadView("dashboard", DashboardViewModel)
 
     log.info("Initializing router")
     router.init()

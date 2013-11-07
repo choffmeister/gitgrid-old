@@ -1,4 +1,4 @@
-define ["jquery", "LoggerService", "ApiService", "DialogViewModelBase"], ($, log, api, DialogViewModelBase) ->
+define ["jquery", "log", "api", "DialogViewModelBase"], ($, log, api, DialogViewModelBase) ->
   class LoginDialogViewModel extends DialogViewModelBase
     init: () =>
       @busy = @observable(false)

@@ -1,4 +1,4 @@
-define ["jquery", "knockout", "EventService"], ($, ko, events) ->
+define ["jquery", "knockout", "events"], ($, ko, events) ->
   class ViewModelBase
     # called from the ViewManager after creating the view model
     init: () => @done()
