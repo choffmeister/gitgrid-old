@@ -3,8 +3,11 @@ package de.choffmeister.asserthub
 import de.choffmeister.asserthub.models._
 import spray.httpx._
 import spray.json._
+import spray.routing.authentication.UserPass
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit val userPassFormat = jsonFormat2(UserPass)
+
   implicit object UserJsonFormat extends RootJsonFormat[User] {
     def write(u: User) =
       JsObject(Map(
@@ -14,8 +17,6 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
         "firstName" -> JsString(u.firstName),
         "lastName" -> JsString(u.lastName)
       ))
-          
-      //JsArray(JsNumber(u.id), JsString(u.userName), JsString(u.email), JsString(u.firstName), JsString(u.lastName))
 
     def read(value: JsValue) =
       value.asJsObject.getFields("id", "userName", "email", "firstName", "lastName") match {

@@ -51,7 +51,7 @@ define ["jquery", "log", "api", "DialogViewModelBase"], ($, log, api, DialogView
     authenticate: (userName, password) =>
       deferred = $.Deferred()
 
-      api.post("/auth/login", [userName, password])
+      api.post("/auth/login", { user: userName, pass: password })
         .done (res) ->
           deferred.resolve(true)
         .fail (err) ->

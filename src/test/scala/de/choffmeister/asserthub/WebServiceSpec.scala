@@ -6,7 +6,8 @@ import de.choffmeister.asserthub.models.Dsl.transaction
 import de.choffmeister.asserthub.JsonProtocol._
 import spray.testkit._
 import spray.http._
-import spray.routing.AuthenticationFailedRejection
+import spray.routing._
+import spray.routing.authentication.UserPass
 import spray.http.parser.HttpParser
 import StatusCodes._
 
@@ -20,7 +21,7 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         db.create
         val users = (1 to 5).map(i => db.users.insert(createUser(i)))
     
-        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user1", "pass1")) ~> route ~> check {
+        Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
           val res = responseAs[User]
           
           res.id === 1
@@ -29,7 +30,7 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
           headers.find(h => h.name.toLowerCase == "set-cookie") must beSome
         }
         
-        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user2", "pass2")) ~> route ~> check {
+        Post("/api/auth/login", UserPass("user2", "pass2")) ~> route ~> check {
           val res = responseAs[User]
           
           res.id === 2
@@ -45,18 +46,18 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         val users = (1 to 5).map(i => db.users.insert(createUser(i)))
     
         Post("/api/auth/login") ~> route ~> check {
-          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+          rejection
         }
         
-        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user1", "pass2")) ~> route ~> check {
+        Post("/api/auth/login", UserPass("user1", "pass2")) ~> route ~> check {
           rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
                 
-        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user2", "pass1")) ~> route ~> check {
+        Post("/api/auth/login", UserPass("user2", "pass1")) ~> route ~> check {
           rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
         
-        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("unknown", "pass")) ~> route ~> check {
+        Post("/api/auth/login", UserPass("unknown", "pass")) ~> route ~> check {
           rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
       }
@@ -79,7 +80,7 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
           rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
         
-        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user1", "pass1")) ~> route ~> check {
+        Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
           val res = responseAs[User]
           val setCookieHeader = headers.find(h => h.name.toLowerCase == "set-cookie").get
           val cookie = setCookieHeader.asInstanceOf[HttpHeaders.`Set-Cookie`].cookie

@@ -4,11 +4,14 @@ import java.security.SecureRandom
 import scala.collection.mutable.Map
 import org.apache.commons.codec.binary.Base64
 import de.choffmeister.asserthub.models.User
+import de.choffmeister.asserthub.JsonProtocol._
 import spray.http.DateTime
 import spray.routing.Directive1
 import spray.routing._
+import spray.routing.authentication._
 import spray.routing.directives.BasicDirectives._
 import spray.routing.directives.RouteDirectives._
+import spray.routing.directives.MarshallingDirectives._
 import shapeless.HNil
 import AuthenticationFailedRejection._
 
@@ -68,6 +71,18 @@ class AuthManager {
     val str = Base64.encodeBase64String(bin)
     
     str
+  }
+  
+  val authLogin: Directive1[AuthenticationPass] = {
+    entity(as[UserPass]).flatMap {
+      case UserPass(userName, password) =>
+        authenticate(userName, password) match {
+          case Some(AuthenticationPass(u, s)) => hprovide(AuthenticationPass(u, s) :: HNil)
+          case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
+        }
+      case _ =>
+        reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
+    }
   }
   
   val authCookie: Directive1[Option[User]] = {

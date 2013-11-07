@@ -19,14 +19,13 @@ trait WebService extends HttpService {
   implicit val timeout = Timeout(5 seconds)
   implicit def executionContext = actorRefFactory.dispatcher
   implicit val authManager = new AuthManager()
-  implicit val authService = new AuthService()
 
   val route =
     pathPrefix("api") {
       pathPrefix("auth") {
         path("login") {
           post {
-            authenticate[AuthenticationPass](authService) { pass =>
+            authManager.authLogin { pass =>
               setCookie(HttpCookie("asserthub-sid", pass.session.id, pass.session.expires)) {
                 complete {
                   pass.user
