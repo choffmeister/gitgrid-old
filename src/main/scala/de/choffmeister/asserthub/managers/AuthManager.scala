@@ -1,15 +1,18 @@
 package de.choffmeister.asserthub.managers
 
 import java.security.SecureRandom
-
 import scala.annotation.migration
 import scala.collection.mutable.Map
 import scala.math.Ordered.orderingToOrdered
-
 import org.apache.commons.codec.binary.Base64
-
 import de.choffmeister.asserthub.models.User
 import spray.http.DateTime
+import spray.routing.Directive1
+import spray.routing._
+import spray.routing.directives.BasicDirectives._
+import spray.routing.directives.RouteDirectives._
+import shapeless.HNil
+import AuthenticationFailedRejection._
 
 case class Session(id: String, userId: Long, expires: Option[DateTime])
 case class AuthenticationPass(user: User, session: Session)
@@ -68,4 +71,24 @@ class AuthManager {
     
     str
   }
+  
+  val authCookie: Directive1[Option[User]] = {
+    extract { ctx =>
+      val cookie = ctx.request.cookies.find(c => c.name == "asserthub-sid")
+      
+      cookie match {
+        case Some(c) => loadSession(c.content) match {
+          case Some(s) => Some(s.user)
+          case _ => None
+        }
+        case _ => None
+      }
+    }
+  }
+  
+  val authCookieForce: Directive1[User] =
+    authCookie.flatMap {
+      case Some(u) => hprovide(u :: HNil)
+      case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
+    }
 }

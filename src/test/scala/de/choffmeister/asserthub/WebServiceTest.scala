@@ -9,6 +9,7 @@ import spray.testkit._
 import spray.http._
 import StatusCodes._
 import spray.routing.AuthenticationFailedRejection
+import spray.http.parser.HttpParser
 
 class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with WebService {
   def actorRefFactory = system
@@ -68,9 +69,31 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
       }
     }
     
-    "handle auth state requests" in {
-      Get("/api/auth/state") ~> route ~> check {
-        responseAs[String] === "state"
+    "handle auth state requests" in new WithDatabase{
+      transaction {
+        db.drop
+        db.create
+        val users = (1 to 5).map(i => Database.users.insert(createUser(i)))
+        var sessionId = ""
+          
+        Get("/api/auth/state") ~> route ~> check {
+          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+        }
+        
+        Post("/api/auth/login") ~> addCredentials(BasicHttpCredentials("user1", "pass1")) ~> route ~> check {
+          val res = responseAs[User]
+          val setCookieHeader = headers.find(h => h.name.toLowerCase == "set-cookie").get
+          val cookie = setCookieHeader.asInstanceOf[HttpHeaders.`Set-Cookie`].cookie
+          
+          status === OK
+          sessionId = cookie.content
+        }
+        
+        Get("/api/auth/state") ~> addHeader(HttpHeaders.Cookie(HttpCookie("asserthub-sid", sessionId))) ~> route ~> check {
+          val res = responseAs[User]
+          
+          status === OK
+        }
       }
     }
     

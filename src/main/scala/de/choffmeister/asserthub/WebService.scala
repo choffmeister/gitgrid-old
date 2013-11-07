@@ -35,6 +35,7 @@ import spray.routing.authentication.HttpAuthenticator
 import spray.routing.authentication.UserPass
 import spray.http.HttpCookie
 import spray.http.DateTime
+import spray.routing.Directive1
 
 class WebServiceActor extends Actor with WebService {
   def actorRefFactory = context
@@ -44,8 +45,8 @@ class WebServiceActor extends Actor with WebService {
 trait WebService extends HttpService {
   implicit val timeout = Timeout(5 seconds)
   implicit def executionContext = actorRefFactory.dispatcher
-  implicit def authManager = new AuthManager()
-  implicit def authService = new AuthService()
+  implicit val authManager = new AuthManager()
+  implicit val authService = new AuthService()
 
   val route =
     pathPrefix("api") {
@@ -64,16 +65,14 @@ trait WebService extends HttpService {
         path("logout") {
           post {
             deleteCookie("asserthub-sid") {
-              complete {
-                "logout"
-              }
+              complete("logout")
             }
           }
         } ~
         path("state") {
-          get {
-            complete {
-              "state"
+          authManager.authCookieForce { user =>
+            get {
+              complete(user)
             }
           }
         }
