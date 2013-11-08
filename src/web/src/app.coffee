@@ -40,11 +40,12 @@ requirejs [
   "jquery"
   "knockout"
   "log"
+  "auth"
   "vm"
   "router"
   "SlideVisibleBinding"
   "DashboardViewModel"
-], ($, ko, log, vm, router, SlideVisibleBinding, DashboardViewModel) ->
+], ($, ko, log, auth, vm, router, SlideVisibleBinding, DashboardViewModel) ->
   $(document).ready () ->
     log.info("Initializing view manager")
     vm.init()
@@ -52,3 +53,6 @@ requirejs [
 
     log.info("Initializing router")
     router.init()
+
+    log.info("Checking session cookie")
+    auth.check()

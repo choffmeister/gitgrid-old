@@ -7,10 +7,9 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
       deferred = $.Deferred()
 
       api.post("/auth/login", { user: userName, pass: password })
-        .done (res) ->
+        .done (res) =>
           log.info("Authenticated with user name #{userName}", res)
-          @user = res.user
-          events.emit("auth", "changestate", @user)
+          @changeUser(res.user)
           deferred.resolve(true)
         .fail (err) ->
           switch err.status
@@ -25,14 +24,30 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
       deferred = $.Deferred()
 
       api.post("/auth/logout")
-        .done (res) ->
+        .done (res) =>
           log.info("Unauthenticated")
-          @user = null
-          events.emit("auth", "changestate", @user)
+          @changeUser(null)
           deferred.resolve()
         .fail (err) ->
           log.error("Error while trying to unauthenticate: #{err.responseText}", err)
           deferred.reject()
+
+      return deferred.promise()
+
+    changeUser: (newUser) =>
+      oldUser = @user
+
+      @user = newUser
+      events.emit("auth", "changestate", newUser) if newUser?.id != oldUser?.id
+
+    check: () =>
+      deferred = $.Deferred()
+
+      api.get("/auth/state")
+        .done (user) =>
+          @changeUser(user)
+        .always () ->
+          deferred.resolve()
 
       return deferred.promise()
 
