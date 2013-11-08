@@ -7,15 +7,26 @@ import de.choffmeister.asserthub.models.Dsl._
 
 object UserManager extends EntityRepository[User] {
   def all: List[User] = inTransaction(from(Database.users)(u => select(u) orderBy(u.id asc)).toList)
-  
+
   def find(id: Long): Option[User] = inTransaction(Database.users.lookup(id))
-  
+
   def insert(user: User): User = inTransaction(Database.users.insert(user))
-    
-  def update(user: User): Unit = inTransaction(Database.users.update(user))
-  
-  def delete(id: Long): Unit = inTransaction(Database.users.deleteWhere(u => u.id === id))
-  
+
+  def update(user: User): User = inTransaction {
+    Database.users.update(user)
+    user
+  }
+
+  def delete(id: Long): Option[User] = inTransaction {
+    find(id) match {
+      case Some(user) =>
+        Database.users.deleteWhere(u => u.id === user.id)
+        Some(user)
+      case _ =>
+        None
+    }
+  }
+
   /**
    * Creates a new user and persists it to the database.
    */
@@ -27,7 +38,7 @@ object UserManager extends EntityRepository[User] {
         throw new Exception(s"Unknown hash algorithm ${x}")
     }
   }
-  
+
   /**
    * Returns the User object if credentials are valid or else None.
    */
@@ -41,7 +52,7 @@ object UserManager extends EntityRepository[User] {
           return user
         }
       }
-    
+
       None
     }
   }

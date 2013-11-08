@@ -9,4 +9,4 @@ case class User(
   passwordHashAlgorithm: String = "plain",
   firstName: String = "",
   lastName: String = ""
-)
+) extends Entity

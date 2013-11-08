@@ -49,50 +49,53 @@ trait WebService extends HttpService {
           }
         }
       } ~
-      createRestRoutes("users")
+      createRestRoutes("users", UserManager)
     }
 
-  def createRestRoutes(name: String): Route = {
+  def createRestRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
+    entityMarshaller: spray.httpx.marshalling.ToResponseMarshaller[T],
+    entityListMarshaller: spray.httpx.marshalling.ToResponseMarshaller[List[T]],
+    entityOptionMarshaller: spray.httpx.marshalling.ToResponseMarshaller[Option[T]],
+    entityUnmarshaller: spray.httpx.unmarshalling.FromRequestUnmarshaller[T],
+    entityListUnmarshaller: spray.httpx.unmarshalling.FromRequestUnmarshaller[List[T]],
+    entityOptionUnmarshaller: spray.httpx.unmarshalling.FromRequestUnmarshaller[Option[T]]
+  ): Route = {
     val list = path(name) & get
     val retrieve = path(name / LongNumber) & get
     val create = path(name) & post
     val update = path(name / LongNumber) & put
     val remove = path(name / LongNumber) & delete
-    
+
     list {
-      complete {
-        val users = UserManager.all
-        users
-      }
+      complete(repo.all)
     } ~
     retrieve { id =>
       complete {
-        val user = UserManager.find(id)
-        user
-      }
-    } ~
-    create { 
-      entity(as[User]) { user =>
-        complete {
-          val persistedUser = UserManager.insert(user)
-          persistedUser
+        repo.find(id) match {
+          case Some(e) => e
+          case _ => NotFound
         }
       }
     } ~
+    create {
+      entity(as[T]) { e =>
+        complete(repo.insert(e))
+      }
+    } ~
     update { id =>
-      entity(as[User]) { user =>
+      entity(as[T]) { e =>
         complete {
-          if (user.id == id) {
-            UserManager.update(user)
-            user
-          } else BadRequest
+          if (e.id == id) repo.update(e)
+          else BadRequest
         }
       }
     } ~
     remove { id =>
       complete {
-        UserManager.delete(id)
-        "Delete #" + id
+        repo.delete(id) match {
+          case Some(e) => e
+          case _ => NotFound
+        }
       }
     }
   }
