@@ -56,3 +56,4 @@ requirejs [
         window.alert("Error while trying to initialize the application")
       .always () ->
         router.historyInterceptor()
+        $(".cloak").removeClass("cloak")
