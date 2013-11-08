@@ -15,6 +15,8 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
+      deferred = $.Deferred()
+
       if @loading is false
         log.debug("Load view", templateName, viewModelType)
         @loading = true
@@ -26,19 +28,26 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
 
         $.when(@loadTemplate(templateName), @initViewModel(newViewModel))
           .done (template) =>
-            # swap views
-            oldViewModel.deactivate() if oldViewModel?
-            @unapplyViewModel(oldViewModel, @content)
-            @content.html(template)
-            @applyViewModel(newViewModel, @content)
-            newViewModel.activate() if newViewModel?
+            try
+              # swap views
+              oldViewModel.deactivate() if oldViewModel?
+              @unapplyViewModel(oldViewModel, @content)
+              @content.html(template)
+              @applyViewModel(newViewModel, @content)
+              newViewModel.activate() if newViewModel?
 
-            @viewModel = newViewModel
-            @deinitViewModel(oldViewModel)
+              @viewModel = newViewModel
+              @deinitViewModel(oldViewModel)
+              deferred.resolve()
+            catch ex
+              log.error("Error while applying view", ex)
+              @loadNotification(true, "Error while loading view")
+              deferred.reject(ex)
 
           .fail (err) =>
             log.error("Error while loading view", err)
             @loadNotification(true, "Error while loading view")
+            deferred.reject(err)
 
           .always () =>
             @loading = false
@@ -46,6 +55,9 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       else
         log.error("Already loading a view")
         @loadNotification(true, "Already loading a view")
+        deferred.reject()
+
+      return deferred.promise()
 
     loadDialogView: (modal, templateName, viewModelType) =>
       log.debug("Load dialog view", templateName, viewModelType)
@@ -84,38 +96,42 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
     openDialogView: (backdrop, template, viewModel) =>
       deferred = $.Deferred()
 
-      # wrap dialog template and append to DOM
-      dialog = $(template)
-      wrapper = $("<div></div>").append(dialog)
-      @dialogs.append(wrapper)
+      try
+        # wrap dialog template and append to DOM
+        dialog = $(template)
+        wrapper = $("<div></div>").append(dialog)
+        @dialogs.append(wrapper)
 
-      # apply view model
-      @applyViewModel(viewModel, dialog)
+        # apply view model
+        @applyViewModel(viewModel, dialog)
 
-      # show dialog
-      dialog.modal({ backdrop: backdrop })
+        # show dialog
+        dialog.modal({ backdrop: backdrop })
 
-      # register to view models result promise and hide dialog if promise is resolved or rejected
-      if viewModel?
-        viewModel.result().always () =>
-          dialog.modal("hide")
+        # register to view models result promise and hide dialog if promise is resolved or rejected
+        if viewModel?
+          viewModel.result().always () =>
+            dialog.modal("hide")
 
-      # register to dialogs hide event and remove dialog from DOM after closing
-      dialog.on "hidden.bs.modal", () =>
-        viewModel.deactivate() if viewModel?
-        @unapplyViewModel(dialog, wrapper)
-        wrapper.remove()
+        # register to dialogs hide event and remove dialog from DOM after closing
+        dialog.on "hidden.bs.modal", () =>
+          viewModel.deactivate() if viewModel?
+          @unapplyViewModel(dialog, wrapper)
+          wrapper.remove()
 
-      # register to dialogs show event and notify view model when the view is ready and in place
-      dialog.on "shown.bs.modal", () =>
-        viewModel.activate() if viewModel?
+        # register to dialogs show event and notify view model when the view is ready and in place
+        dialog.on "shown.bs.modal", () =>
+          viewModel.activate() if viewModel?
 
-      if viewModel?
-        viewModel.result()
-          .done((res) -> deferred.resolve(res))
-          .fail((err) -> deferred.reject(err))
-      else
-        dialog.on "hidden.bs.modal", () -> deferred.resolve()
+        if viewModel?
+          viewModel.result()
+            .done((res) -> deferred.resolve(res))
+            .fail((err) -> deferred.reject(err))
+        else
+          dialog.on "hidden.bs.modal", () -> deferred.resolve()
+      catch ex
+        log.error("Error while opening dialog view", ex)
+        deferred.reject(ex)
 
       return deferred.promise()
 
