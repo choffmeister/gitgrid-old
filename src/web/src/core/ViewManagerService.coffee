@@ -38,12 +38,14 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
 
           .fail (err) =>
             log.error("Error while loading view", err)
+            @loadNotification(true, "Error while loading view")
 
           .always () =>
             @loading = false
             events.emit("viewmanager", "loadingview", false)
       else
         log.error("Already loading a view")
+        @loadNotification(true, "Already loading a view")
 
     loadDialogView: (modal, templateName, viewModelType) =>
       log.debug("Load dialog view", templateName, viewModelType)
@@ -55,42 +57,65 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       # load template and initialize view model
       $.when(@loadTemplate(templateName), @initViewModel(dialogViewModel))
         .done (template) =>
-          # wrap dialog template and append to DOM
-          dialog = $(template)
-          wrapper = $("<div></div>").append(dialog)
-          @dialogs.append(wrapper)
-
-          # apply view model
-          @applyViewModel(dialogViewModel, dialog)
-
-          # show dialog
-          dialog.modal({ backdrop: modal })
-
-          # register to view models result promise and hide dialog if promise is resolved or rejected
-          if dialogViewModel?
-            dialogViewModel.result().always () =>
-              dialog.modal("hide")
-
-          # register to dialogs hide event and remove dialog from DOM after closing
-          dialog.on "hidden.bs.modal", () =>
-            dialogViewModel.deactivate()
-            @unapplyViewModel(dialog, wrapper)
-            wrapper.remove()
-
-          # register to dialogs show event and notify view model when the view is ready and in place
-          dialog.on "shown.bs.modal", () =>
-            dialogViewModel.activate()
-
-          if dialogViewModel?
-            dialogViewModel.result()
-              .done((res) -> deferred.resolve(res))
-              .fail((err) -> deferred.reject(err))
-          else
-            dialog.on "hidden.bs.modal", () -> deferred.resolve()
+          @openDialogView(modal, template, dialogViewModel)
+            .done (res) -> deferred.resolve(res)
+            .fail (err) -> deferred.reject(err)
 
         .fail (err) =>
           log.error("Error while creating dialog view:\n#{err.toString()}", err)
+          @loadNotification(true, "Error while creating dialog view")
           deferred.reject(err)
+
+      return deferred.promise()
+
+    loadNotification: (backdrop, text) =>
+      deferred = $.Deferred()
+
+      @loadTemplate("notificationdialog")
+        .done (templateRaw) =>
+          template = templateRaw.replace("{{text}}", text)
+          return @openDialogView(backdrop, template, null)
+
+        .fail (err) ->
+          deferred.reject(err)
+
+      return deferred.promise()
+
+    openDialogView: (backdrop, template, viewModel) =>
+      deferred = $.Deferred()
+
+      # wrap dialog template and append to DOM
+      dialog = $(template)
+      wrapper = $("<div></div>").append(dialog)
+      @dialogs.append(wrapper)
+
+      # apply view model
+      @applyViewModel(viewModel, dialog)
+
+      # show dialog
+      dialog.modal({ backdrop: backdrop })
+
+      # register to view models result promise and hide dialog if promise is resolved or rejected
+      if viewModel?
+        viewModel.result().always () =>
+          dialog.modal("hide")
+
+      # register to dialogs hide event and remove dialog from DOM after closing
+      dialog.on "hidden.bs.modal", () =>
+        viewModel.deactivate() if viewModel?
+        @unapplyViewModel(dialog, wrapper)
+        wrapper.remove()
+
+      # register to dialogs show event and notify view model when the view is ready and in place
+      dialog.on "shown.bs.modal", () =>
+        viewModel.activate() if viewModel?
+
+      if viewModel?
+        viewModel.result()
+          .done((res) -> deferred.resolve(res))
+          .fail((err) -> deferred.reject(err))
+      else
+        dialog.on "hidden.bs.modal", () -> deferred.resolve()
 
       return deferred.promise()
 
