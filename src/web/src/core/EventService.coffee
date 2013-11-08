@@ -36,7 +36,7 @@ define ["jquery", "log"], ($, log) ->
       fqen = "#{namespace}:#{name}"
       fqenMulti = "#{namespace}:*"
 
-      log.trace("Event #{fqen}", data) if name.substr(0,4) != 'tick'
+      log.trace("Event #{fqen}", data) if name.substr(0,4) != 'tick' and name.substr(0,3) != 'key'
 
       listeners = @listeners[fqen] ? []
       for listener in listeners

@@ -1,4 +1,4 @@
-define ["jquery", "log", "api", "DialogViewModelBase"], ($, log, api, DialogViewModelBase) ->
+define ["jquery", "log", "auth", "DialogViewModelBase"], ($, log, auth, DialogViewModelBase) ->
   class LoginDialogViewModel extends DialogViewModelBase
     init: () =>
       @busy = @observable(false)
@@ -34,7 +34,7 @@ define ["jquery", "log", "api", "DialogViewModelBase"], ($, log, api, DialogView
       @busy(true)
 
       if @userName() and @password()
-        @authenticate(@userName(), @password())
+        auth.authenticate(@userName(), @password())
           .done (result) =>
             if result is true
               @close(true)
@@ -47,18 +47,3 @@ define ["jquery", "log", "api", "DialogViewModelBase"], ($, log, api, DialogView
       else
         @showMessage("info", "Please enter both, your user name and your password.")
         @prepare()
-
-    authenticate: (userName, password) =>
-      deferred = $.Deferred()
-
-      api.post("/auth/login", { user: userName, pass: password })
-        .done (res) ->
-          deferred.resolve(true)
-        .fail (err) ->
-          switch err.status
-            when 401 then deferred.resolve(false)
-            else
-              log.error("Error while trying to authenticate: #{err.responseText}", err)
-              deferred.reject()
-
-      return deferred.promise()

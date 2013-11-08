@@ -16,6 +16,7 @@ requirejs.config
     events: "core/EventService"
     http: "core/HttpService"
     api: "core/ApiService"
+    auth: "core/AuthService"
     router: "core/RouterService"
     vm: "core/ViewManagerService"
 
