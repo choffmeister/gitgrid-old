@@ -1,5 +1,5 @@
 define [], () ->
   logging:
-    verbosity: 5 # TRACE
+    verbosity: 3 # INFO
   api:
     baseUrl: "/api"

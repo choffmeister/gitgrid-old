@@ -1,6 +1,7 @@
 define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, log, vm, DashboardViewModel) ->
   class RouterService
     init: () =>
+      log.info("Initializing router")
       @registerLinkInterceptor()
       @registerHistoryInterceptor()
 
@@ -15,13 +16,19 @@ define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, lo
 
       if not @isAbsoluteUrl(url)
         event.preventDefault()
-        log.info("Intercepted link click to #{url}", event)
+        log.trace("Intercepted link click to #{url}", event)
         history.pushState(null, null, url)
-        vm.loadView("dashboard", DashboardViewModel) if url is "/"
 
     historyInterceptor: () =>
       state = history.getState()
-      log.info("Changed location", state)
+      log.info("Changed location to #{state.hash}", state)
+
+      switch state.hash
+        when "/" then vm.loadView("dashboard", DashboardViewModel)
+        when "/test" then vm.loadView("dashboard")
+        when "/test/second" then vm.loadView("foobar", DashboardViewModel)
+        else
+          log.warn("Unknown route #{state.hash}")
 
     isAbsoluteUrl: (url) ->
       absolutePatterns = [/^\w+:\/\//, /^mailto:/]

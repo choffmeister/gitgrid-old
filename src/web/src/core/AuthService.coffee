@@ -9,7 +9,7 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
       api.post("/auth/login", { user: userName, pass: password })
         .done (res) =>
           log.info("Authenticated with user name #{userName}", res)
-          @changeUser(res.user)
+          @changeState(res.user)
           deferred.resolve(true)
         .fail (err) ->
           switch err.status
@@ -26,7 +26,7 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
       api.post("/auth/logout")
         .done (res) =>
           log.info("Unauthenticated")
-          @changeUser(null)
+          @changeState(null)
           deferred.resolve()
         .fail (err) ->
           log.error("Error while trying to unauthenticate: #{err.responseText}", err)
@@ -34,20 +34,23 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
 
       return deferred.promise()
 
-    changeUser: (newUser) =>
+    changeState: (newUser) =>
       oldUser = @user
 
       @user = newUser
+      log.info("Changed authentication state", newUser)
       events.emit("auth", "changestate", newUser) if newUser?.id != oldUser?.id
 
-    check: () =>
+    checkState: () =>
+      log.info("Checking session cookie")
+
       deferred = $.Deferred()
 
       api.get("/auth/state")
         .done (user) =>
-          @changeUser(user)
-        .always () ->
-          deferred.resolve()
+          deferred.resolve(user)
+        .fail () ->
+          deferred.resolve(null)
 
       return deferred.promise()
 

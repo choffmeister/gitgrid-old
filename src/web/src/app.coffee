@@ -47,12 +47,12 @@ requirejs [
   "DashboardViewModel"
 ], ($, ko, log, auth, vm, router, SlideVisibleBinding, DashboardViewModel) ->
   $(document).ready () ->
-    log.info("Initializing view manager")
-    vm.init()
-    vm.loadView("dashboard", DashboardViewModel)
-
-    log.info("Initializing router")
-    router.init()
-
-    log.info("Checking session cookie")
-    auth.check()
+    $.when(auth.checkState(), vm.init(), router.init())
+      .done (user) ->
+        log.info("Application initialization done")
+        auth.changeState(user)
+      .fail (err) ->
+        log.fatal("Error while trying to initialize the application", err)
+        window.alert("Error while trying to initialize the application")
+      .always () ->
+        router.historyInterceptor()

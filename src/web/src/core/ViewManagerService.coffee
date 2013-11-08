@@ -6,6 +6,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       @loading = false
 
     init: () =>
+      log.info("Initializing view manager")
       @body = $("body")
       @content = $("#content")
       @dialogs = $("#dialogs")

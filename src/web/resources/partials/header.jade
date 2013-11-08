@@ -8,20 +8,9 @@ nav.navbar.navbar-default.navbar-fixed-top(role="navigation")
         a.navbar-brand(href="/") assert:hub
     #bs-example-navbar-collapse-1.collapse.navbar-collapse
         ul.nav.navbar-nav
-            li.active: a(href="#") Link
-            li: a(href="#") Link
-            li.dropdown
-                a.dropdown-toggle(href="#", data-toggle="dropdown")
-                    | Dropdown
-                    b.caret
-                ul.dropdown-menu
-                    li: a(href="#") Action
-                    li: a(href="#") Another action
-                    li: a(href="#") Something else here
-                    li.divider
-                    li: a(href="#") Separated link
-                    li.divider
-                    li: a(href="#") One more separated link
+            li.active: a(href="/") Dashboard
+            li: a(href="/test") Test
+            li: a(href="/test/second") Test 2
         ul.nav.navbar-nav.navbar-right
             li(data-bind="visible: !isAuthenticated()"): a(href="#", data-bind="click: login") Login
             li(data-bind="visible: isAuthenticated()").dropdown
