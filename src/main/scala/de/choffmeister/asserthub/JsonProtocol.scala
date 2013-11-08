@@ -25,6 +25,7 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
       }
   }
 
+  implicit val ticketFormat = jsonFormat3(Ticket)
   implicit val userPassFormat = jsonFormat2(UserPass)
   implicit val authenticationResponseFormat = jsonFormat2(AuthenticationResponse)
 }

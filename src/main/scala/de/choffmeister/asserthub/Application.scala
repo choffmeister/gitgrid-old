@@ -1,7 +1,6 @@
 package de.choffmeister.asserthub
 
 import org.squeryl.adapters.H2Adapter
-
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.actor.actorRef2Scala
@@ -10,6 +9,7 @@ import de.choffmeister.asserthub.managers._
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
 import spray.can.Http
+import scala.util.Random
 
 object Application extends App {
   // bootstrap database
@@ -17,8 +17,13 @@ object Application extends App {
 
   transaction {
     Database.create
+    
+    val userCount = 20
+    val ticketCount = 100
 
-    val users = (1 to 50).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
+    val random = new Random()
+    val users = (1 to userCount).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
+    val tickets = (1 to ticketCount).map(i => TicketManager.insert(Ticket(0L, s"Ticket #${i}", random.nextInt(userCount) + 1)))
   }
 
   // start webservice

@@ -51,6 +51,7 @@ trait WebService extends HttpService {
           }
         }
       } ~
-      CrudRoute.create("users", UserManager)
+      CrudRoute.create("users", UserManager) ~
+      CrudRoute.create("tickets", TicketManager)
     }
 }

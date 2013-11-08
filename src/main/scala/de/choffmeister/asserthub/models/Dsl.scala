@@ -10,4 +10,10 @@ object Dsl extends PrimitiveTypeMode
     def isPersisted(u: User) = u.id > 0
     def idPropertyName = "id"
   }
+  
+  implicit object ticketKED extends KeyedEntityDef[Ticket, Long] {
+    def getId(t: Ticket) = t.id
+    def isPersisted(t: Ticket) = t.id > 0
+    def idPropertyName = "id"
+  }
 }
