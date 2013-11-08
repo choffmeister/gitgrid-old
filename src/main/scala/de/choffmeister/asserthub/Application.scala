@@ -18,7 +18,7 @@ object Application extends App {
   transaction {
     Database.create
 
-    val users = (1 to 5).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
+    val users = (1 to 50).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
   }
 
   // start webservice

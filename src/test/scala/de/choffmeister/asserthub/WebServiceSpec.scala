@@ -176,6 +176,22 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         }
       }
     }
+
+    "respect OData queries" in new WithDatabase {
+      transaction {
+        db.drop
+        db.create
+        val users = (1 to 20).map(i => db.users.insert(createUser(i)))
+          
+        Get("/api/users?$top=5&$skip=10") ~> route ~> check {
+          val res = responseAs[List[User]]
+            
+          status === OK
+          res must haveSize(5)
+          res.map(_.id) === (11 to 15)
+        }
+      }
+    }
   }
 
   def createUser(i: Long) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}", "", "plain", s"First${i}", s"Last${i}")
