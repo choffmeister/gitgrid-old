@@ -31,6 +31,7 @@ define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, lo
         when "/test/second" then vm.loadView("foobar", DashboardViewModel)
         else
           log.warn("Unknown route #{state.hash}")
+          vm.loadNotification(false, "Unknown route")
           deferred = $.Deferred()
           deferred.reject()
           deferred.promise()
