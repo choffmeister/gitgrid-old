@@ -29,6 +29,7 @@ define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, lo
         when "/" then vm.loadView("dashboard", DashboardViewModel)
         when "/test" then vm.loadView("dashboard")
         when "/test/second" then vm.loadView("foobar", DashboardViewModel)
+        when "/about" then vm.loadView("about")
         else
           log.warn("Unknown route #{state.hash}")
           vm.loadNotification(false, "Unknown route")

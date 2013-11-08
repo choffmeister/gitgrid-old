@@ -11,6 +11,7 @@ nav.navbar.navbar-default.navbar-fixed-top(role="navigation")
             li.active: a(href="/") Dashboard
             li.cloak: a(href="/test") Test
             li.cloak: a(href="/test/second") Test 2
+            li.cloak: a(href="/about") About
         ul.nav.navbar-nav.navbar-right.cloak
             li(data-bind="visible: !isAuthenticated()"): a(href="#", data-bind="click: login") Login
             li(data-bind="visible: isAuthenticated()").dropdown
