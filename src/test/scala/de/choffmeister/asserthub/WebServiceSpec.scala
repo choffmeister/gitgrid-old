@@ -22,19 +22,21 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         val users = (1 to 5).map(i => db.users.insert(createUser(i)))
     
         Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
-          val res = responseAs[User]
-          
-          res.id === 1
-          res.userName == "user1"
-            
+          val res = responseAs[AuthenticationResponse]
+
+          status === OK
+          res.user.get.id === 1
+          res.user.get.userName == "user1"
           headers.find(h => h.name.toLowerCase == "set-cookie") must beSome
         }
-        
+
         Post("/api/auth/login", UserPass("user2", "pass2")) ~> route ~> check {
-          val res = responseAs[User]
-          
-          res.id === 2
-          res.userName == "user2"
+          val res = responseAs[AuthenticationResponse]
+
+          status === OK
+          res.user.get.id === 2
+          res.user.get.userName == "user2"
+          headers.find(h => h.name.toLowerCase == "set-cookie") must beSome
         }
       }
     }
@@ -65,7 +67,9 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
     
     "handle auth logout requests" in {
       Post("/api/auth/logout") ~> route ~> check {
-        responseAs[String] === "logout"
+        val res = responseAs[AuthenticationResponse]
+
+        res.user must beNone
       }
     }
     
@@ -81,7 +85,7 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         }
         
         Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
-          val res = responseAs[User]
+          val res = responseAs[AuthenticationResponse]
           val setCookieHeader = headers.find(h => h.name.toLowerCase == "set-cookie").get
           val cookie = setCookieHeader.asInstanceOf[HttpHeaders.`Set-Cookie`].cookie
           

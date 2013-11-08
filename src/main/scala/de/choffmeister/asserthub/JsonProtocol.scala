@@ -6,8 +6,6 @@ import spray.json._
 import spray.routing.authentication.UserPass
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit val userPassFormat = jsonFormat2(UserPass)
-
   implicit object UserJsonFormat extends RootJsonFormat[User] {
     def write(u: User) =
       JsObject(Map(
@@ -26,4 +24,7 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
           deserializationError("User expected: " + value)
       }
   }
+
+  implicit val userPassFormat = jsonFormat2(UserPass)
+  implicit val authenticationResponseFormat = jsonFormat2(AuthenticationResponse)
 }

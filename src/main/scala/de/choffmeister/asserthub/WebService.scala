@@ -10,6 +10,8 @@ import spray.http._
 import spray.http.StatusCodes._
 import spray.routing._
 
+case class AuthenticationResponse(message: String, user: Option[User])
+
 class WebServiceActor extends Actor with WebService {
   def actorRefFactory = context
   def receive = runRoute(route)
@@ -27,9 +29,7 @@ trait WebService extends HttpService {
           post {
             authManager.authLogin { pass =>
               setCookie(HttpCookie("asserthub-sid", pass.session.id, pass.session.expires)) {
-                complete {
-                  pass.user
-                }
+                complete(AuthenticationResponse("Logged in", Some(pass.user)))
               }
             }
           }
@@ -37,7 +37,7 @@ trait WebService extends HttpService {
         path("logout") {
           post {
             deleteCookie("asserthub-sid") {
-              complete("logout")
+              complete(AuthenticationResponse("Logged out", None))
             }
           }
         } ~
