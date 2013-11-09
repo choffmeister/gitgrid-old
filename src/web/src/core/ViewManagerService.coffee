@@ -29,15 +29,25 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
         $.when(@loadTemplate(templateName), @initViewModel(newViewModel))
           .done (template) =>
             try
-              # swap views
+              # generate DOM node and apply bindings
+              newDom = $("<div style=\"display: none;\">#{template}</div>")
+              $("body").append(newDom)
+              @applyViewModel(newViewModel, newDom)
+
+              # remove old view
+              oldDom = $(@content.children("div"))
+              oldDom.css("display", "none")
               oldViewModel.deactivate() if oldViewModel?
-              @unapplyViewModel(oldViewModel, @content)
-              @content.html(template)
-              @applyViewModel(newViewModel, @content)
+              @unapplyViewModel(oldViewModel, oldDom)
+              @deinitViewModel(oldViewModel)
+              oldDom.remove()
+
+              # add new view
+              @content.append(newDom)
+              newDom.css("display", "block")
+              @viewModel = newViewModel
               newViewModel.activate() if newViewModel?
 
-              @viewModel = newViewModel
-              @deinitViewModel(oldViewModel)
               deferred.resolve()
             catch ex
               log.error("Error while applying view", ex)
