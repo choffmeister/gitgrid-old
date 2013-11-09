@@ -3,6 +3,8 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
     constructor: () ->
       @templateCache = {}
       @viewModel = null
+      @templateName = null
+      @viewModelType = null
       @loading = false
 
     init: () =>
@@ -15,8 +17,9 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType) =>
-      deferred = $.Deferred()
+      return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType
 
+      deferred = $.Deferred()
       if @loading is false
         log.debug("Load view", templateName, viewModelType)
         @loading = true
@@ -46,6 +49,8 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
               @content.append(newDom)
               newDom.css("display", "block")
               @viewModel = newViewModel
+              @templateName = templateName
+              @viewModelType = viewModelType
               newViewModel.activate() if newViewModel?
 
               deferred.resolve()
@@ -126,7 +131,8 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
         # register to dialogs hide event and remove dialog from DOM after closing
         dialog.on "hidden.bs.modal", () =>
           viewModel.deactivate() if viewModel?
-          @unapplyViewModel(dialog, wrapper)
+          @unapplyViewModel(viewModel, wrapper)
+          @deinitViewModel(viewModel)
           wrapper.remove()
 
         # register to dialogs show event and notify view model when the view is ready and in place
@@ -170,7 +176,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       ko.applyBindings(viewModel, wrapper.get(0))
 
     unapplyViewModel: (viewModel, wrapper) =>
-      log.debug("Unapply view model", @viewModel)
+      log.debug("Unapply view model", viewModel)
       ko.cleanNode(wrapper.get(0))
 
     loadTemplate: (templateName) =>
