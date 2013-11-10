@@ -31,9 +31,11 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
 
         $.when(@loadTemplate(templateName), @initViewModel(newViewModel))
           .done (template) =>
+            # generate DOM node
+            newDom = $("<div style=\"display: none;\">#{template}</div>")
+
             try
-              # generate DOM node and apply bindings
-              newDom = $("<div style=\"display: none;\">#{template}</div>")
+              # apply bindings
               $("body").append(newDom)
               @applyViewModel(newViewModel, newDom)
 
@@ -55,6 +57,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
 
               deferred.resolve()
             catch ex
+              newDom.remove()
               log.error("Error while applying view", ex)
               @loadNotification(true, "Error while loading view")
               deferred.reject(ex)
