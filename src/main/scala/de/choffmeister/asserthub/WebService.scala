@@ -42,6 +42,13 @@ trait WebService extends HttpService {
 
   val staticContentPathMatcher: PathMatcher1[String] = Rest flatMap(staticContentPathMapper)
 
+  val modules = List(new GitHubModule())
+
+  def moduleRoute(module: Module) =
+    pathPrefix(module.routePrefix) {
+      module.route
+    }
+
   val route =
     pathPrefix("api") {
       respondWithHeader(HttpHeaders.`Cache-Control`(`no-cache`, `max-age`(0))) {
@@ -81,10 +88,13 @@ trait WebService extends HttpService {
         pathPrefix("projects" / LongNumber / "git")(projectId => GitRoutes.create(projectId)) ~
         CrudRoutes.create("users", UserManager) ~
         CrudRoutes.create("projects", ProjectManager) ~
-        CrudRoutes.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
+        CrudRoutes.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now))) ~
+        moduleRoute(modules(0))
       }
     } ~
     path(staticContentPathMatcher) { filePath =>
       getFromResource("web/" + filePath)
+        }
+      } ~
     }
 }
