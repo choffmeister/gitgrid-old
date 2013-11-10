@@ -62,6 +62,26 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         Post("/api/auth/login", UserPass("unknown", "pass")) ~> route ~> check {
           rejection must beAnInstanceOf[AuthenticationFailedRejection]
         }
+
+        Post("/api/auth/login") ~> sealRoute(route) ~> check {
+          status === BadRequest
+          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
+        }
+
+        Post("/api/auth/login", UserPass("user1", "pass2")) ~> sealRoute(route) ~> check {
+          status === Unauthorized
+          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
+        }
+
+        Post("/api/auth/login", UserPass("user2", "pass1")) ~> sealRoute(route) ~> check {
+          status === Unauthorized
+          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
+        }
+
+        Post("/api/auth/login", UserPass("unknown", "pass")) ~> sealRoute(route) ~> check {
+          status === Unauthorized
+          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
+        }
       }
     }
 
