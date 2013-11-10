@@ -120,6 +120,21 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         }
       }
     }
+
+    "map non API requests to static HTML filenames" in {
+      staticContentPathMapper("") === Some("index.html")
+      staticContentPathMapper("index.html") === Some("index.html")
+      staticContentPathMapper("about") === Some("index.html")
+      staticContentPathMapper("api") === Some("index.html")
+      staticContentPathMapper("foo/bar/test.it/route") === Some("index.html")
+      staticContentPathMapper("styles/main.css") === Some("styles/main.css")
+ 
+      staticContentPathMapper("api/") must beNone
+      staticContentPathMapper("api/index.html") must beNone
+      staticContentPathMapper("api/about") must beNone
+      staticContentPathMapper("api/foo/bar/test.it/route") must beNone
+      staticContentPathMapper("api/styles/main.css") must beNone
+    }
   }
 
   def createUser(i: Long) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}", "", "plain", s"First${i}", s"Last${i}")

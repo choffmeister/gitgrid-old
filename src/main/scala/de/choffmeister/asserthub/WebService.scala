@@ -1,6 +1,7 @@
 package de.choffmeister.asserthub
 
 import scala.concurrent.duration._
+import scala.util.matching.Regex
 import akka.actor._
 import akka.util.Timeout
 import de.choffmeister.asserthub.JsonProtocol._
@@ -11,6 +12,7 @@ import spray.http.StatusCodes._
 import spray.routing._
 import spray.httpx.unmarshalling.Unmarshaller
 import spray.httpx.unmarshalling.Deserializer
+import spray.http.Uri.Path
 
 case class AuthenticationResponse(message: String, user: Option[User])
 
@@ -23,6 +25,20 @@ trait WebService extends HttpService {
   implicit val timeout = Timeout(5 seconds)
   implicit def executionContext = actorRefFactory.dispatcher
   implicit val authManager = new AuthManager()
+
+  def staticContentPathMapper(path: String): Option[String] = path match {
+    case path if !path.startsWith("api/") =>
+      val extensionRegex = "\\.([^/\\.]+)$".r
+      val extension = extensionRegex.findFirstIn(path)
+
+      extension match {
+        case Some(ext) => Some(path)
+        case _ => Some("index.html")
+      }
+    case _ => None
+  }
+
+  val staticContentPathMatcher: PathMatcher1[String] = Rest flatMap(staticContentPathMapper)
 
   val route =
     pathPrefix("api") {
@@ -53,5 +69,8 @@ trait WebService extends HttpService {
       } ~
       CrudRoute.create("users", UserManager) ~
       CrudRoute.create("tickets", TicketManager)
+    } ~
+    path(staticContentPathMatcher) { filePath =>
+      getFromResource("web/" + filePath)
     }
 }

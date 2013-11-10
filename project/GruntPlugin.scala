@@ -1,29 +1,63 @@
 import sbt._
 import Keys._
 
-// put into build.sbt: (compile in Compile) <<= (compile in Compile) dependsOn (gruntTask("prod-build"))
 object GruntPlugin extends Plugin {
-  private var running: Boolean = false
-  private var process: Process = _
+  val grunt = taskKey[Unit]("executes grunt with target 'default'")
+  val gruntTest = taskKey[Unit]("executes grunt with target 'test'")
+  val gruntDist = taskKey[Unit]("executes grunt with target 'prod-build'")
+  val gruntStart = taskKey[Unit]("starts a background grunt process")
+  val gruntStop = taskKey[Unit]("stops running backgrund grunt process")
+  val gruntWebDir = settingKey[File]("grunt-webdir")
 
-  // make project root relative
-  private lazy val webDir = new java.io.File("src/web")
+  lazy val gruntSettings = Seq[Def.Setting[_]](
+    gruntWebDir := baseDirectory.value / "src/web",
 
-  private def runGrunt(task: String) = {
+    grunt := {
+      val webDir: File = gruntWebDir.value
+
+      runGrunt(webDir, "default")
+    },
+
+    gruntTest := {
+      val webDir: File = gruntWebDir.value
+
+      runGrunt(webDir, "test")
+    },
+
+    gruntDist := {
+      val webDir: File = gruntWebDir.value
+
+      runGrunt(webDir, "prod-build")
+    },
+
+    gruntStart := {
+      val webDir: File = gruntWebDir.value
+
+      startGrunt(webDir, "default")
+    },
+
+    gruntStop := {
+      val webDir: File = gruntWebDir.value
+
+      stopGrunt()
+    }
+  )
+
+  private def runGrunt(cwd: File, task: String) = {
     val command = "grunt" :: task :: Nil
-    val returnValue = Process(command, webDir) !
+    val returnValue = Process(command, cwd) !
 
     if (returnValue != 0) {
       throw new Exception(s"Grunt task $task failed")
     }
   }
 
-  private def startGrunt(task: String) = {
+  private def startGrunt(cwd: File, task: String) = {
     if (running) {
       stopGrunt()
     }
 
-    process = Process("grunt" :: "--force" :: task :: Nil, webDir).run()
+    process = Process("grunt" :: "--force" :: task :: Nil, cwd).run()
     running = true
   }
 
@@ -32,49 +66,6 @@ object GruntPlugin extends Plugin {
     running = true
   }
 
-  def gruntCommand = {
-    Command.command("grunt") { (state: State) =>
-      runGrunt("default")
-
-      state
-    }
-  }
-
-  def gruntTaskCommand = {
-    Command.single("gruntTask") { (state: State, task: String) =>
-      runGrunt(task)
-
-      state
-    }
-  }
-
-  def gruntTestCommand = {
-    Command.command("gruntTest") { (state: State) =>
-      runGrunt("test")
-
-      state
-    }
-  }
-
-  def gruntStartCommand = {
-    Command.command("gruntStart") { (state: State) =>
-      startGrunt("default")
-
-      state
-    }
-  }
-
-  def gruntStopCommand = {
-    Command.command("gruntStop") { (state: State) =>
-      stopGrunt()
-
-      state
-    }
-  }
-
-  def gruntTask(task: String) = streams map { (s: TaskStreams) =>
-    runGrunt(task)
-  }
-
-  override lazy val settings = Seq(commands ++= Seq(gruntCommand, gruntTaskCommand, gruntTestCommand, gruntStartCommand, gruntStopCommand))
+  private var running: Boolean = false
+  private var process: Process = _
 }
