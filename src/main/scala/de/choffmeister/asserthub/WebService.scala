@@ -16,6 +16,8 @@ import spray.httpx.unmarshalling.Deserializer
 import spray.http.Uri.Path
 import java.sql.Timestamp
 import CacheDirectives._
+import de.choffmeister.asserthub.modules.Module
+import de.choffmeister.asserthub.modules.GitHubModule
 
 case class AuthenticationResponse(message: String, user: Option[User])
 
@@ -94,7 +96,5 @@ trait WebService extends HttpService {
     } ~
     path(staticContentPathMatcher) { filePath =>
       getFromResource("web/" + filePath)
-        }
-      } ~
     }
 }

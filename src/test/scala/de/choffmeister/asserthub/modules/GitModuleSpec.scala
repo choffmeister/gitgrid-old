@@ -21,6 +21,7 @@ class GitModuleSpec extends SpecificationWithJUnit with Specs2RouteTest with Web
         )) ~> route ~> check
       {
         status === OK
+        responseAs[String] === "12490674"
       }
     }
   }
