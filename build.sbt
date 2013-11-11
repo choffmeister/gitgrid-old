@@ -33,6 +33,8 @@ libraryDependencies ++= {
   )
 }
 
+testOptions in Test += Tests.Argument("junitxml", "console")
+
 packSettings
 
 packMain := Map("asserthub" -> "de.choffmeister.asserthub.Application")
