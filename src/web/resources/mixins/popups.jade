@@ -1,6 +1,6 @@
 mixin dialog-form(title, submitlabel, submitbinding)
     .modal.fade(tabindex="-1", role="dialog", aria-hidden="true")
-        form(autocomplete="off", data-bind="submit: login")
+        form(autocomplete="off", data-bind="submit: #{submitbinding}")
             .modal-dialog
                 .modal-content
                     .modal-header
