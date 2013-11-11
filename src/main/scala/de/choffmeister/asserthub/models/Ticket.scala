@@ -9,6 +9,7 @@ import java.sql.Timestamp
 case class Ticket(
   id: Long,
   title: String,
+  description: String,
   creatorId: Long,
   createdAt: Timestamp
 ) extends TimestampedEntity

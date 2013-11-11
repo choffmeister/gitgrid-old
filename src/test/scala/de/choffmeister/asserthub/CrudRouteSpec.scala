@@ -32,8 +32,8 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
   def projectCompare(p1: Project, p2: Project) = p1.id == p2.id && p1.name == p2.name
   
   def ticketBefore(): Unit = (1 to 5).foreach(i => Database.users.insert(userCreate(i)))
-  def ticketCreate(i: Long) = new Ticket(0L, s"ticket${i}", i % 5 + 1, now)
-  def ticketModify(t: Ticket) = new Ticket(t.id, t.title + "-changed", t.creatorId, t.createdAt)
+  def ticketCreate(i: Long) = new Ticket(0L, s"ticket${i}", s"This is ticket ${i}", i % 5 + 1, now)
+  def ticketModify(t: Ticket) = new Ticket(t.id, t.title + "-changed", t.description, t.creatorId, t.createdAt)
   def ticketCompare(t1: Ticket, t2: Ticket) = t1.id == t2.id && t1.title == t2.title
   
   def is: Fragments = {

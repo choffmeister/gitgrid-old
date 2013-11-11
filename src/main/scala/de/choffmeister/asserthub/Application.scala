@@ -26,7 +26,7 @@ object Application extends App {
     val random = new Random()
     val users = (1 to userCount).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
     val projects = (1 to projectCount).map(i => ProjectManager.createProject(s"P${i}", s"Project ${i}", random.nextInt(userCount) + 1))
-    val tickets = (1 to ticketCount).map(i => TicketManager.createTicket(s"Ticket #${i}", random.nextInt(userCount) + 1))
+    val tickets = (1 to ticketCount).map(i => TicketManager.createTicket(s"Ticket #${i}", s"This is ticket ${i}", random.nextInt(userCount) + 1))
   }
 
   // start webservice
