@@ -3,9 +3,15 @@ package de.choffmeister.asserthub.models
 import org.squeryl.Table
 import org.squeryl.KeyedEntityDef
 import de.choffmeister.asserthub.models.Dsl._
+import java.sql.Timestamp
+import java.util.Calendar
 
 trait Entity {
   val id: Long
+}
+
+trait TimestampedEntity extends Entity {
+  val createdAt: Timestamp
 }
 
 trait EntityRepository[T <: Entity] {
@@ -46,5 +52,11 @@ trait EntityRepository[T <: Entity] {
       case _ =>
         None
     }
+  }
+
+  def now(): Timestamp = {
+    val cal = Calendar.getInstance()
+
+    return new Timestamp(cal.getTimeInMillis())
   }
 }

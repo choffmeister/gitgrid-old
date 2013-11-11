@@ -7,7 +7,6 @@ import org.specs2.specification.SpecificationStringContext
 import org.specs2.specification.Fragments
 import org.specs2.specification.DefaultExampleFactory
 import org.squeryl.Table
-
 import de.choffmeister.asserthub.models.Dsl.transaction
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.JsonProtocol._
@@ -16,6 +15,8 @@ import spray.httpx.marshalling._
 import spray.httpx.unmarshalling._
 import spray.routing.Route
 import spray.testkit.Specs2RouteTest
+import java.sql.Timestamp
+import java.util.Calendar
 
 object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs2RouteTest with WebService {
   def actorRefFactory = system
@@ -25,14 +26,14 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
   def userModify(u: User) = new User(u.id, u.userName + "-changed", u.email, u.passwordHash, u.passwordSalt, u.passwordHashAlgorithm, u.firstName, u.lastName)
   def userCompare(u1: User, u2: User) = u1.id == u2.id && u1.userName == u2.userName
 
-  def projectBefore(): Unit = {}
-  def projectCreate(i: Long) = new Project(0L, s"P${i}", s"Project ${i}", s"This is project ${i}")
-  def projectModify(p: Project) = new Project(p.id, p.key, p.name + "-changed", p.description)
+  def projectBefore(): Unit = (1 to 5).foreach(i => Database.users.insert(userCreate(i)))
+  def projectCreate(i: Long) = new Project(0L, s"P${i}", s"Project ${i}", s"This is project ${i}", i % 5 + 1, now)
+  def projectModify(p: Project) = new Project(p.id, p.key, p.name + "-changed", p.description, p.creatorId, p.createdAt)
   def projectCompare(p1: Project, p2: Project) = p1.id == p2.id && p1.name == p2.name
   
   def ticketBefore(): Unit = (1 to 5).foreach(i => Database.users.insert(userCreate(i)))
-  def ticketCreate(i: Long) = new Ticket(0L, s"ticket${i}", i % 5 + 1)
-  def ticketModify(t: Ticket) = new Ticket(t.id, t.title + "-changed", t.creatorId)
+  def ticketCreate(i: Long) = new Ticket(0L, s"ticket${i}", i % 5 + 1, now)
+  def ticketModify(t: Ticket) = new Ticket(t.id, t.title + "-changed", t.creatorId, t.createdAt)
   def ticketCompare(t1: Ticket, t2: Ticket) = t1.id == t2.id && t1.title == t2.title
   
   def is: Fragments = {
@@ -152,5 +153,11 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
     }
 
     return listExample append listODataExample append retrieveExample append createExample append deleteExample append updateExample
+  }
+
+  def now(): Timestamp = {
+    val cal = Calendar.getInstance()
+
+    return new Timestamp(cal.getTimeInMillis())
   }
 }
