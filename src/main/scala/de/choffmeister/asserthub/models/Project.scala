@@ -6,13 +6,14 @@ import org.squeryl.KeyedEntityDef
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
 
-case class Ticket(
+case class Project(
   id: Long,
-  title: String,
-  creatorId: Long
+  key: String,
+  name: String,
+  description: String
 ) extends Entity
 
-trait TicketRepository extends EntityRepository[Ticket] {
-  val keyDef = ticketKED
-  val table = Database.tickets
+trait ProjectRepository extends EntityRepository[Project] {
+  val keyDef = projectKED
+  val table = Database.projects
 }

@@ -1,15 +1,9 @@
 package de.choffmeister.asserthub.managers
 
-import org.squeryl.Query
-import org.squeryl.KeyedEntityDef
-
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
 
-object UserManager extends EntityRepository[User] {
-  val keyDef = userKED
-  val table = Database.users
-
+object UserManager extends UserRepository {
   /**
    * Creates a new user and persists it to the database.
    */

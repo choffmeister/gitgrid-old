@@ -25,6 +25,11 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
   def userModify(u: User) = new User(u.id, u.userName + "-changed", u.email, u.passwordHash, u.passwordSalt, u.passwordHashAlgorithm, u.firstName, u.lastName)
   def userCompare(u1: User, u2: User) = u1.id == u2.id && u1.userName == u2.userName
 
+  def projectBefore(): Unit = {}
+  def projectCreate(i: Long) = new Project(0L, s"P${i}", s"Project ${i}", s"This is project ${i}")
+  def projectModify(p: Project) = new Project(p.id, p.key, p.name + "-changed", p.description)
+  def projectCompare(p1: Project, p2: Project) = p1.id == p2.id && p1.name == p2.name
+  
   def ticketBefore(): Unit = (1 to 5).foreach(i => Database.users.insert(userCreate(i)))
   def ticketCreate(i: Long) = new Ticket(0L, s"ticket${i}", i % 5 + 1)
   def ticketModify(t: Ticket) = new Ticket(t.id, t.title + "-changed", t.creatorId)
@@ -32,9 +37,10 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
   
   def is: Fragments = {
     val userExamples = spec[User](Database.users, route, "users", userBefore, userCreate, userModify, userCompare)
+    val projectExamples = spec[Project](Database.projects, route, "projects", projectBefore, projectCreate, projectModify, projectCompare)
     val ticketExamples = spec[Ticket](Database.tickets, route, "tickets", ticketBefore, ticketCreate, ticketModify, ticketCompare)
     
-    return userExamples append ticketExamples
+    return userExamples append projectExamples append ticketExamples
   }
   
   def spec[T <: Entity](

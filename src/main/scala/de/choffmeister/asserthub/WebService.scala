@@ -68,6 +68,7 @@ trait WebService extends HttpService {
         }
       } ~
       CrudRoute.create("users", UserManager) ~
+      CrudRoute.create("projects", ProjectManager) ~
       CrudRoute.create("tickets", TicketManager)
     } ~
     path(staticContentPathMatcher) { filePath =>

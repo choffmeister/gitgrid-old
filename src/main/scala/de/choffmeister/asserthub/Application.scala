@@ -18,11 +18,13 @@ object Application extends App {
   transaction {
     Database.create
     
-    val userCount = 20
+    val userCount = 5
+    val projectCount = 10
     val ticketCount = 100
 
     val random = new Random()
     val users = (1 to userCount).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
+    val projects = (1 to projectCount).map(i => ProjectManager.insert(Project(0L, s"P${i}", s"Project ${i}", s"This is project ${i}")))
     val tickets = (1 to ticketCount).map(i => TicketManager.insert(Ticket(0L, s"Ticket #${i}", random.nextInt(userCount) + 1)))
   }
 
