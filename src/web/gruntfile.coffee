@@ -184,7 +184,7 @@ module.exports = (grunt) ->
       options:
         singleRun: true
         autoWatch: false
-        browsers: ["Chrome", "Firefox"]
+        browsers: ["PhantomJS"]
       unit:
         configFile: "karma-unit.conf.js"
 
