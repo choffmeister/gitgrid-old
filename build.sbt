@@ -35,4 +35,21 @@ packSettings
 
 packMain := Map("asserthub" -> "de.choffmeister.asserthub.Application")
 
+gruntSettings
+
+packExtraClasspath := Map("asserthub" -> Seq("${PROG_HOME}/res"))
+
+pack <<= pack dependsOn(gruntDist)
+
+pack <<= (baseDirectory, pack, streams) map { (baseDirectory: File, value: File, s) =>
+  val gruntProdTargetDir = baseDirectory / "target/web/prod"
+  val gruntProdPackDir = baseDirectory / "target/pack/res/web"
+  s.log.info("Copying web files to target/pack/res/web")
+  IO.delete(gruntProdPackDir)
+  gruntProdPackDir.mkdirs()
+  IO.copyDirectory(gruntProdTargetDir, gruntProdPackDir)
+  s.log.info("done.")
+  value
+}
+
 EclipseKeys.withSource := true
