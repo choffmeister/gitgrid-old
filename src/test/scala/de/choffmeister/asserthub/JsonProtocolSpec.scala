@@ -1,10 +1,11 @@
 package de.choffmeister.asserthub
 
 import org.specs2.mutable._
-
 import de.choffmeister.asserthub.JsonProtocol._
 import de.choffmeister.asserthub.models._
 import spray.json._
+import java.sql.Timestamp
+import java.util.Date
 
 class JsonProtocolSpec extends SpecificationWithJUnit { 
   "JsonProtocol" should {
@@ -16,6 +17,14 @@ class JsonProtocolSpec extends SpecificationWithJUnit {
       original.id === deserialized.id
       original.userName === deserialized.userName
       original !== deserialized
+    }
+    
+    "convert Timestamp objects" in {
+      val ts = new Timestamp(System.currentTimeMillis())
+      val str = TimestampFormat.write(ts)
+      val ts2 = TimestampFormat.read(str)
+
+      ts === ts2
     }
   } 
 }

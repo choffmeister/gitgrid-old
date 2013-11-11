@@ -5,19 +5,23 @@ import spray.httpx._
 import spray.json._
 import spray.routing.authentication.UserPass
 import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Date
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object TimestampFormat extends RootJsonFormat[Timestamp] {
+    val format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+
     def write(ts: Timestamp) =
-      JsString("")
-      
+      JsString(format.format(new Date(ts.getTime())))
+
     def read(value: JsValue) =
       value match {
-        case JsString(s) => new Timestamp(2013, 1, 1, 0, 0, 0, 0)
+        case JsString(s) => new Timestamp(format.parse(s).getTime())
         case _ => deserializationError("Timestamp expected: " + value)
       }
   }
-  
+
   implicit object UserJsonFormat extends RootJsonFormat[User] {
     def write(u: User) =
       JsObject(Map(
