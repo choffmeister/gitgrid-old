@@ -16,7 +16,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       @mainViewModel.init(this)
       ko.applyBindings(@mainViewModel, @body.get(0))
 
-    loadView: (templateName, viewModelType) =>
+    loadView: (templateName, viewModelType, parameters) =>
       return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType
 
       deferred = $.Deferred()
@@ -29,7 +29,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
         oldViewModel = @viewModel
         newViewModel = if viewModelType? then new viewModelType() else null
 
-        $.when(@loadTemplate(templateName), @initViewModel(newViewModel))
+        $.when(@loadTemplate(templateName), @initViewModel(newViewModel, parameters))
           .done (template) =>
             # generate DOM node
             newDom = $("<div style=\"display: none;\">#{template}</div>")
@@ -77,7 +77,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
 
       return deferred.promise()
 
-    loadDialogView: (modal, templateName, viewModelType) =>
+    loadDialogView: (modal, templateName, viewModelType, parameters) =>
       log.debug("Load dialog view", templateName, viewModelType)
       deferred = $.Deferred()
 
@@ -85,7 +85,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
       dialogViewModel = if viewModelType? then new viewModelType() else null
 
       # load template and initialize view model
-      $.when(@loadTemplate(templateName), @initViewModel(dialogViewModel))
+      $.when(@loadTemplate(templateName), @initViewModel(dialogViewModel, parameters))
         .done (template) =>
           @openDialogView(modal, template, dialogViewModel)
             .done (res) -> deferred.resolve(res)
@@ -154,11 +154,11 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "MainViewMod
 
       return deferred.promise()
 
-    initViewModel: (viewModel) =>
+    initViewModel: (viewModel, parameters) =>
       log.debug("Init view model", viewModel)
       if viewModel?
         try
-          viewModel.init()
+          viewModel.init(parameters)
         catch ex
           $.Deferred().reject(ex).promise()
       else

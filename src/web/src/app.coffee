@@ -4,7 +4,7 @@ requirejs.config
     # external libraries
     jquery: "../bower_components/jquery/jquery"
     underscore: "../bower_components/underscore/underscore"
-    history: "../bower_components/history.js/scripts/bundled/html4+html5/jquery.history"
+    history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
 
@@ -55,5 +55,8 @@ requirejs [
         log.fatal("Error while trying to initialize the application", err)
         window.alert("Error while trying to initialize the application")
       .always () ->
+        router.addRoute("/", "dashboard", DashboardViewModel)
+        router.addRoute("/about", "about")
+
         router.historyInterceptor()
         $(".cloak").removeClass("cloak")

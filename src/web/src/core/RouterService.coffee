@@ -1,7 +1,47 @@
-define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, log, vm, DashboardViewModel) ->
+define ["jquery", "history", "log", "vm"], ($, history, log, vm) ->
+  class Route
+    constructor: (pattern) ->
+      @compile(pattern)
+
+    match: (url) =>
+      matchings = url.match(@regex)
+      if matchings?
+        values = {}
+
+        for matching, i in matchings[1..]
+          values[@parameters[i]] = matching
+
+        return values
+      else
+        return null
+
+    compile: (pattern) =>
+      # ensure starting with /
+      throw "Pattern must start with /" if not pattern.match(/^\//)?
+      # reduce multiple slashes
+      pattern = pattern.replace(/\/{2,}/g, "/")
+      # remove trailing slash
+      pattern = pattern.replace(/\/$/, "") if pattern.length >= 2
+
+      if pattern == "/"
+        @pattern = "/"
+        @parameters = []
+        @regex = new RegExp("^/$")
+      else
+        @pattern = pattern.replace("/$", "")
+        @parameters = []
+
+        patternCallback = (match, name) =>
+          @parameters.push(name)
+          return "([^/]+)"
+
+        regex = pattern.replace(/\{([a-zA-Z0-9\-\_]+)\}/g, patternCallback)
+        @regex = new RegExp("^#{regex}/?$")
+
   class RouterService
     init: () =>
       log.info("Initializing router")
+      @routes = []
       @historyCount = 0
       @registerLinkInterceptor()
       @registerHistoryInterceptor()
@@ -23,19 +63,19 @@ define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, lo
 
     historyInterceptor: () =>
       state = history.getState()
-      log.info("Changed location to #{state.hash}", state)
+      url = state.hash
+      log.info("Changed location to #{url}", state)
 
-      promise = switch state.hash
-        when "/" then vm.loadView("dashboard", DashboardViewModel)
-        when "/test" then vm.loadView("dashboard")
-        when "/test/second" then vm.loadView("foobar", DashboardViewModel)
-        when "/about" then vm.loadView("about")
-        else
-          log.warn("Unknown route #{state.hash}")
-          vm.loadNotification(false, "Unknown route")
-          deferred = $.Deferred()
-          deferred.reject()
-          deferred.promise()
+      matchingRoute = @matchRoute(url)
+      promise = null
+      if matchingRoute?
+        promise = vm.loadView(matchingRoute.templateName, matchingRoute.viewModelType, matchingRoute.parameters)
+      else
+        log.warn("Unknown route #{state.hash}")
+        vm.loadNotification(false, "Unknown route")
+        deferred = $.Deferred()
+        deferred.reject()
+        promise = deferred.promise()
 
       promise.fail (err) =>
         if @historyCount > 0
@@ -44,6 +84,29 @@ define ["jquery", "history", "log", "vm", "DashboardViewModel"], ($, history, lo
         else
           @historyCount = 1
           history.pushState(null, null, "/")
+
+    addRoute: (pattern, templateName, viewModelType) =>
+      route = @createRoute(pattern)
+      @routes.push({
+        route: route,
+        templateName: templateName,
+        viewModelType: viewModelType
+      })
+
+    matchRoute: (url) =>
+      for route in @routes
+        matching = route.route.match(url)
+
+        if matching?
+          return {
+            templateName: route.templateName,
+            viewModelType: route.viewModelType,
+            parameters: matching
+          }
+
+      return null
+
+    createRoute: (pattern) => new Route(pattern)
 
     isAbsoluteUrl: (url) ->
       absolutePatterns = [/^\w+:\/\//, /^mailto:/]
