@@ -1,6 +1,9 @@
 # Simple Build Tool
 target/
 
+# Logfiles
+*.log
+
 # Eclipse
 .classpath
 .project
