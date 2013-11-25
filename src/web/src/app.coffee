@@ -7,6 +7,7 @@ requirejs.config
     history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
+    knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
 
     # configuration
     config: "config"
@@ -31,6 +32,8 @@ requirejs.config
       exports: "History"
     bootstrap:
       deps: ["jquery"]
+    knockoutvalidation:
+      deps: ["knockout"]
 
 requirejs [
   "jquery"

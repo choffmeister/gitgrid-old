@@ -1,6 +1,6 @@
 mixin form-control(id, label)
     div(class="form-group", attributes)
-        label(for="#{id}")= label
+        label.control-label(for="#{id}")= label
         block
 
 mixin form-control-unlabeled()
@@ -45,3 +45,19 @@ mixin input-radio(id, label, entries)
 mixin input-submit(label)
     +form-control-unlabeled
         button.btn(type="submit", attributes)= label
+
+mixin input-text-bind(id, label, placeholder)
+    div(class="form-group", data-bind="validationElement: #{id}")
+        label.control-label(for="#{id}")= label
+        input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="value: #{id}", attributes)
+        p.control-label(data-bind="validationMessage: #{id}")
+
+mixin input-textarea-bind(id, label, placeholder, rows)
+    div(class="form-group", data-bind="validationElement: #{id}")
+        label.control-label(for="#{id}")= label
+        textarea.form-control(id="#{id}", name="#{id}", rows="#{rows}", placeholder="#{placeholder}", data-bind="value: #{id}", attributes)
+        p.control-label(data-bind="validationMessage: #{id}")
+
+mixin input-submit-bind(label, submit)
+    +form-control-unlabeled
+        button.btn(type="submit", data-bind="submit: #{submit}", attributes)= label
