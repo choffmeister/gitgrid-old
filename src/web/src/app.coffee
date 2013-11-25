@@ -11,6 +11,7 @@ requirejs.config
 
     # configuration
     config: "config"
+    routes: "routes"
 
     # services
     log: "core/LoggerService"
@@ -38,24 +39,30 @@ requirejs.config
 requirejs [
   "jquery"
   "knockout"
+  "knockoutvalidation"
   "log"
   "auth"
   "vm"
   "router"
+  "routes"
   "utils/SlideVisibleBinding"
   "viewmodels/DashboardViewModel"
-], ($, ko, log, auth, vm, router, SlideVisibleBinding, DashboardViewModel) ->
+], ($, ko, koval, log, auth, vm, router, routes, SlideVisibleBinding) ->
+  ko.validation.init
+    insertMessages: false
+    decorateElement: true
+    errorElementClass: "has-error"
+
+  # bootstrap application
   $(document).ready () ->
     $.when(auth.checkState(), vm.init(), router.init())
       .done (user) ->
         log.info("Application initialization done")
         auth.changeState(user)
+        for route in routes
+          router.addRoute(route[0], route[1], route[2])
+        router.historyInterceptor()
+        $(".cloak").removeClass("cloak")
       .fail (err) ->
         log.fatal("Error while trying to initialize the application", err)
         window.alert("Error while trying to initialize the application")
-      .always () ->
-        router.addRoute("/", "dashboard", DashboardViewModel)
-        router.addRoute("/about", "about")
-
-        router.historyInterceptor()
-        $(".cloak").removeClass("cloak")

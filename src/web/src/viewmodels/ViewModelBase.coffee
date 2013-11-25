@@ -23,3 +23,8 @@ define ["jquery", "knockout", "events"], ($, ko, events) ->
 
     # promise helper methods
     done: () -> $.Deferred().resolve().promise()
+
+    validate: () =>
+      errors = ko.validation.group(this)
+      errors.showAllMessages()
+      errors().length == 0
