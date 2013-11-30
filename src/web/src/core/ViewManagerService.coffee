@@ -58,13 +58,13 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
               deferred.resolve()
             catch ex
               newDom.remove()
-              log.error("Error while applying view: #{ex.toString()}", ex)
-              @loadNotification(true, "Error while loading view")
+              log.error("Error while applying view:\n#{ex.toString()}", ex)
+              @showNotification(true, "Error while loading view")
               deferred.reject(ex)
 
           .fail (err) =>
-            log.error("Error while loading view: #{err.toString()}", err)
-            @loadNotification(true, "Error while loading view")
+            log.error("Error while loading view:\n#{err.toString()}", err)
+            @showNotification(true, "Error while loading view")
             deferred.reject(err)
 
           .always () =>
@@ -72,7 +72,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
             events.emit("viewmanager", "loadingview", false)
       else
         log.error("Already loading a view")
-        @loadNotification(true, "Already loading a view")
+        @showNotification(true, "Already loading a view")
         deferred.reject()
 
       return deferred.promise()
@@ -93,23 +93,15 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
 
         .fail (err) =>
           log.error("Error while creating dialog view:\n#{err.toString()}", err)
-          @loadNotification(true, "Error while creating dialog view")
+          @showNotification(true, "Error while creating dialog view")
           deferred.reject(err)
 
       return deferred.promise()
 
-    loadNotification: (backdrop, text) =>
-      deferred = $.Deferred()
-
-      @loadTemplate("notificationdialog")
-        .done (templateRaw) =>
-          template = templateRaw.replace("{{text}}", text)
-          return @openDialogView(backdrop, template, null)
-
-        .fail (err) ->
-          deferred.reject(err)
-
-      return deferred.promise()
+    showNotification: (backdrop, text) =>
+      templateRaw = $("#template-notification").html()
+      template = templateRaw.replace("{{text}}", text)
+      return @openDialogView(backdrop, template, null)
 
     openDialogView: (backdrop, template, viewModel) =>
       deferred = $.Deferred()
@@ -149,7 +141,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
         else
           dialog.on "hidden.bs.modal", () -> deferred.resolve()
       catch ex
-        log.error("Error while opening dialog view", ex)
+        log.error("Error while opening dialog view:\n#{ex.toString()}", ex)
         deferred.reject(ex)
 
       return deferred.promise()

@@ -1,4 +1,4 @@
-define ["jquery", "api", "ViewModelBase"], ($, api, ViewModelBase) ->
+define ["jquery", "api", "vm", "ViewModelBase"], ($, api, vm, ViewModelBase) ->
   class CreateTicketViewModel extends ViewModelBase
     init: () =>
       @name = @observable().extend({ required: true, maxLength: 10 })
@@ -7,6 +7,6 @@ define ["jquery", "api", "ViewModelBase"], ($, api, ViewModelBase) ->
 
     submit: () =>
       if @validate()
-        window.alert(@name() + " " + @description())
+        vm.showNotification(false, @name() + " " + @description())
       else
-        window.alert("Validation errors")
+        vm.showNotification(false, "Validation errors")
