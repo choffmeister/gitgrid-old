@@ -1,4 +1,4 @@
-define ["auth", "ViewModelBase", "LoginDialogViewModel"], (auth, ViewModelBase, LoginDialogViewModel) ->
+define ["auth", "ViewModelBase", "viewmodels/LoginDialogViewModel"], (auth, ViewModelBase, LoginDialogViewModel) ->
   class MainViewModel extends ViewModelBase
     init: (viewManager) =>
       @viewManager = viewManager

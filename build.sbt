@@ -35,6 +35,10 @@ libraryDependencies ++= {
 
 testOptions in Test += Tests.Argument("junitxml", "console")
 
+ScctPlugin.instrumentSettings
+
+CoveragePlugin.coverageSettings
+
 packSettings
 
 packMain := Map("asserthub" -> "de.choffmeister.asserthub.Application")

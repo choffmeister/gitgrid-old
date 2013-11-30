@@ -23,13 +23,9 @@ requirejs.config
     router: "core/RouterService"
     vm: "core/ViewManagerService"
 
-    # misc
-    SlideVisibleBinding: "utils/SlideVisibleBinding"
+    # base viewmodels
     ViewModelBase: "viewmodels/ViewModelBase"
     DialogViewModelBase: "viewmodels/DialogViewModelBase"
-    MainViewModel: "viewmodels/MainViewModel"
-    LoginDialogViewModel: "viewmodels/LoginDialogViewModel"
-    DashboardViewModel: "viewmodels/DashboardViewModel"
 
   shim:
     underscore:

@@ -81,7 +81,7 @@ nav {
 
     .fullscreen(10000);
     .transition(visibility 0s linear @duration, opacity @duration linear);
-    background-color: #000000;
+    background-color: transparent;
 
     visibility: hidden;
     opacity: 0;
@@ -95,4 +95,8 @@ nav {
 
 .cloak {
     display: none !important;
+}
+
+textarea.form-control {
+    resize: vertical;
 }
