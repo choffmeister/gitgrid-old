@@ -55,21 +55,23 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
               @viewModelType = viewModelType
               newViewModel.activate() if newViewModel?
 
+              @loading = false
+              events.emit("viewmanager", "loadingview", false)
               deferred.resolve()
             catch ex
               newDom.remove()
-              log.error("Error while applying view:\n#{ex.toString()}", ex)
+              log.error("Error while applying view: #{ex.toString()}", ex)
+              @loading = false
+              events.emit("viewmanager", "loadingview", false)
               @showNotificationError("Error while loading view")
               deferred.reject(ex)
 
           .fail (err) =>
-            log.error("Error while loading view:\n#{err.toString()}", err)
-            @showNotificationError("Error while loading view")
-            deferred.reject(err)
-
-          .always () =>
+            log.error("Error while loading view: #{err.toString()}", err)
             @loading = false
             events.emit("viewmanager", "loadingview", false)
+            @showNotificationError("Error while loading view")
+            deferred.reject(err)
       else
         log.error("Already loading a view")
         @showNotificationWarning("Already loading a view")
@@ -92,7 +94,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
             .fail (err) -> deferred.reject(err)
 
         .fail (err) =>
-          log.error("Error while creating dialog view:\n#{err.toString()}", err)
+          log.error("Error while creating dialog view: #{err.toString()}", err)
           @showNotificationError("Error while creating dialog view")
           deferred.reject(err)
 
@@ -101,7 +103,6 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
     showNotification: (backdrop, type, text) =>
       templateRaw = $("#template-notification").html()
       template = templateRaw.replace("{{type}}", type).replace("{{text}}", text)
-      console.log(template)
       return @openDialogView(backdrop, template, null)
 
     showNotificationSuccess: (text) => @showNotification(false, "success", text)
@@ -147,7 +148,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
         else
           dialog.on "hidden.bs.modal", () -> deferred.resolve()
       catch ex
-        log.error("Error while opening dialog view:\n#{ex.toString()}", ex)
+        log.error("Error while opening dialog view: #{ex.toString()}", ex)
         deferred.reject(ex)
 
       return deferred.promise()
