@@ -7,6 +7,6 @@ define ["jquery", "api", "vm", "ViewModelBase"], ($, api, vm, ViewModelBase) ->
 
     submit: () =>
       if @validate()
-        vm.showNotification(false, @name() + " " + @description())
+        vm.showNotificationSuccess(@name() + " " + @description())
       else
-        vm.showNotification(false, "Validation errors")
+        vm.showNotificationError("Validation errors")

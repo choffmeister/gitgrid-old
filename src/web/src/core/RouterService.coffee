@@ -72,7 +72,7 @@ define ["jquery", "history", "log", "vm"], ($, history, log, vm) ->
         promise = vm.loadView(matchingRoute.templateName, matchingRoute.viewModelType, matchingRoute.parameters)
       else
         log.warn("Unknown route #{state.hash}")
-        vm.showNotification(true, "Unknown route")
+        vm.showNotificationWarning("Unknown route")
         deferred = $.Deferred()
         deferred.reject()
         promise = deferred.promise()

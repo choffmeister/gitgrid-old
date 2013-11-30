@@ -59,12 +59,12 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
             catch ex
               newDom.remove()
               log.error("Error while applying view:\n#{ex.toString()}", ex)
-              @showNotification(true, "Error while loading view")
+              @showNotificationError("Error while loading view")
               deferred.reject(ex)
 
           .fail (err) =>
             log.error("Error while loading view:\n#{err.toString()}", err)
-            @showNotification(true, "Error while loading view")
+            @showNotificationError("Error while loading view")
             deferred.reject(err)
 
           .always () =>
@@ -72,7 +72,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
             events.emit("viewmanager", "loadingview", false)
       else
         log.error("Already loading a view")
-        @showNotification(true, "Already loading a view")
+        @showNotificationWarning("Already loading a view")
         deferred.reject()
 
       return deferred.promise()
@@ -93,15 +93,21 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
 
         .fail (err) =>
           log.error("Error while creating dialog view:\n#{err.toString()}", err)
-          @showNotification(true, "Error while creating dialog view")
+          @showNotificationError("Error while creating dialog view")
           deferred.reject(err)
 
       return deferred.promise()
 
-    showNotification: (backdrop, text) =>
+    showNotification: (backdrop, type, text) =>
       templateRaw = $("#template-notification").html()
-      template = templateRaw.replace("{{text}}", text)
+      template = templateRaw.replace("{{type}}", type).replace("{{text}}", text)
+      console.log(template)
       return @openDialogView(backdrop, template, null)
+
+    showNotificationSuccess: (text) => @showNotification(false, "success", text)
+    showNotificationInfo: (text) => @showNotification(false, "info", text)
+    showNotificationWarning: (text) => @showNotification(false, "warning", text)
+    showNotificationError: (text) => @showNotification(true, "danger", text)
 
     openDialogView: (backdrop, template, viewModel) =>
       deferred = $.Deferred()

@@ -1,0 +1,6 @@
+script(id="template-notification", type="text/html")
+    .modal.fade(tabindex="-1", role="dialog", aria-hidden="true")
+        .modal-dialog
+            div.alert(class="alert-{{type}}")
+                button.close(type="button", aria-hidden="true", data-dismiss="modal") &times;
+                div(style="margin-right: 30px;") {{text}}

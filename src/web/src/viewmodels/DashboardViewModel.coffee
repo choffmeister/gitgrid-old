@@ -9,6 +9,6 @@ define ["jquery", "api", "vm", "ViewModelBase"], ($, api, vm, ViewModelBase) ->
           .done (res) =>
             @tickets(res)
           .fail (err) =>
-            vm.showNotification(true, "Could not fetch data")
+            vm.showNotificationError("Could not fetch data")
 
       return api.get("/tickets?$top=10&$skip=0").done((res) => @tickets(res)).promise()
