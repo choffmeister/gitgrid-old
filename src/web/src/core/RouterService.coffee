@@ -55,7 +55,7 @@ define ["jquery", "history", "log", "vm"], ($, history, log, vm) ->
     linkInterceptor: (event) =>
       url = $(event.currentTarget).attr("href")
 
-      if not @isAbsoluteUrl(url)
+      if url != "#" and not @isAbsoluteUrl(url)
         event.preventDefault()
         log.trace("Intercepted link click to #{url}", event)
         @historyCount += 1
