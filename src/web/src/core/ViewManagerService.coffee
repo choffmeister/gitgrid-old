@@ -58,12 +58,12 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
               deferred.resolve()
             catch ex
               newDom.remove()
-              log.error("Error while applying view", ex)
+              log.error("Error while applying view: #{ex.toString()}", ex)
               @loadNotification(true, "Error while loading view")
               deferred.reject(ex)
 
           .fail (err) =>
-            log.error("Error while loading view", err)
+            log.error("Error while loading view: #{err.toString()}", err)
             @loadNotification(true, "Error while loading view")
             deferred.reject(err)
 
