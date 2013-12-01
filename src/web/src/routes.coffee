@@ -1,17 +1,15 @@
 define [
   "viewmodels/DashboardViewModel"
-  "viewmodels/CreateTicketViewModel"
-  "viewmodels/ShowTicketViewModel"
+  "viewmodels/TicketViewModels"
   "viewmodels/ThrowingViewModel"
 ], (
   DashboardViewModel
-  CreateTicketViewModel
-  ShowTicketViewModel
+  TicketViewModels
   ThrowingViewModel
 ) -> [
   ["/", "dashboard", DashboardViewModel]
   ["/about", "about"]
-  ["/create", "createticket", CreateTicketViewModel]
-  ["/tickets/{ticketId}", "showticket", ShowTicketViewModel]
+  ["/create", "tickets/create", TicketViewModels.TicketViewModel]
+  ["/tickets/{ticketId}", "tickets/show", TicketViewModels.TicketViewModel]
   ["/throw", "throwing", ThrowingViewModel]
 ]

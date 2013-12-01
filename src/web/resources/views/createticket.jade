@@ -1,7 +1,0 @@
-include ../mixins/inputelements
-
-h1 New Ticket
-form(data-bind="submit: submit")
-    +input-text-bind("name", "Name", "A short name")
-    +input-textarea-bind("description", "Description", "The detailed description", 10)
-    +input-submit-bind("Create", "submit").btn-primary

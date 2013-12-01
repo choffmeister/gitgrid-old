@@ -8,6 +8,7 @@ requirejs.config
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
     knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
+    knockoutmapping: "../bower_components/knockout-mapping/build/output/knockout.mapping-latest.debug"
 
     # configuration
     config: "config"
@@ -26,6 +27,9 @@ requirejs.config
     ViewModelBase: "viewmodels/ViewModelBase"
     DialogViewModelBase: "viewmodels/DialogViewModelBase"
 
+    # base model
+    ModelBase: "models/ModelBase"
+
   shim:
     underscore:
       exports: "_"
@@ -33,13 +37,12 @@ requirejs.config
       exports: "History"
     bootstrap:
       deps: ["jquery"]
-    knockoutvalidation:
-      deps: ["knockout"]
 
 requirejs [
   "jquery"
   "knockout"
   "knockoutvalidation"
+  "knockoutmapping"
   "log"
   "auth"
   "vm"
@@ -47,11 +50,14 @@ requirejs [
   "routes"
   "utils/SlideVisibleBinding"
   "viewmodels/DashboardViewModel"
-], ($, ko, koval, log, auth, vm, router, routes, SlideVisibleBinding) ->
+], ($, ko, koval, komap, log, auth, vm, router, routes, SlideVisibleBinding) ->
   ko.validation.init
     insertMessages: false
     decorateElement: true
     errorElementClass: "has-error"
+    grouping:
+      deep: true
+  ko.mapping = komap
 
   # bootstrap application
   $(document).ready () ->

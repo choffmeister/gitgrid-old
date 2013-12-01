@@ -46,17 +46,17 @@ mixin input-submit(label)
     +form-control-unlabeled
         button.btn(type="submit", attributes)= label
 
-mixin input-text-bind(id, label, placeholder)
-    div(class="form-group", data-bind="validationElement: #{id}")
+mixin input-text-bind(id, label, placeholder, value)
+    div(class="form-group", data-bind="validationElement: #{value}")
         label.control-label(for="#{id}")= label
-        input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="value: #{id}", attributes)
-        p.control-label(data-bind="validationMessage: #{id}")
+        input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="value: #{value}", attributes)
+        p.control-label(data-bind="validationMessage: #{value}")
 
-mixin input-textarea-bind(id, label, placeholder, rows)
-    div(class="form-group", data-bind="validationElement: #{id}")
+mixin input-textarea-bind(id, label, placeholder, rows, value)
+    div(class="form-group", data-bind="validationElement: #{value}")
         label.control-label(for="#{id}")= label
-        textarea.form-control(id="#{id}", name="#{id}", rows="#{rows}", placeholder="#{placeholder}", data-bind="value: #{id}", attributes)
-        p.control-label(data-bind="validationMessage: #{id}")
+        textarea.form-control(id="#{id}", name="#{id}", rows="#{rows}", placeholder="#{placeholder}", data-bind="value: #{value}", attributes)
+        p.control-label(data-bind="validationMessage: #{value}")
 
 mixin input-submit-bind(label, submit)
     +form-control-unlabeled

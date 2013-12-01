@@ -10,9 +10,12 @@ requirejs.config
     history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
+    knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
+    knockoutmapping: "../bower_components/knockout-mapping/build/output/knockout.mapping-latest.debug"
 
     # configuration
     config: "config"
+    routes: "routes"
 
     # services
     log: "core/LoggerService"
@@ -26,6 +29,9 @@ requirejs.config
     # base viewmodels
     ViewModelBase: "viewmodels/ViewModelBase"
     DialogViewModelBase: "viewmodels/DialogViewModelBase"
+
+    # base model
+    ModelBase: "models/ModelBase"
 
   shim:
     underscore:
