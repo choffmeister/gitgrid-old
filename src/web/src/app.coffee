@@ -3,6 +3,7 @@ requirejs.config
   paths:
     # external libraries
     jquery: "../bower_components/jquery/jquery"
+    jquerytransit: "../bower_components/jquery.transit/jquery.transit"
     underscore: "../bower_components/underscore/underscore"
     history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
@@ -31,6 +32,8 @@ requirejs.config
     ModelBase: "models/ModelBase"
 
   shim:
+    jquerytransit:
+      deps: ["jquery"]
     underscore:
       exports: "_"
     history:
@@ -40,6 +43,7 @@ requirejs.config
 
 requirejs [
   "jquery"
+  "jquerytransit"
   "knockout"
   "knockoutvalidation"
   "knockoutmapping"
@@ -49,7 +53,7 @@ requirejs [
   "router"
   "routes"
   "utils/SlideVisibleBinding"
-], ($, ko, koval, komap, log, auth, vm, router, routes, SlideVisibleBinding) ->
+], ($, $transit, ko, koval, komap, log, auth, vm, router, routes, SlideVisibleBinding) ->
   ko.validation.init
     insertMessages: false
     decorateElement: true

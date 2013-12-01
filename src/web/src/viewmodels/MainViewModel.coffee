@@ -31,6 +31,6 @@ define ["jquery", "auth", "ViewModelBase", "viewmodels/LoginDialogViewModel"], (
         @userDisplayName(null)
 
     addNotification: (type, title, message) => @notifications.push({ type: type, title: title, message: message })
-    showNotification: (elem) -> $(elem).hide().fadeIn(200)
-    hideNotification: (elem) -> $(elem).fadeOut(200, () -> $(elem).remove())
+    showNotification: (elem) -> $(elem).css({ opacity: 0, scale: 0.5 }).transition({ opacity: 1, scale: 1 }, 500)
+    hideNotification: (elem) -> $(elem).transition({ opacity: 0, scale: 1.5 }, 500, () -> $(elem).remove())
     clearNotifications: () => @notifications.removeAll()

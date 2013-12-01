@@ -10,7 +10,8 @@
     "bootstrap": "~3.0.1",
     "roboto-fontface": "~0.1.2",
     "knockout.validation": "~1.0.2",
-    "knockout-mapping": "~2.4.1"
+    "knockout-mapping": "~2.4.1",
+    "jquery.transit": "~0.9.9"
   },
   "ignore": [
     "**/.*",
