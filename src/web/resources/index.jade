@@ -18,6 +18,6 @@ html
             div.container
                 include partials/footer
         div#dialogs
+        div#notifications.cloak
+            include partials/notifications
         div#busy.active(data-bind="css: { active: busy }")
-        div#statictemplates
-            include partials/statictemplates

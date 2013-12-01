@@ -1,4 +1,4 @@
-define ["jquery", "history", "log", "vm"], ($, history, log, vm) ->
+define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, vm) ->
   class Route
     constructor: (pattern) ->
       @compile(pattern)
@@ -74,7 +74,7 @@ define ["jquery", "history", "log", "vm"], ($, history, log, vm) ->
         promise = vm.loadView(matchingRoute.templateName, matchingRoute.viewModelType, matchingRoute.parameters)
       else
         log.warn("Unknown route #{state.hash}")
-        vm.showNotificationWarning("Unknown route")
+        events.emit("notification", "warning", { title: "Unknown route", message: "The route '#{state.hash}' is unknown" })
         deferred = $.Deferred()
         deferred.reject()
         promise = deferred.promise()

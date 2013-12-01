@@ -1,0 +1,5 @@
+div(data-bind="click: clearNotifications, template: { foreach: notifications, beforeRemove: hideNotification, afterAdd: showNotification }")
+    div.alert(data-bind="css: 'alert-' + type")
+        strong(data-bind="text: title")
+        | &nbsp;
+        span(data-bind="text: message")
