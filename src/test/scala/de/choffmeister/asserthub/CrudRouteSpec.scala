@@ -17,10 +17,13 @@ import spray.routing.Route
 import spray.testkit.Specs2RouteTest
 import java.sql.Timestamp
 import java.util.Calendar
+import spray.routing.authentication.UserPass
+import spray.http.HttpCookie
+import spray.http.HttpHeaders
 
 object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs2RouteTest with WebService {
   def actorRefFactory = system
-  
+
   def userBefore(): Unit = {}
   def userCreate(i: Long) = new User(0L, s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}", "", "plain", s"First${i}", s"Last${i}")
   def userModify(u: User) = new User(u.id, u.userName + "-changed", u.email, u.passwordHash, u.passwordSalt, u.passwordHashAlgorithm, u.firstName, u.lastName)
@@ -65,7 +68,7 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
         before()
         val entities = (1 to 5).map(i => table.insert(createEntity(i)))
         
-        Get(s"/api/${name}") ~> route ~> check { responseAs[List[T]].map(_.id) === (1 to 5) }
+        Get(s"/api/${name}") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[List[T]].map(_.id) === (1 to 5) }
       }
     }
 
@@ -76,7 +79,7 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
         before()
         val entities = (1 to 20).map(i => table.insert(createEntity(i)))
 
-        Get(s"/api/${name}?$$top=5&$$skip=10") ~> route ~> check {
+        Get(s"/api/${name}?$$top=5&$$skip=10") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check {
           val res = responseAs[List[T]]
 
           status === OK
@@ -93,10 +96,10 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
         before()
         val entities = (1 to 5).map(i => table.insert(createEntity(i)))
 
-        Get(s"/api/${name}/1") ~> route ~> check { responseAs[Option[T]].get.id === 1 }
-        Get(s"/api/${name}/5") ~> route ~> check { responseAs[Option[T]].get.id === 5 }
-        Get(s"/api/${name}/0") ~> route ~> check { status === NotFound }
-        Get(s"/api/${name}/6") ~> route ~> check { status === NotFound }
+        Get(s"/api/${name}/1") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[Option[T]].get.id === 1 }
+        Get(s"/api/${name}/5") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[Option[T]].get.id === 5 }
+        Get(s"/api/${name}/0") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === NotFound }
+        Get(s"/api/${name}/6") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === NotFound }
       }
     }
     
@@ -108,9 +111,9 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
         val entities = (1 to 5).map(i => table.insert(createEntity(i)))
         val newEntity = createEntity(6)
 
-        Post(s"/api/${name}", newEntity) ~> route ~> check { responseAs[Option[T]].get.id === 6 }
-        Get(s"/api/${name}") ~> route ~> check { responseAs[List[T]].map(_.id) === (1 to 6) }
-        Get(s"/api/${name}/6") ~> route ~> check { responseAs[Option[T]].get.id === 6 }
+        Post(s"/api/${name}", newEntity) ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[Option[T]].get.id === 6 }
+        Get(s"/api/${name}") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[List[T]].map(_.id) === (1 to 6) }
+        Get(s"/api/${name}/6") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[Option[T]].get.id === 6 }
       }
     }
     
@@ -121,10 +124,10 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
         before()
         val entities = (1 to 5).map(i => table.insert(createEntity(i)))
 
-        Delete(s"/api/${name}/17") ~> route ~> check { status === NotFound }
-        Delete(s"/api/${name}/2") ~> route ~> check { status === OK }
-        Get(s"/api/${name}") ~> route ~> check { responseAs[List[T]].length === 4 }
-        Get(s"/api/${name}/2") ~> route ~> check { status === NotFound }
+        Delete(s"/api/${name}/17") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === NotFound }
+        Delete(s"/api/${name}/2") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === OK }
+        Get(s"/api/${name}") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { responseAs[List[T]].length === 4 }
+        Get(s"/api/${name}/2") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === NotFound }
       }
     }
 
@@ -137,14 +140,14 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
         val outdatedEntity = entities(3)
         val updatedEntity = modifyEntity(outdatedEntity)
 
-        Put(s"/api/${name}/1", updatedEntity) ~> route ~> check { status === BadRequest }
-        Get(s"/api/${name}/4") ~> route ~> check {
+        Put(s"/api/${name}/1", updatedEntity) ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === BadRequest }
+        Get(s"/api/${name}/4") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check {
           val res = responseAs[Option[T]].get
           compareEntities(res, outdatedEntity) === true
           compareEntities(res, updatedEntity) === false
         }
-        Put(s"/api/${name}/4", updatedEntity) ~> route ~> check { status === OK }
-        Get(s"/api/${name}/4") ~> route ~> check {
+        Put(s"/api/${name}/4", updatedEntity) ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check { status === OK }
+        Get(s"/api/${name}/4") ~> addHeader(HttpHeaders.Cookie(session())) ~> route ~> check {
           val res = responseAs[Option[T]].get
           compareEntities(res, outdatedEntity) === false
           compareEntities(res, updatedEntity) === true
@@ -155,6 +158,21 @@ object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs
     return listExample append listODataExample append retrieveExample append createExample append deleteExample append updateExample
   }
 
+  def session(): HttpCookie = {
+    var sessionId = ""
+
+    Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
+      val res = responseAs[AuthenticationResponse]
+      val setCookieHeader = headers.find(h => h.name.toLowerCase == "set-cookie").get
+      val cookie = setCookieHeader.asInstanceOf[HttpHeaders.`Set-Cookie`].cookie
+
+      status === OK
+      sessionId = cookie.content
+    }
+
+    HttpCookie("asserthub-sid", sessionId)
+  }
+  
   def now(): Timestamp = {
     val cal = Calendar.getInstance()
 

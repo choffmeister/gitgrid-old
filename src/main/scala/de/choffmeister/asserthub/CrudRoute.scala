@@ -24,7 +24,9 @@ object CrudRoute {
     }
   }
 
-  def create[T <: Entity](name: String, repo: EntityRepository[T], beforeCreate: Option[(T, User) => T] = None, beforeUpdate: Option[(T, User) => T] = None)(implicit
+  def create[T <: Entity](name: String, repo: EntityRepository[T],
+    beforeCreate: Option[(T, User) => T] = None,
+    beforeUpdate: Option[(T, User) => T] = None)(implicit
     entityMarshaller: spray.httpx.marshalling.ToResponseMarshaller[T],
     entityListMarshaller: spray.httpx.marshalling.ToResponseMarshaller[List[T]],
     entityOptionMarshaller: spray.httpx.marshalling.ToResponseMarshaller[Option[T]],
@@ -81,10 +83,12 @@ object CrudRoute {
       }
     } ~
     remove { id =>
-      complete {
-        repo.delete(id) match {
-          case Some(e) => e
-          case _ => NotFound
+      AuthManager.global.authCookieForce { user =>
+        complete {
+          repo.delete(id) match {
+            case Some(e) => e
+            case _ => NotFound
+          }
         }
       }
     }
