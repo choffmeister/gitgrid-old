@@ -24,7 +24,6 @@ class WebServiceActor extends Actor with WebService {
 trait WebService extends HttpService {
   implicit val timeout = Timeout(5 seconds)
   implicit def executionContext = actorRefFactory.dispatcher
-  implicit val authManager = new AuthManager()
 
   def staticContentPathMapper(path: String): Option[String] = path match {
     case path if !path.startsWith("api/") =>
@@ -45,9 +44,14 @@ trait WebService extends HttpService {
       pathPrefix("auth") {
         path("login") {
           post {
-            authManager.authLogin { pass =>
-              setCookie(HttpCookie("asserthub-sid", pass.session.id, pass.session.expires)) {
-                complete(AuthenticationResponse("Logged in", Some(pass.user)))
+            AuthManager.global.authLogin { pass =>
+              pass match {
+                case Some(AuthenticationPass(u, s)) =>
+                  setCookie(HttpCookie("asserthub-sid", s.id, s.expires)) {
+                    complete(AuthenticationResponse("Logged in", Some(u)))
+                  }
+                case _ =>
+                  complete(AuthenticationResponse("Invalid credentials", None))
               }
             }
           }
@@ -61,8 +65,11 @@ trait WebService extends HttpService {
         } ~
         path("state") {
           get {
-            authManager.authCookieForce { user =>
-              complete(user)
+            AuthManager.global.authCookie { user =>
+              user match {
+                case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
+                case None => complete(AuthenticationResponse("No or invalid session", None))
+              }
             }
           }
         }

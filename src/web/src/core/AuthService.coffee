@@ -11,15 +11,15 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
 
       api.post("/auth/login", { user: userName, pass: password })
         .done (res) =>
-          log.info("Authenticated with user name #{userName}", res)
-          @changeState(res.user)
-          deferred.resolve(true)
+          if res.user?
+            log.info("Authenticated with user name #{userName}", res)
+            @changeState(res.user)
+            deferred.resolve(true)
+          else
+            deferred.resolve(false)
         .fail (err) ->
-          switch err.status
-            when 401 then deferred.resolve(false)
-            else
-              log.error("Error while trying to authenticate: #{err.responseText}", err)
-              deferred.reject()
+            log.error("Error while trying to authenticate: #{err.responseText}", err)
+            deferred.reject()
 
       return deferred.promise()
 
@@ -50,8 +50,11 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
       deferred = $.Deferred()
 
       api.get("/auth/state")
-        .done (user) =>
-          deferred.resolve(user)
+        .done (res) =>
+          if res.user?
+            deferred.resolve(res.user)
+          else
+            deferred.resolve(null)
         .fail () ->
           deferred.resolve(null)
 

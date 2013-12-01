@@ -21,7 +21,7 @@ case class AuthenticationPass(user: User, session: Session)
 class AuthManager {
   private val random = new SecureRandom()
   val sessions = Map.empty[String, Session]
-  
+
   def authenticate(userName: String, password: String): Option[AuthenticationPass] = {
     UserManager.authenticate(userName, password) match {
       case Some(u) =>
@@ -30,22 +30,22 @@ class AuthManager {
       case _ => None
     }
   }
-  
+
   def createSession(userId: Long, expires: Option[DateTime]): Session = {
     val sessionId = generateSessionId()
     val session = Session(sessionId, userId, expires)
     sessions(sessionId) = session
-    
+
     session
   }
-  
+
   def loadSession(sessionId: String, now: Option[DateTime] = None): Option[AuthenticationPass] = {
     if (sessions.contains(sessionId)) {
       val session = sessions(sessionId)
-      
+
       if (!session.expires.isDefined || session.expires > now.orElse(Some(DateTime.now))) {
         val user = UserManager.find(session.userId)
-      
+
         user match {
           case Some(u) => Some(AuthenticationPass(u, session))
           case _ => None
@@ -54,41 +54,40 @@ class AuthManager {
     }
     else None
   }
-  
-  def cleanSessions(dt: Some[DateTime]): Unit = {
+
+  def cleanSessions(dt: Option[DateTime]): Unit = {
     val now = dt.orElse(Some(DateTime.now)).get
     val expiredSessions = sessions.values.filter(s => s.expires match {
       case Some(dt) if dt < now => true
       case _ => false
     }).toList
-    
+
     expiredSessions.foreach(s => sessions.remove(s.id))
   }
-  
+
   def generateSessionId(): String = {
     val bin = new Array[Byte](32)
     random.nextBytes(bin)
     val str = Base64.encodeBase64String(bin)
-    
+
     str
   }
-  
-  val authLogin: Directive1[AuthenticationPass] = {
+
+  val authLogin: Directive1[Option[AuthenticationPass]] = {
     entity(as[UserPass]).flatMap {
       case UserPass(userName, password) =>
         authenticate(userName, password) match {
-          case Some(AuthenticationPass(u, s)) => hprovide(AuthenticationPass(u, s) :: HNil)
-          case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
+          case Some(AuthenticationPass(u, s)) => hprovide(Some(AuthenticationPass(u, s)) :: HNil)
+          case _ => hprovide(None :: HNil)
         }
       case _ =>
-        reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
+        hprovide(None :: HNil)
     }
   }
-  
+
   val authCookie: Directive1[Option[User]] = {
     extract { ctx =>
       val cookie = ctx.request.cookies.find(c => c.name == "asserthub-sid")
-      
       cookie match {
         case Some(c) => loadSession(c.content) match {
           case Some(s) => Some(s.user)
@@ -98,10 +97,14 @@ class AuthManager {
       }
     }
   }
-  
+
   val authCookieForce: Directive1[User] =
     authCookie.flatMap {
       case Some(u) => hprovide(u :: HNil)
       case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
     }
+}
+
+object AuthManager {
+  lazy val global = new AuthManager()
 }

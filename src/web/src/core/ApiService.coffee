@@ -6,7 +6,10 @@ define ["config", "events", "http"], (config, events, http) ->
 
   serialize = (data) -> JSON.stringify(data)
 
-  fail = (err) -> events.emit("notification", "error", { title: "#{err.status} #{err.statusText}", message: err.responseText }) if err.status != 401
+  fail = (err) ->
+    switch err.status
+      when 401 then events.emit("notification", "warning", { title: "Unauthorized", message: "You are either not logged in or have insufficient permissions" })
+      else events.emit("notification", "error", { title: "#{err.status} #{err.statusText}", message: err.responseText })
 
   class ApiService
     get: (url) => http.get(baseUrl + url, options).fail(fail)

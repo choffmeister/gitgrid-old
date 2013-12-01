@@ -52,34 +52,19 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         }
 
         Post("/api/auth/login", UserPass("user1", "pass2")) ~> route ~> check {
-          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+          responseAs[AuthenticationResponse].user must beNone
         }
 
         Post("/api/auth/login", UserPass("user2", "pass1")) ~> route ~> check {
-          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+          responseAs[AuthenticationResponse].user must beNone
         }
 
         Post("/api/auth/login", UserPass("unknown", "pass")) ~> route ~> check {
-          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+          responseAs[AuthenticationResponse].user must beNone
         }
 
         Post("/api/auth/login") ~> sealRoute(route) ~> check {
           status === BadRequest
-          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
-        }
-
-        Post("/api/auth/login", UserPass("user1", "pass2")) ~> sealRoute(route) ~> check {
-          status === Unauthorized
-          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
-        }
-
-        Post("/api/auth/login", UserPass("user2", "pass1")) ~> sealRoute(route) ~> check {
-          status === Unauthorized
-          headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
-        }
-
-        Post("/api/auth/login", UserPass("unknown", "pass")) ~> sealRoute(route) ~> check {
-          status === Unauthorized
           headers.find(h => h.name.toLowerCase == "set-cookie") must beNone
         }
       }
@@ -101,7 +86,10 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         var sessionId = ""
 
         Get("/api/auth/state") ~> route ~> check {
-          rejection must beAnInstanceOf[AuthenticationFailedRejection]
+          val res = responseAs[AuthenticationResponse]
+
+          status === OK
+          res.user must beNone
         }
 
         Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
@@ -114,9 +102,10 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         }
 
         Get("/api/auth/state") ~> addHeader(HttpHeaders.Cookie(HttpCookie("asserthub-sid", sessionId))) ~> route ~> check {
-          val res = responseAs[User]
+          val res = responseAs[AuthenticationResponse]
 
           status === OK
+          res.user must beSome
         }
       }
     }
@@ -128,7 +117,7 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
       staticContentPathMapper("api") === Some("index.html")
       staticContentPathMapper("foo/bar/test.it/route") === Some("index.html")
       staticContentPathMapper("styles/main.css") === Some("styles/main.css")
- 
+
       staticContentPathMapper("api/") must beNone
       staticContentPathMapper("api/index.html") must beNone
       staticContentPathMapper("api/about") must beNone
