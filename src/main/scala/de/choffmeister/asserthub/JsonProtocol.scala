@@ -6,19 +6,49 @@ import spray.json._
 import spray.routing.authentication.UserPass
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.{Date, TimeZone}
+import org.joda.time.format.ISODateTimeFormat
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
-  implicit object TimestampFormat extends RootJsonFormat[Timestamp] {
-    val format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+  implicit object DateFormat extends JsonFormat[Date] {
+    val formatWrite = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    formatWrite.setTimeZone(TimeZone.getTimeZone("UTC"))
+    val formatRead = ISODateTimeFormat.dateTimeParser()
 
-    def write(ts: Timestamp) =
-      JsString(format.format(new Date(ts.getTime())))
+    def write(d: Date) = {
+      JsString(formatWrite.format(d.getTime) + "Z")
+    }
 
     def read(value: JsValue) =
       value match {
-        case JsString(s) => new Timestamp(format.parse(s).getTime())
-        case _ => deserializationError("Timestamp expected: " + value)
+        case JsString(s) =>
+          try {
+            new Date(formatRead.parseMillis(s))
+          } catch {
+            case e: Throwable => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value, e)
+          }
+        case _ => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value)
+      }
+  }
+
+  implicit object TimestampFormat extends JsonFormat[Timestamp] {
+    val formatWrite = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    formatWrite.setTimeZone(TimeZone.getTimeZone("UTC"))
+    val formatRead = ISODateTimeFormat.dateTimeParser()
+
+    def write(d: Timestamp) = {
+      JsString(formatWrite.format(d.getTime))
+    }
+
+    def read(value: JsValue) =
+      value match {
+        case JsString(s) =>
+          try {
+            new Timestamp(formatRead.parseMillis(s))
+          } catch {
+            case e: Throwable => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value, e)
+          }
+        case _ => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value)
       }
   }
 

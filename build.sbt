@@ -17,6 +17,7 @@ libraryDependencies ++= {
   val sprayVersion = "1.2-RC2"
   Seq(
     "commons-codec" % "commons-codec" % "1.8",
+    "joda-time" % "joda-time" % "2.3",
     "ch.qos.logback" % "logback-classic" % "1.0.13",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
