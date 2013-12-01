@@ -15,6 +15,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
       @mainViewModel = new MainViewModel()
       @mainViewModel.init(this)
       ko.applyBindings(@mainViewModel, @body.get(0))
+      @registerNotificationEventListeners()
 
     loadView: (templateName, viewModelType, parameters) =>
       return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType
@@ -109,6 +110,17 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
     showNotificationInfo: (text) => @showNotification(false, "info", text)
     showNotificationWarning: (text) => @showNotification(false, "warning", text)
     showNotificationError: (text) => @showNotification(true, "danger", text)
+
+    registerNotificationEventListeners: () =>
+      formatNotification = (data) ->
+        if data.title? and data.message? then "<strong>#{data.title}:</strong> #{data.message}"
+        else if data.message? then data.message
+        else data.toString()
+
+      events.listen "notification", "success", (data) => @showNotificationSuccess(formatNotification(data))
+      events.listen "notification", "info", (data) => @showNotificationInfo(formatNotification(data))
+      events.listen "notification", "warning", (data) => @showNotificationWarning(formatNotification(data))
+      events.listen "notification", "error", (data) => @showNotificationError(formatNotification(data))
 
     openDialogView: (backdrop, template, viewModel) =>
       deferred = $.Deferred()
