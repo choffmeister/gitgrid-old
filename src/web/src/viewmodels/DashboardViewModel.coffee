@@ -8,7 +8,5 @@ define ["jquery", "api", "vm", "ViewModelBase"], ($, api, vm, ViewModelBase) ->
         api.get("/tickets?$top=10&$skip=#{page * 10}")
           .done (res) =>
             @tickets(res)
-          .fail (err) =>
-            vm.showNotificationError("Could not fetch data")
 
-      return api.get("/tickets?$top=10&$skip=0").done((res) => @tickets(res)).promise()
+      return api.get("/tickets?$top=10&$skip=0").done((res) => @tickets(res))
