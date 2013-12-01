@@ -1,4 +1,10 @@
-h1 Ticket
-div
-    div(data-bind="text: ticket.title")
-    div(data-bind="text: ticket.description")
+div.pull-right.btn-group
+    a.btn.btn-default(data-bind="attr: { href: '/tickets/' + ticket.id() + '/edit' }")
+        span.glyphicon.glyphicon-pencil
+        | Edit
+    button.btn.btn-danger(data-bind="click: remove")
+        span.glyphicon.glyphicon-trash
+        | Delete
+
+h1(data-bind="text: ticket.title")
+pre(data-bind="text: ticket.description")

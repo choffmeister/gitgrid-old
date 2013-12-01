@@ -1,14 +1,1 @@
-ul.pagination.pull-right(data-bind="foreach: [0,1,2,3,4,5,6,7,8,9]")
-    li: a(href="#", data-bind="text: ($data + 1), click: $parent.page")
-
-h1 Tickets
-
-table.table
-    thead
-        tr
-            td ID
-            td Title
-    tbody(data-bind="foreach: tickets")
-        tr
-            td: a(href="#", data-bind="text: id, attr: { href: '/tickets/' + id }")
-            td(data-bind="text: title")
+h1 assert:hub

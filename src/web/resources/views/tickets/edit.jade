@@ -1,8 +1,8 @@
 include ../../mixins/inputelements
 
 div.pull-right.btn-group
-    button.btn.btn-default(data-bind="click: add") Create
-h1 New Ticket
-form(data-bind="submit: add")
+    button.btn.ptn-default(data-bind="click: modify") Save
+h1 Edit Ticket
+form(data-bind="submit: modify")
     +input-text-bind("title", "Title", "A short title", "ticket.title")
     +input-textarea-bind("description", "Description", "The detailed description", 10, "ticket.description")

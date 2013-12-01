@@ -49,7 +49,6 @@ requirejs [
   "router"
   "routes"
   "utils/SlideVisibleBinding"
-  "viewmodels/DashboardViewModel"
 ], ($, ko, koval, komap, log, auth, vm, router, routes, SlideVisibleBinding) ->
   ko.validation.init
     insertMessages: false

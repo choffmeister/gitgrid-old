@@ -57,7 +57,3 @@ mixin input-textarea-bind(id, label, placeholder, rows, value)
         label.control-label(for="#{id}")= label
         textarea.form-control(id="#{id}", name="#{id}", rows="#{rows}", placeholder="#{placeholder}", data-bind="value: #{value}", attributes)
         p.control-label(data-bind="validationMessage: #{value}")
-
-mixin input-submit-bind(label, submit)
-    +form-control-unlabeled
-        button.btn(type="submit", data-bind="submit: #{submit}", attributes)= label
