@@ -63,7 +63,9 @@ define ["jquery", "history", "log", "vm"], ($, history, log, vm) ->
 
     historyInterceptor: () =>
       state = history.getState()
-      url = state.hash
+      # fix issue in IE9
+      # TODO find proper solution (this solutions does not solve the problem of ugly urls prefixed with a dot)
+      url = state.hash.match(/^\.?(.*)$/)[1]
       log.info("Changed location to #{url}", state)
 
       matchingRoute = @matchRoute(url)
