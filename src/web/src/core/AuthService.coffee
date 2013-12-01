@@ -1,7 +1,10 @@
 define ["jquery", "log", "events", "api"], ($, log, events, api) ->
+  # save here to prevent direct access from the outside
+  user = null
+
   class AuthService
-    constructor: () ->
-      @user = null
+    user: () => if user? then $.extend({}, user) else null
+    userId: () => if user? then user.id else null
 
     authenticate: (userName, password) =>
       deferred = $.Deferred()
@@ -35,9 +38,9 @@ define ["jquery", "log", "events", "api"], ($, log, events, api) ->
       return deferred.promise()
 
     changeState: (newUser) =>
-      oldUser = @user
+      oldUser = user
 
-      @user = newUser
+      user = newUser
       log.info("Changed authentication state", newUser)
       events.emit("auth", "changestate", newUser) if newUser?.id != oldUser?.id
 
