@@ -18,13 +18,29 @@ class JsonProtocolSpec extends SpecificationWithJUnit {
       original.userName === deserialized.userName
       original !== deserialized
     }
-    
-    "convert Timestamp objects" in {
-      val ts = new Timestamp(System.currentTimeMillis())
-      val str = TimestampFormat.write(ts)
-      val ts2 = TimestampFormat.read(str)
 
-      ts === ts2
+    "convert Date objects" in {
+      val now = System.currentTimeMillis()
+      val nowround = now - now % 60000
+      for (i <- 0 to 60000) {
+        val ts = new Date(nowround + i)
+        val str = DateFormat.write(ts)
+        val ts2 = DateFormat.read(str)
+        ts.getTime === ts2.getTime
+      }
+      ok
+    }
+
+    "convert Timestamp objects" in {
+      val now = System.currentTimeMillis()
+      val nowround = now - now % 1000
+      for (i <- 0 to 60000) {
+        val ts = new Timestamp(nowround + i)
+        val str = TimestampFormat.write(ts)
+        val ts2 = TimestampFormat.read(str)
+        ts.getTime === ts2.getTime
+      }
+      ok
     }
   } 
 }
