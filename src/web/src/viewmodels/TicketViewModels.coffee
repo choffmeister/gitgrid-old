@@ -11,8 +11,15 @@ define ["underscore", "api", "ViewModelBase", "../models/Ticket"], (_, api, View
         @ticket = new Ticket()
         @done()
 
-    add: () => api.post("/tickets", @ticket.toJS()) if @validate()
-    modify: () => api.put("/tickets/#{@ticket.id()}", @ticket.toJS()) if @validate()
+    add: () => if @validate()
+      api.post("/tickets", @ticket.toJS()).then () =>
+        @notifySuccess("Created", "Successfully created new ticket")
+        @redirect("/")
+
+    modify: () => if @validate()
+      api.put("/tickets/#{@ticket.id()}", @ticket.toJS()).then () =>
+        @notifySuccess("Modified", "Successfully modified ticket")
+
     remove: () => api.delete("/tickets/#{@ticket.id()}")
 
   return {

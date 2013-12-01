@@ -1,4 +1,4 @@
-define ["jquery", "knockout", "events"], ($, ko, events) ->
+define ["jquery", "knockout", "history", "events"], ($, ko, history, events) ->
   class ViewModelBase
     # called from the ViewManager after creating the view model
     init: () => @done()
@@ -17,13 +17,22 @@ define ["jquery", "knockout", "events"], ($, ko, events) ->
     observableArray: (array) -> ko.observableArray(array)
 
     # event helper methods
-    emitMessage: (type, message) -> events.emit("messages", type, { type: type, message: message})
     emitEvent: (namespace, name, data) -> events.emit(namespace, name, data)
     listenEvent: (namespace, name, callback) -> events.listen(namespace, name, callback)
+
+    # notification helper methods
+    notifySuccess: (title, message) => @emitEvent("notification", "success", { title: title, message: message })
+    notifyInfo: (title, message) => @emitEvent("notification", "info", { title: title, message: message })
+    notifyWarning: (title, message) => @emitEvent("notification", "warning", { title: title, message: message })
+    notifyError: (title, message) => @emitEvent("notification", "error", { title: title, message: message })
 
     # promise helper methods
     done: () -> $.Deferred().resolve().promise()
 
+    # redirect to new route
+    redirect: (url) => history.pushState(null, null, url)
+
+    # validate view model
     validate: () =>
       errors = ko.validation.group(this)
       errors.showAllMessages()
