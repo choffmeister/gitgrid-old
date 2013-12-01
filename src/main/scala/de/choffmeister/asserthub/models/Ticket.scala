@@ -12,7 +12,7 @@ case class Ticket(
   description: String,
   creatorId: Long,
   createdAt: Timestamp
-) extends TimestampedEntity
+) extends Entity with TimestampedEntity with OwnedEntity
 
 trait TicketRepository extends EntityRepository[Ticket] {
   val keyDef = ticketKED

@@ -1,6 +1,7 @@
 package de.choffmeister.asserthub
 
 import de.choffmeister.asserthub.models._
+import de.choffmeister.asserthub.managers.AuthManager
 import spray.routing._
 import spray.routing.Directives._
 import spray.http.StatusCodes._
@@ -23,7 +24,7 @@ object CrudRoute {
     }
   }
 
-  def create[T <: Entity](name: String, repo: EntityRepository[T])(implicit
+  def create[T <: Entity](name: String, repo: EntityRepository[T], beforeCreate: Option[(T, User) => T] = None, beforeUpdate: Option[(T, User) => T] = None)(implicit
     entityMarshaller: spray.httpx.marshalling.ToResponseMarshaller[T],
     entityListMarshaller: spray.httpx.marshalling.ToResponseMarshaller[List[T]],
     entityOptionMarshaller: spray.httpx.marshalling.ToResponseMarshaller[Option[T]],
@@ -38,12 +39,12 @@ object CrudRoute {
     val remove = path(name / LongNumber) & delete
 
     list {
-      odata { query => 
+      odata { query =>
         complete {
           inTransaction {
             val base = from(repo.table)(e => select(e) orderBy(e.id asc))
             val paged = base.page(query.skip.orElse(Some(0)).get, query.top.orElse(Some(100)).get)
-              
+
             paged.toList
           }
         }
@@ -59,15 +60,24 @@ object CrudRoute {
     } ~
     create {
       entity(as[T]) { e =>
-        complete(repo.insert(e))
+        AuthManager.global.authCookieForce { user =>
+          beforeCreate match {
+            case Some(f) => complete(repo.insert(f(e, user)))
+            case None => complete(repo.insert(e))
+          }
+        }
       }
     } ~
     update { id =>
       entity(as[T]) { e =>
-        complete {
-          if (e.id == id) repo.update(e)
-          else BadRequest
-        }
+        if (e.id == id) {
+          AuthManager.global.authCookieForce { user =>
+            beforeUpdate match {
+              case Some(f) => complete(repo.update(f(e, user)))
+              case None => complete(repo.update(e))
+            }
+          }
+        } else complete(BadRequest)
       }
     } ~
     remove { id =>

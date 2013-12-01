@@ -14,6 +14,10 @@ trait TimestampedEntity extends Entity {
   val createdAt: Timestamp
 }
 
+trait OwnedEntity extends Entity {
+  val creatorId: Long
+}
+
 trait EntityRepository[T <: Entity] {
   implicit val keyDef: KeyedEntityDef[T, Long]
   val table: Table[T]
@@ -55,8 +59,6 @@ trait EntityRepository[T <: Entity] {
   }
 
   def now(): Timestamp = {
-    val cal = Calendar.getInstance()
-
-    return new Timestamp(cal.getTimeInMillis())
+    return new Timestamp(System.currentTimeMillis)
   }
 }

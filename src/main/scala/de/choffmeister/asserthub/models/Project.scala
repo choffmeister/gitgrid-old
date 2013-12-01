@@ -13,7 +13,7 @@ case class Project(
   description: String,
   creatorId: Long,
   createdAt: Timestamp
-) extends TimestampedEntity
+) extends Entity with TimestampedEntity with OwnedEntity
 
 trait ProjectRepository extends EntityRepository[Project] {
   val keyDef = projectKED

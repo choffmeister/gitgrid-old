@@ -13,6 +13,7 @@ import spray.routing._
 import spray.httpx.unmarshalling.Unmarshaller
 import spray.httpx.unmarshalling.Deserializer
 import spray.http.Uri.Path
+import java.sql.Timestamp
 
 case class AuthenticationResponse(message: String, user: Option[User])
 
@@ -76,7 +77,7 @@ trait WebService extends HttpService {
       } ~
       CrudRoute.create("users", UserManager) ~
       CrudRoute.create("projects", ProjectManager) ~
-      CrudRoute.create("tickets", TicketManager)
+      CrudRoute.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
     } ~
     path(staticContentPathMatcher) { filePath =>
       getFromResource("web/" + filePath)
