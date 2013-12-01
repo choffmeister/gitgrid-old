@@ -47,7 +47,7 @@ trait WebService extends HttpService {
             AuthManager.global.authLogin { pass =>
               pass match {
                 case Some(AuthenticationPass(u, s)) =>
-                  setCookie(HttpCookie("asserthub-sid", s.id, s.expires)) {
+                  setCookie(HttpCookie("asserthub-sid", s.id, expires = s.expires, path = Some("/"))) {
                     complete(AuthenticationResponse("Logged in", Some(u)))
                   }
                 case _ =>
@@ -58,7 +58,7 @@ trait WebService extends HttpService {
         } ~
         path("logout") {
           post {
-            deleteCookie("asserthub-sid") {
+            deleteCookie("asserthub-sid", path = "/") {
               complete(AuthenticationResponse("Logged out", None))
             }
           }
