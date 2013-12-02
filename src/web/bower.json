@@ -2,16 +2,16 @@
   "name": "asserthub",
   "version": "0.0.0",
   "dependencies": {
-    "requirejs": "~2.1.9",
-    "jquery": "~2.0.3",
-    "underscore": "~1.5.2",
-    "history.js": "~1.8.0",
-    "knockout-dist": "~3.0.0",
     "bootstrap": "~3.0.1",
-    "roboto-fontface": "~0.1.2",
-    "knockout.validation": "~1.0.2",
+    "history.js": "~1.8.0",
+    "jquery": "~2.0.3",
+    "jquery.transit": "~0.9.9",
+    "knockout-dist": "~3.0.0",
     "knockout-mapping": "~2.4.1",
-    "jquery.transit": "~0.9.9"
+    "knockout.validation": "~1.0.2",
+    "requirejs": "~2.1.9",
+    "roboto-fontface": "~0.1.2",
+    "underscore": "~1.5.2"
   },
   "ignore": [
     "**/.*",
