@@ -14,6 +14,7 @@ define ["jquery", "auth", "ViewModelBase", "viewmodels/LoginDialogViewModel"], (
       @listenEvent("notification", "info", (data) => @addNotification("info", data.title, data.message))
       @listenEvent("notification", "warning", (data) => @addNotification("warning", data.title, data.message))
       @listenEvent("notification", "error", (data) => @addNotification("danger", data.title, data.message))
+      @listenEvent("global", "keydown", (event) => @clearNotifications() if event.keyCode == 27)
       @done()
 
     login: () =>
