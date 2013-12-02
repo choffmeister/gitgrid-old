@@ -1,0 +1,10 @@
+div.pull-right.btn-group
+    a.btn.btn-default(data-bind="attr: { href: '/projects/' + project.id() + '/edit' }")
+        span.glyphicon.glyphicon-pencil
+        | Edit
+    button.btn.btn-danger(data-bind="click: remove")
+        span.glyphicon.glyphicon-trash
+        | Delete
+
+h1(data-bind="text: project.name")
+pre(data-bind="text: project.description")

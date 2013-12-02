@@ -3,14 +3,18 @@ define ["ModelBase"], (ModelBase) ->
     default: () ->
       id: 0
       title: ""
+      key: ""
+      name: ""
       description: ""
       creatorId: 0
       createdAt: new Date()
 
     validation: () ->
-      title:
+      name:
         required: true
         maxLength: 128
-      description:
+      key:
         required: true
+        maxLength: 8
+      description:
         maxLength: 65536

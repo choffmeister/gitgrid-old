@@ -1,0 +1,13 @@
+include ../../mixins/inputelements
+
+mixin print(submit, label)
+    div.pull-right.btn-group
+        button.btn.btn-default(data-bind="click: #{submit}") #{label}
+    h1 New Project
+    form(data-bind="submit: #{submit}")
+        div.row
+            div.col-xs-8
+                +input-text-bind("name", "Name", "A short name", "project.name")
+            div.col-xs-4
+                +input-text-bind("key", "Key", "A short identifier", "project.key")
+        +input-textarea-bind("description", "Description", "The detailed description", 10, "project.description")
