@@ -14,7 +14,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= {
   val akkaVersion = "2.2.3"
-  val sprayVersion = "1.2-RC2"
+  val sprayVersion = "1.2-RC4"
   Seq(
     "commons-codec" % "commons-codec" % "1.8",
     "joda-time" % "joda-time" % "2.3",

@@ -14,6 +14,7 @@ import spray.httpx.unmarshalling.Unmarshaller
 import spray.httpx.unmarshalling.Deserializer
 import spray.http.Uri.Path
 import java.sql.Timestamp
+import CacheDirectives._
 
 case class AuthenticationResponse(message: String, user: Option[User])
 
@@ -42,42 +43,44 @@ trait WebService extends HttpService {
 
   val route =
     pathPrefix("api") {
-      pathPrefix("auth") {
-        path("login") {
-          post {
-            AuthManager.global.authLogin { pass =>
-              pass match {
-                case Some(AuthenticationPass(u, s)) =>
-                  setCookie(HttpCookie("asserthub-sid", s.id, expires = s.expires, path = Some("/"))) {
-                    complete(AuthenticationResponse("Logged in", Some(u)))
-                  }
-                case _ =>
-                  complete(AuthenticationResponse("Invalid credentials", None))
+      respondWithHeader(HttpHeaders.`Cache-Control`(`no-cache`, `max-age`(0))) {
+        pathPrefix("auth") {
+          path("login") {
+            post {
+              AuthManager.global.authLogin { pass =>
+                pass match {
+                  case Some(AuthenticationPass(u, s)) =>
+                    setCookie(HttpCookie("asserthub-sid", s.id, expires = s.expires, path = Some("/"))) {
+                      complete(AuthenticationResponse("Logged in", Some(u)))
+                    }
+                  case _ =>
+                    complete(AuthenticationResponse("Invalid credentials", None))
+                }
+              }
+            }
+          } ~
+          path("logout") {
+            post {
+              deleteCookie("asserthub-sid", path = "/") {
+                complete(AuthenticationResponse("Logged out", None))
+              }
+            }
+          } ~
+          path("state") {
+            get {
+              AuthManager.global.authCookie { user =>
+                user match {
+                  case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
+                  case None => complete(AuthenticationResponse("No or invalid session", None))
+                }
               }
             }
           }
         } ~
-        path("logout") {
-          post {
-            deleteCookie("asserthub-sid", path = "/") {
-              complete(AuthenticationResponse("Logged out", None))
-            }
-          }
-        } ~
-        path("state") {
-          get {
-            AuthManager.global.authCookie { user =>
-              user match {
-                case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
-                case None => complete(AuthenticationResponse("No or invalid session", None))
-              }
-            }
-          }
-        }
-      } ~
-      CrudRoute.create("users", UserManager) ~
-      CrudRoute.create("projects", ProjectManager) ~
-      CrudRoute.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
+        CrudRoute.create("users", UserManager) ~
+        CrudRoute.create("projects", ProjectManager) ~
+        CrudRoute.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
+      }
     } ~
     path(staticContentPathMatcher) { filePath =>
       getFromResource("web/" + filePath)
