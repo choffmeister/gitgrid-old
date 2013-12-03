@@ -8,6 +8,8 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.{Date, TimeZone}
 import org.joda.time.format.ISODateTimeFormat
+import org.eclipse.jgit.revwalk._
+import org.eclipse.jgit.lib._
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object DateFormat extends JsonFormat[Date] {
@@ -75,4 +77,22 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val ticketFormat = jsonFormat5(Ticket)
   implicit val userPassFormat = jsonFormat2(UserPass)
   implicit val authenticationResponseFormat = jsonFormat2(AuthenticationResponse)
+
+  implicit val gitCommitSignatureFormat = jsonFormat4(GitCommitSignature)
+  implicit val gitCommitFormat = jsonFormat7(GitCommit)
+  implicit object GitObjectTypeFormat extends JsonFormat[GitObjectType] {
+    def write(t: GitObjectType) =
+      t match {
+        case GitCommitObjectType => JsString("commit")
+        case GitTreeObjectType => JsString("tree")
+        case GitBlobObjectType => JsString("blob")
+        case GitTagObjectType => JsString("tag")
+        case _ => deserializationError("Unknown git object type")
+      }
+
+    def read(value: JsValue) = deserializationError("Deserialization of GitObjectType is not implemented")
+  }
+  implicit val gitTreeEntryFormat = jsonFormat4(GitTreeEntry)
+  implicit val gitTreeFormat = jsonFormat2(GitTree)
+  implicit val gitBlobFormat = jsonFormat1(GitBlob)
 }

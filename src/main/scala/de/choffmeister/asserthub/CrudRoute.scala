@@ -10,7 +10,7 @@ import de.choffmeister.asserthub.models.Dsl.{get => _, _}
 case class ODataParameters(top: Option[Int], skip: Option[Int])
 
 object CrudRoute {
-  val odata: Directive1[ODataParameters] = {
+  lazy val odata: Directive1[ODataParameters] = {
     def parseInt(str: Option[String]): Option[Int] = str match {
       case Some(s) => Some(s.toInt)
       case _ => None
