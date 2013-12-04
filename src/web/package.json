@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
-    "bower": "~1.2.8",
     "grunt": "~0.4.2",
     "grunt-connect-proxy": "~0.1.6",
     "grunt-contrib-clean": "~0.5.0",
