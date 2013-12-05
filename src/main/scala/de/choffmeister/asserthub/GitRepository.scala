@@ -7,6 +7,7 @@ import org.eclipse.jgit.internal.storage.pack._
 import org.eclipse.jgit.lib._
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.treewalk._
+import org.eclipse.jgit.api._
 import java.util.Date
 
 abstract class GitObject {
@@ -175,5 +176,9 @@ object GitRepository {
     } finally {
       repo.close()
     }
+  }
+
+  def init[T](dir: File, bare: Boolean) {
+    Git.init().setBare(bare).setDirectory(dir).call()
   }
 }
