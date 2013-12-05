@@ -7,6 +7,7 @@ requirejs.config
     underscore: "../bower_components/underscore/underscore"
     history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
+    bootstrapdatepicker: "../bower_components/bootstrap-datepicker/js/bootstrap-datepicker"
     knockout: "../bower_components/knockout-dist/knockout"
     knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
     knockoutmapping: "../bower_components/knockout-mapping/build/output/knockout.mapping-latest.debug"
@@ -40,6 +41,8 @@ requirejs.config
       exports: "History"
     bootstrap:
       deps: ["jquery"]
+    bootstrapdatepicker:
+      deps: ["bootstrap"]
 
 requirejs [
   "jquery"
@@ -47,13 +50,15 @@ requirejs [
   "knockout"
   "knockoutvalidation"
   "knockoutmapping"
+  "bootstrap"
+  "bootstrapdatepicker"
   "log"
   "auth"
   "vm"
   "router"
   "routes"
   "utils/SlideVisibleBinding"
-], ($, $transit, ko, koval, komap, log, auth, vm, router, routes, SlideVisibleBinding) ->
+], ($, $transit, ko, koval, komap, bs, bsdatepicker, log, auth, vm, router, routes, SlideVisibleBinding) ->
   ko.validation.init
     insertMessages: false
     decorateElement: true
