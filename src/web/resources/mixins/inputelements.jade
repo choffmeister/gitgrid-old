@@ -55,7 +55,11 @@ mixin input-text-bind(id, label, placeholder, value)
 mixin input-date-bind(id, label, placeholder, value)
     div(class="form-group", data-bind="validationElement: #{value}")
         label.control-label(for="#{id}")= label
-        input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="datevalue: #{value}", attributes)
+        div.input-group
+            input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="datevalue: #{value}", attributes)
+            span.input-group-btn
+                button.btn.btn-default(type="button", for="#{id}")
+                    span.glyphicon.glyphicon-calendar
         p.control-label(data-bind="validationMessage: #{value}")
 
 mixin input-textarea-bind(id, label, placeholder, rows, value)
