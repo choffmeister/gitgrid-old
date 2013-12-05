@@ -58,7 +58,8 @@ requirejs [
   "router"
   "routes"
   "utils/SlideVisibleBinding"
-], ($, $transit, ko, koval, komap, bs, bsdatepicker, log, auth, vm, router, routes, SlideVisibleBinding) ->
+  "utils/DateValueBinding"
+], ($, $transit, ko, koval, komap, bs, bsdatepicker, log, auth, vm, router, routes) ->
   ko.validation.init
     insertMessages: false
     decorateElement: true
