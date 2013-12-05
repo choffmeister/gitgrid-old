@@ -9,6 +9,10 @@ target/
 .project
 .settings/
 
+# IDEA
+.idea/
+.idea_modules/
+
 # Trash
 .cache
 .DS_Store
