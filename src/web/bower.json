@@ -2,7 +2,7 @@
   "name": "asserthub",
   "version": "0.0.0",
   "dependencies": {
-    "bootstrap": "~3.0.2",
+    "bootstrap": "~3.0.3",
     "bootstrap-datepicker": "~1.2.0",
     "history.js": "~1.8.0",
     "jquery": "~2.0.3",
@@ -20,6 +20,6 @@
     "bower_components"
   ],
   "resolutions": {
-    "bootstrap": "~3.0.2"
+    "bootstrap": "~3.0.3"
   }
 }
