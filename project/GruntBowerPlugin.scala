@@ -46,10 +46,18 @@ object GruntBowerPlugin extends Plugin {
     },
 
     gruntBowerVersions := {
-      val node = VersionString("node --version" !!)
-      val npm = VersionString("npm --version" !!)
-      val grunt = VersionString("grunt --version" !!)
-      val bower = VersionString("bower --version" !!)
+      def getVersion(name: String): Option[VersionString] = {
+        try {
+          VersionString(s"$name --version" !!)
+        } catch {
+          case e: Throwable => None
+        }
+      }
+
+      val node = getVersion("node")
+      val npm = getVersion("npm")
+      val grunt = getVersion("grunt")
+      val bower = getVersion("bower")
 
       GruntBowerVersions(node, npm, grunt, bower)
     },
