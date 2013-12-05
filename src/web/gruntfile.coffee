@@ -24,16 +24,12 @@ module.exports = (grunt) ->
         src: ["**/*.coffee"]
         dest: "#{targetDev}/src"
         ext: ".js"
-        options:
-          bare: true
       test:
         expand: true
         cwd: "test"
         src: ["**/*.coffee"]
         dest: "#{targetDev}/test"
         ext: ".js"
-        options:
-          bare: true
 
     jade:
       dev:
