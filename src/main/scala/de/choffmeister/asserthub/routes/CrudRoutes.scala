@@ -1,4 +1,4 @@
-package de.choffmeister.asserthub
+package de.choffmeister.asserthub.routes
 
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.managers.AuthManager
@@ -9,7 +9,7 @@ import de.choffmeister.asserthub.models.Dsl.{get => _, _}
 
 case class ODataParameters(top: Option[Int], skip: Option[Int])
 
-object CrudRoute {
+object CrudRoutes {
   lazy val odata: Directive1[ODataParameters] = {
     def parseInt(str: Option[String]): Option[Int] = str match {
       case Some(s) => Some(s.toInt)

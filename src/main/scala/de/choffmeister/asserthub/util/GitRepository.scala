@@ -1,4 +1,4 @@
-package de.choffmeister.asserthub
+package de.choffmeister.asserthub.util
 
 import java.io._
 import scala.collection.JavaConversions._

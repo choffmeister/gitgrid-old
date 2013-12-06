@@ -10,6 +10,16 @@ import java.util.{Date, TimeZone}
 import org.joda.time.format.ISODateTimeFormat
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.lib._
+import de.choffmeister.asserthub.util.GitTreeObjectType
+import de.choffmeister.asserthub.util.GitTreeEntry
+import de.choffmeister.asserthub.util.GitTree
+import de.choffmeister.asserthub.util.GitTagObjectType
+import de.choffmeister.asserthub.util.GitObjectType
+import de.choffmeister.asserthub.util.GitCommitSignature
+import de.choffmeister.asserthub.util.GitCommitObjectType
+import de.choffmeister.asserthub.util.GitCommit
+import de.choffmeister.asserthub.util.GitBlobObjectType
+import de.choffmeister.asserthub.util.GitBlob
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object DateFormat extends JsonFormat[Date] {

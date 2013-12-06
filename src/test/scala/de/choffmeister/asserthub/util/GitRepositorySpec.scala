@@ -1,10 +1,9 @@
-package de.choffmeister.asserthub
+package de.choffmeister.asserthub.util
 
 import org.specs2.mutable._
 import spray.json._
 import java.io.File
 import java.util.UUID
-import de.choffmeister.asserthub.util.ZipHelper
 
 class GitRepositorySpec extends SpecificationWithJUnit {
   def tmp = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID.toString)

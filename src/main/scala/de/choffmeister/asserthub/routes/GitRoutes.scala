@@ -1,10 +1,12 @@
-package de.choffmeister.asserthub
+package de.choffmeister.asserthub.routes
 
 import java.io._
 import scala.collection.JavaConversions._
 import spray.routing._
 import spray.routing.Directives._
 import de.choffmeister.asserthub.JsonProtocol._
+import de.choffmeister.asserthub.util._
+import de.choffmeister.asserthub.Config
 import org.eclipse.jgit.storage.file._
 import org.eclipse.jgit.internal.storage.pack._
 import org.eclipse.jgit.lib._
@@ -12,8 +14,8 @@ import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.treewalk._
 import java.util.Date
 
-object GitRoute {
-  def route(projectId: Long): Route =
+object GitRoutes {
+  def create(projectId: Long): Route =
     path("commit" / Segment) { refOrSha =>
       complete(gitRepository(projectId)(repo => repo.commit(repo.resolve(refOrSha))))
     } ~

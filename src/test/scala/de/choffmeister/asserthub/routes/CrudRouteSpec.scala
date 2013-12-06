@@ -1,4 +1,4 @@
-package de.choffmeister.asserthub
+package de.choffmeister.asserthub.routes
 
 import org.specs2.mutable._
 import org.specs2.matcher._
@@ -7,6 +7,7 @@ import org.specs2.specification.SpecificationStringContext
 import org.specs2.specification.Fragments
 import org.specs2.specification.DefaultExampleFactory
 import org.squeryl.Table
+import de.choffmeister.asserthub._
 import de.choffmeister.asserthub.models.Dsl.transaction
 import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.JsonProtocol._
@@ -21,7 +22,7 @@ import spray.routing.authentication.UserPass
 import spray.http.HttpCookie
 import spray.http.HttpHeaders
 
-object CrudRouteSpec extends FragmentsBuilder with MustThrownMatchers with Specs2RouteTest with WebService {
+object CrudRoutesSpec extends FragmentsBuilder with MustThrownMatchers with Specs2RouteTest with WebService {
   def actorRefFactory = system
 
   def userBefore(): Unit = {}

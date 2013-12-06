@@ -7,6 +7,7 @@ import akka.util.Timeout
 import de.choffmeister.asserthub.JsonProtocol._
 import de.choffmeister.asserthub.managers._
 import de.choffmeister.asserthub.models._
+import de.choffmeister.asserthub.routes._
 import spray.http._
 import spray.http.StatusCodes._
 import spray.routing._
@@ -77,10 +78,10 @@ trait WebService extends HttpService {
             }
           }
         } ~
-        pathPrefix("projects" / LongNumber / "git")(projectId => GitRoute.route(projectId)) ~
-        CrudRoute.create("users", UserManager) ~
-        CrudRoute.create("projects", ProjectManager) ~
-        CrudRoute.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
+        pathPrefix("projects" / LongNumber / "git")(projectId => GitRoutes.create(projectId)) ~
+        CrudRoutes.create("users", UserManager) ~
+        CrudRoutes.create("projects", ProjectManager) ~
+        CrudRoutes.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
       }
     } ~
     path(staticContentPathMatcher) { filePath =>
