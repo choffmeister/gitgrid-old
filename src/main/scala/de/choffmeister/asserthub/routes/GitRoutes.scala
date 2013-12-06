@@ -16,6 +16,15 @@ import java.util.Date
 
 object GitRoutes {
   def create(projectId: Long): Route =
+    path("branches") {
+      ODataDirective.odata(query => complete(gitRepository(projectId)(repo => repo.branches(query.skip, query.top))))
+    } ~
+    path("tags") {
+      ODataDirective.odata(query => complete(gitRepository(projectId)(repo => repo.tags(query.skip, query.top))))
+    } ~
+    path("commits") {
+      ODataDirective.odata(query => complete(gitRepository(projectId)(repo => repo.commits(query.skip, query.top))))
+    } ~
     path("commit" / Segment) { refOrSha =>
       complete(gitRepository(projectId)(repo => repo.commit(repo.resolve(refOrSha))))
     } ~

@@ -10,16 +10,7 @@ import java.util.{Date, TimeZone}
 import org.joda.time.format.ISODateTimeFormat
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.lib._
-import de.choffmeister.asserthub.util.GitTreeObjectType
-import de.choffmeister.asserthub.util.GitTreeEntry
-import de.choffmeister.asserthub.util.GitTree
-import de.choffmeister.asserthub.util.GitTagObjectType
-import de.choffmeister.asserthub.util.GitObjectType
-import de.choffmeister.asserthub.util.GitCommitSignature
-import de.choffmeister.asserthub.util.GitCommitObjectType
-import de.choffmeister.asserthub.util.GitCommit
-import de.choffmeister.asserthub.util.GitBlobObjectType
-import de.choffmeister.asserthub.util.GitBlob
+import de.choffmeister.asserthub.util._
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object DateFormat extends JsonFormat[Date] {
@@ -88,6 +79,7 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val userPassFormat = jsonFormat2(UserPass)
   implicit val authenticationResponseFormat = jsonFormat2(AuthenticationResponse)
 
+  implicit val gitRefFormat = jsonFormat2(GitRef)
   implicit val gitCommitSignatureFormat = jsonFormat4(GitCommitSignature)
   implicit val gitCommitFormat = jsonFormat7(GitCommit)
   implicit object GitObjectTypeFormat extends JsonFormat[GitObjectType] {

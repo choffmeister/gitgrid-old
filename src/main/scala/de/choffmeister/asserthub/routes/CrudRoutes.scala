@@ -7,23 +7,7 @@ import spray.routing.Directives._
 import spray.http.StatusCodes._
 import de.choffmeister.asserthub.models.Dsl.{get => _, _}
 
-case class ODataParameters(top: Option[Int], skip: Option[Int])
-
 object CrudRoutes {
-  lazy val odata: Directive1[ODataParameters] = {
-    def parseInt(str: Option[String]): Option[Int] = str match {
-      case Some(s) => Some(s.toInt)
-      case _ => None
-    }
-    Directives.parameterMap.flatMap {
-      case m: Map[String, String] => provide(ODataParameters(
-        parseInt(m.get("$top")),
-        parseInt(m.get("$skip"))
-      ))
-      case _ => provide(ODataParameters(None, None))
-    }
-  }
-
   def create[T <: Entity](name: String, repo: EntityRepository[T],
     beforeCreate: Option[(T, User) => T] = None,
     beforeUpdate: Option[(T, User) => T] = None)(implicit
@@ -41,7 +25,7 @@ object CrudRoutes {
     val remove = path(name / LongNumber) & delete
 
     list {
-      odata { query =>
+      ODataDirective.odata { query =>
         complete {
           inTransaction {
             val base = from(repo.table)(e => select(e) orderBy(e.id asc))
