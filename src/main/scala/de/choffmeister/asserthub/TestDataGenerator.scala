@@ -5,6 +5,9 @@ import de.choffmeister.asserthub.models._
 import de.choffmeister.asserthub.models.Dsl._
 import scala.util.Random
 import scala.io.Source
+import de.choffmeister.asserthub.util.ZipHelper
+
+class TestDataGenerator
 
 object TestDataGenerator {
   def generate(userCount: Int = 5, projectCount: Int = 10, ticketCount: Int = 50) {
@@ -14,6 +17,11 @@ object TestDataGenerator {
 
       val users = (1 to userCount).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
       val projects = (1 to projectCount).map(i => ProjectManager.createProject(s"P${i}", s"Project ${i}", s"This is project ${i}. ${loremipsum(random.nextInt(5000) + 1000)}", random.nextInt(userCount) + 1))
+      for (i <- 1 to projectCount) {
+        val dir = new java.io.File(Config.repositoriesDir, i.toString)
+        dir.delete()
+        ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream("/highlightjs.zip"), dir)
+      }
       val tickets = (1 to ticketCount).map(i => TicketManager.createTicket(s"Ticket #${i}", s"This is ticket ${i}. ${loremipsum(random.nextInt(5000) + 1000)}", random.nextInt(userCount) + 1))
     }
   }
