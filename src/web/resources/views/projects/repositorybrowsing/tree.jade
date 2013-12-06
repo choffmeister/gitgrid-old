@@ -1,0 +1,5 @@
+h1 Tree
+div(data-bind="text: '/' + args.path")
+
+ul.list-group(data-bind="foreach: tree.entries")
+    li.list-group-item: a(href="#", data-bind="text: name, attr: { href: $parent.entryUrl($data) }")
