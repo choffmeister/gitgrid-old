@@ -28,15 +28,26 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
         @parameters = []
         @regex = new RegExp("^/$")
       else
+        @hasCatchAll = false
         @pattern = pattern.replace("/$", "")
         @parameters = []
 
         patternCallback = (match, name) =>
           @parameters.push(name)
           return "([^/]+)"
+        patternCallback2 = (match, name) =>
+          @hasCatchAll = true
+          @parameters.push(name)
+          return "(.*)"
 
-        regex = pattern.replace(/\{([a-zA-Z0-9\-\_]+)\}/g, patternCallback)
-        @regex = new RegExp("^#{regex}/?$")
+        regex = pattern
+          .replace(/\{([a-zA-Z0-9\-\_]+)\}/g, patternCallback)
+          .replace(/\{\*([a-zA-Z0-9\-\_]+)\}/g, patternCallback2)
+        if @hasCatchAll
+          regex = "^#{regex}$"
+        else
+          regex = "^#{regex}/?$"
+        @regex = new RegExp(regex)
 
   class RouterService
     init: () =>

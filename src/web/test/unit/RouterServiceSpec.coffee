@@ -25,6 +25,10 @@ define ["jquery", "../../src/core/RouterService.js"], ($, router) ->
       expect(r3b.regex).toEqual(new RegExp("^/search/([^/]+)/([^/]+)/?$"))
       expect(r3b.parameters).toEqual(["name", "age"])
 
+      r4 = router.createRoute("/folder/{type}/{*path}")
+      expect(r4.regex).toEqual(new RegExp("^/folder/([^/]+)/(.*)$"))
+      expect(r4.parameters).toEqual(["type", "path"])
+
     it "match routes", () ->
       r1 = router.createRoute("/")
       expect(r1.match("")).toBeNull()
@@ -44,6 +48,15 @@ define ["jquery", "../../src/core/RouterService.js"], ($, router) ->
       expect(r3.match("/search/tom/")).toBeNull()
       expect(r3.match("/search/tom/23")).toEqual({ name: "tom", age: "23" })
       expect(r3.match("/search/tom/23/")).toEqual({ name: "tom", age: "23" })
+
+    it "match catch all routes", () ->
+      r = router.createRoute("/folder/{type}/{*path}")
+      expect(r.match("/folder")).toBeNull()
+      expect(r.match("/folder/test/")).toEqual({ type: "test", path: "" })
+      expect(r.match("/folder/test/a")).toEqual({ type: "test", path: "a" })
+      expect(r.match("/folder/test/b/")).toEqual({ type: "test", path: "b/" })
+      expect(r.match("/folder/test/c/d")).toEqual({ type: "test", path: "c/d" })
+      expect(r.match("/folder/test/e/f/")).toEqual({ type: "test", path: "e/f/" })
 
   describe "RouterService", () ->
     it "match routes", () ->
