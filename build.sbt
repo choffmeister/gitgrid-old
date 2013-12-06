@@ -19,6 +19,7 @@ libraryDependencies ++= {
     "ch.qos.logback" % "logback-classic" % "1.0.13",
     "com.h2database" % "h2" % "1.2.127",
     "com.jcraft" % "jsch" % "0.1.50",
+    "com.typesafe" % "config" % "1.0.2",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
@@ -48,7 +49,7 @@ packMain := Map("asserthub" -> "de.choffmeister.asserthub.Application")
 
 gruntSettings
 
-packExtraClasspath := Map("asserthub" -> Seq("${PROG_HOME}/res"))
+packExtraClasspath := Map("asserthub" -> Seq("${PROG_HOME}/res", "${PROG_HOME}/conf"))
 
 pack <<= pack dependsOn(gruntDist)
 
@@ -59,6 +60,12 @@ pack <<= (baseDirectory, pack, streams) map { (baseDirectory: File, value: File,
   IO.delete(gruntProdPackDir)
   gruntProdPackDir.mkdirs()
   IO.copyDirectory(gruntProdTargetDir, gruntProdPackDir)
+  s.log.info("done.")
+  s.log.info("Copying config files")
+  val confSourceDir = baseDirectory / "src/main/resources"
+  val confTargetDir = baseDirectory / "target/pack/conf"
+  confTargetDir.mkdirs()
+  IO.copyFile(confSourceDir / "application.conf.dist", confTargetDir / "application.conf")
   s.log.info("done.")
   value
 }
