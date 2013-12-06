@@ -75,7 +75,7 @@ requirejs [
         log.info("Application initialization done")
         auth.changeState(user)
         for route in routes
-          router.addRoute(route[0], route[1], route[2])
+          router.addRoute(route[0], route[1], route[2], route[3])
         router.historyInterceptor()
         $(".cloak").removeClass("cloak")
       .fail (err) ->

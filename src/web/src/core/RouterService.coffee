@@ -98,12 +98,13 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
           @historyCount = 1
           history.pushState(null, null, "/")
 
-    addRoute: (pattern, templateName, viewModelType) =>
+    addRoute: (pattern, templateName, viewModelType, defaultParameters) =>
       route = @createRoute(pattern)
       @routes.push({
         route: route,
         templateName: templateName,
-        viewModelType: viewModelType
+        viewModelType: viewModelType,
+        defaultParameters: defaultParameters
       })
 
     matchRoute: (url) =>
@@ -114,7 +115,7 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
           return {
             templateName: route.templateName,
             viewModelType: route.viewModelType,
-            parameters: matching
+            parameters: $.extend({}, matching, route.defaultParameters or {})
           }
 
       return null
