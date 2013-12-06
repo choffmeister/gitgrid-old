@@ -64,7 +64,13 @@ class GitRepository(val dir: File) {
       case Some(oid) => oid.getName
       case _ => Option(jgit.getRef("refs/heads/" + refOrSha)) match {
         case Some(ref) => ref.getObjectId.getName
-        case _ => throw new Exception(s"Unknown commit '$refOrSha'")
+        case _ => Option(jgit.getRef("refs/tags/" + refOrSha)) match {
+          case Some(ref) => ref.getObjectId.getName
+          case _ => Option(jgit.getRef(refOrSha)) match {
+            case Some(ref) => ref.getObjectId.getName
+            case _ => throw new Exception(s"Unknown ref '$refOrSha'")
+          }
+        }
       }
     }
   }

@@ -1,6 +1,12 @@
 h1 Tree
 ol.breadcrumb(data-bind="foreach: pathParts")
-  li: a(href="#", data-bind="text: name, attr: { href: url }")
+    li: a(href="#", data-bind="text: name, attr: { href: url }")
+
+ul(data-bind="foreach: branches")
+    li: a(href="#", data-bind="click: function () { $parent.changeToBranch(name) }, text: name")
+
+ul(data-bind="foreach: tags")
+    li: a(href="#", data-bind="click: function () { $parent.changeToTag(name) }, text: name")
 
 ul.list-group(data-bind="foreach: tree.entries")
     // ko if: objectType == 'tree'

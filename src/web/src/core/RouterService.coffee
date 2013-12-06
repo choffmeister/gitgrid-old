@@ -69,8 +69,7 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
       if url != "#" and not @isAbsoluteUrl(url)
         event.preventDefault()
         log.trace("Intercepted link click to #{url}", event)
-        @historyCount += 1
-        history.pushState(null, null, url)
+        @redirect(url)
 
     historyInterceptor: () =>
       state = history.getState()
@@ -97,6 +96,10 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
         else
           @historyCount = 1
           history.pushState(null, null, "/")
+
+    redirect: (url) =>
+      @historyCount += 1
+      history.pushState(null, null, url)
 
     addRoute: (pattern, templateName, viewModelType, defaultParameters) =>
       route = @createRoute(pattern)
