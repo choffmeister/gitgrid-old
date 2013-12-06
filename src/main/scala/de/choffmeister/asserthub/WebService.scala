@@ -77,7 +77,7 @@ trait WebService extends HttpService {
             }
           }
         } ~
-        pathPrefix("git")(GitRoute.route) ~
+        pathPrefix("projects" / LongNumber / "git")(projectId => GitRoute.route(projectId)) ~
         CrudRoute.create("users", UserManager) ~
         CrudRoute.create("projects", ProjectManager) ~
         CrudRoute.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))

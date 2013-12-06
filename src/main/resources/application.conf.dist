@@ -1,8 +1,12 @@
 akka {
   loggers = ["akka.event.slf4j.Slf4jLogger"]
-  loglevel = "WARNING" # ERROR, WARNING, INFO, DEBUG
+  loglevel = "INFO" # ERROR, WARNING, INFO, DEBUG
 }
 
 spray.can.server {
-  request-timeout = 1s
+  request-timeout = 5s
+}
+
+asserthub {
+  repositoriesDir = "repositories"
 }

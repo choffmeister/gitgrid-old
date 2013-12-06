@@ -13,21 +13,19 @@ import org.eclipse.jgit.treewalk._
 import java.util.Date
 
 object GitRoute {
-  val dir = new File("/home/choffmeister/Development/asserthub/.git")
-
-  lazy val route: Route =
+  def route(projectId: Long): Route =
     path("commit" / Segment) { refOrSha =>
-      complete(GitRepository(dir)(repo => repo.commit(repo.resolve(refOrSha))))
+      complete(gitRepository(projectId)(repo => repo.commit(repo.resolve(refOrSha))))
     } ~
     path("tree" / Segment) { sha =>
-      complete(GitRepository(dir)(repo => repo.tree(repo.resolve(sha))))
+      complete(gitRepository(projectId)(repo => repo.tree(repo.resolve(sha))))
     } ~
     path("blob" / Segment) { sha =>
-      complete(GitRepository(dir)(repo => repo.blob(repo.resolve(sha)).readAsString(repo)))
+      complete(gitRepository(projectId)(repo => repo.blob(repo.resolve(sha)).readAsString(repo)))
     } ~
     path("tree" / Segment / RestPath) { (refOrSha, path) =>
       complete {
-        GitRepository(dir) { repo =>
+        gitRepository(projectId) { repo =>
           val commitId = repo.resolve(refOrSha)
           val commit = repo.commit(commitId)
           val tree = repo.traverse(commit, "/" + path).asInstanceOf[GitTree]
@@ -37,7 +35,7 @@ object GitRoute {
     } ~
     path("blob"/ Segment / RestPath) { (refOrSha, path) =>
       complete {
-        GitRepository(dir) { repo =>
+        gitRepository(projectId) { repo =>
           val commitId = repo.resolve(refOrSha)
           val commit = repo.commit(commitId)
           val blob = repo.traverse(commit, "/" + path).asInstanceOf[GitBlob]
@@ -45,4 +43,7 @@ object GitRoute {
         }
       }
     }
+
+  private def gitRepository[T](projectId: Long)(inner: GitRepository => T): T =
+    GitRepository(new File(Config.repositoriesDir, projectId.toString))(inner)
 }
