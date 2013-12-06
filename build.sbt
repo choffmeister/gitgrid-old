@@ -22,6 +22,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
+    "com.typesafe" % "config" % "1.0.2",
     "io.spray" % "spray-can" % sprayVersion,
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" % "spray-testkit" % sprayVersion % "test",
@@ -46,7 +47,7 @@ packMain := Map("asserthub" -> "de.choffmeister.asserthub.Application")
 
 gruntSettings
 
-packExtraClasspath := Map("asserthub" -> Seq("${PROG_HOME}/res"))
+packExtraClasspath := Map("asserthub" -> Seq("${PROG_HOME}/res", "${PROG_HOME}/conf"))
 
 pack <<= pack dependsOn(gruntDist)
 
@@ -57,6 +58,12 @@ pack <<= (baseDirectory, pack, streams) map { (baseDirectory: File, value: File,
   IO.delete(gruntProdPackDir)
   gruntProdPackDir.mkdirs()
   IO.copyDirectory(gruntProdTargetDir, gruntProdPackDir)
+  s.log.info("done.")
+  s.log.info("Copying config files")
+  val confSourceDir = baseDirectory / "src/main/resources"
+  val confTargetDir = baseDirectory / "target/pack/conf"
+  confTargetDir.mkdirs()
+  IO.copyFile(confSourceDir / "application.conf.dist", confTargetDir / "application.conf")
   s.log.info("done.")
   value
 }
