@@ -17,7 +17,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
       ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType, parameters) =>
-      return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType
+      return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType and parameters == @parameters
 
       deferred = $.Deferred()
       if @loading is false
@@ -53,6 +53,7 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
               @viewModel = newViewModel
               @templateName = templateName
               @viewModelType = viewModelType
+              @parameters = parameters
               newViewModel.activate() if newViewModel?
 
               @loading = false
