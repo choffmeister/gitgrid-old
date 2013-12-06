@@ -2,20 +2,21 @@ define ["underscore", "http", "api", "ViewModelBase"], (_, http, api, ViewModelB
   class RepositoryBrowsingViewModel extends ViewModelBase
     init: (args) =>
       @projectId = args.projectId
+      @refOrSha = args.refOrSha
       @path = RepositoryBrowsingViewModel.normalizePath(args.path)
       @pathParts = @splitPath(args.path)
       console.log(@pathParts)
 
       switch args.type
-        when "tree" then api.get("/projects/#{args.projectId}/git/tree/master#{@path}").then (data) => @tree = data
-        when "blob" then http.get("/api/projects/#{args.projectId}/git/blob/master#{@path}").then (data) => @blob = data
+        when "tree" then api.get("/projects/#{@projectId}/git/tree/#{@refOrSha}#{@path}").then (data) => @tree = data
+        when "blob" then http.get("/api/projects/#{@projectId}/git/blob/#{@refOrSha}#{@path}").then (data) => @blob = data
         else throw new Error("Unknown type '#{args.type}'")
 
     entryUrl: (entry) =>
       @url(entry.objectType, "#{@path}/#{entry.name}")
 
     url: (objectType, path) =>
-      RepositoryBrowsingViewModel.normalizePath("/projects/#{@projectId}/#{objectType}/master#{path}")
+      RepositoryBrowsingViewModel.normalizePath("/projects/#{@projectId}/#{objectType}/#{@refOrSha}#{path}")
 
     splitPath: (path) =>
       parts = RepositoryBrowsingViewModel.normalizePath(path).split("/")
