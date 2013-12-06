@@ -11,6 +11,9 @@ requirejs.config
     knockout: "../bower_components/knockout-dist/knockout"
     knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
     knockoutmapping: "../bower_components/knockout-mapping/build/output/knockout.mapping-latest.debug"
+    microplugin: "../bower_components/microplugin/src/microplugin"
+    sifter: "../bower_components/sifter/sifter"
+    selectize: "../bower_components/selectize/dist/js/selectize"
 
     # configuration
     config: "config"
@@ -52,6 +55,7 @@ requirejs [
   "knockoutmapping"
   "bootstrap"
   "bootstrapdatepicker"
+  "selectize"
   "log"
   "auth"
   "vm"
@@ -59,7 +63,7 @@ requirejs [
   "routes"
   "utils/SlideVisibleBinding"
   "utils/DateValueBinding"
-], ($, $transit, ko, koval, komap, bs, bsdatepicker, log, auth, vm, router, routes) ->
+], ($, $transit, ko, koval, komap, bs, bsdatepicker, selectize, log, auth, vm, router, routes) ->
   ko.validation.init
     insertMessages: false
     decorateElement: true

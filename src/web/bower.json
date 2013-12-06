@@ -12,6 +12,7 @@
     "knockout.validation": "~1.0.2",
     "requirejs": "~2.1.9",
     "roboto-fontface": "~0.1.2",
+    "selectize": "~0.8.5",
     "underscore": "~1.5.2"
   },
   "ignore": [
