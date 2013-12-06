@@ -161,7 +161,7 @@ class GitRepository(val dir: File) {
     parser.reset(reader, id)
     var list = List.empty[T]
     while (!parser.eof) {
-      list = inner(parser) :: list
+      list = list ::: List(inner(parser))
       parser.next()
     }
     list

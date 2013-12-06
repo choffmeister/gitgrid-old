@@ -1,5 +1,17 @@
 h1 Tree
-div(data-bind="text: '/' + args.path")
+ol.breadcrumb(data-bind="foreach: pathParts")
+  li: a(href="#", data-bind="text: name, attr: { href: url }")
 
 ul.list-group(data-bind="foreach: tree.entries")
-    li.list-group-item: a(href="#", data-bind="text: name, attr: { href: $parent.entryUrl($data) }")
+    // ko if: objectType == 'tree'
+    li.list-group-item
+        span.glyphicon.glyphicon-folder-open(style="margin-right: 0.5em;")
+        a(href="#", data-bind="text: name, attr: { href: $parent.entryUrl($data) }")
+    // /ko
+
+ul.list-group(data-bind="foreach: tree.entries")
+    // ko if: objectType == 'blob'
+    li.list-group-item
+        span.glyphicon.glyphicon-file(style="margin-right: 0.5em;")
+        a(href="#", data-bind="text: name, attr: { href: $parent.entryUrl($data) }")
+    // /ko

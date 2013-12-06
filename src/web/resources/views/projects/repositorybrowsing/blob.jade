@@ -1,4 +1,5 @@
 h1 Blob
-div(data-bind="text: '/' + args.path")
+ol.breadcrumb(data-bind="foreach: pathParts")
+  li: a(href="#", data-bind="text: name, attr: { href: url }")
 
 pre(data-bind="text: blob")
