@@ -46,15 +46,23 @@ mixin input-submit(label)
     +form-control-unlabeled
         button.btn(type="submit", attributes)= label
 
-mixin input-text-bind(id, label, placeholder, value)
+mixin form-control-bind(id, label, value)
     div(class="form-group", data-bind="validationElement: #{value}")
         label.control-label(for="#{id}")= label
+        block
+
+mixin input-text-bind(id, label, placeholder, value)
+    +form-control-bind(id, label, value)
         input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="value: #{value}", attributes)
         p.control-label(data-bind="validationMessage: #{value}")
 
+mixin input-textarea-bind(id, label, placeholder, rows, value)
+    +form-control-bind(id, label, value)
+        textarea.form-control(id="#{id}", name="#{id}", rows="#{rows}", placeholder="#{placeholder}", data-bind="value: #{value}", attributes)
+        p.control-label(data-bind="validationMessage: #{value}")
+
 mixin input-date-bind(id, label, placeholder, value)
-    div(class="form-group", data-bind="validationElement: #{value}")
-        label.control-label(for="#{id}")= label
+    +form-control-bind(id, label, value)
         div.input-group
             input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="datevalue: #{value}", attributes)
             span.input-group-btn
@@ -62,8 +70,12 @@ mixin input-date-bind(id, label, placeholder, value)
                     span.glyphicon.glyphicon-calendar
         p.control-label(data-bind="validationMessage: #{value}")
 
-mixin input-textarea-bind(id, label, placeholder, rows, value)
-    div(class="form-group", data-bind="validationElement: #{value}")
-        label.control-label(for="#{id}")= label
-        textarea.form-control(id="#{id}", name="#{id}", rows="#{rows}", placeholder="#{placeholder}", data-bind="value: #{value}", attributes)
+mixin input-select-bind(id, label, value, options)
+    +form-control-bind(id, label, value)
+        select(id="#{id}", data-bind="selectize: #{value}, selectizeOptions: #{options}")
+        p.control-label(data-bind="validationMessage: #{value}")
+
+mixin input-textmulti-bind(id, label, placeholder, value)
+    +form-control-bind(id, label, value)
+        input.form-control(type="text", id="#{id}", name="#{id}", placeholder="#{placeholder}", data-bind="selectizeMultiText: #{value}", attributes)
         p.control-label(data-bind="validationMessage: #{value}")

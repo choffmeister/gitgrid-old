@@ -3,7 +3,16 @@ include ../mixins/inputelements
 h1 Widget Test
 
 +input-text-bind("userName", "User name", "Your user name", "userName")
++input-text-bind("userName", "User name", "Your user name", "userName")
++input-textarea-bind("description", "Description", "A short description", 3, "description")
 +input-textarea-bind("description", "Description", "A short description", 3, "description")
 +input-date-bind("birthday", "Birthday", "Your birthday", "birthday")
++input-date-bind("birthday", "Birthday", "Your birthday", "birthday")
++input-select-bind("group", "Group", "group", "{1: 'First', 2: 'Second', 3: 'Third'}")
++input-select-bind("group", "Group", "group", "{1: 'First', 2: 'Second', 3: 'Third'}")
++input-textmulti-bind("tags", "Tags", "Choose some tags", "tags")
++input-textmulti-bind("tags", "Tags", "Choose some tags", "tags")
++input-select-bind("group2", "Group 2", "group2", "tags")
++input-select-bind("group2", "Group 2", "group2", "tags")
 
 pre(data-bind="text: json")
