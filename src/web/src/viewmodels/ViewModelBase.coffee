@@ -15,6 +15,7 @@ define ["jquery", "knockout", "history", "events"], ($, ko, history, events) ->
     # knockout helper methods
     observable: (value) -> ko.observable(value)
     observableArray: (array) -> ko.observableArray(array)
+    computed: (fn) -> ko.computed(fn)
 
     # event helper methods
     emitEvent: (namespace, name, data) -> events.emit(namespace, name, data)

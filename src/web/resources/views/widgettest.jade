@@ -1,0 +1,9 @@
+include ../mixins/inputelements
+
+h1 Widget Test
+
++input-text-bind("userName", "User name", "Your user name", "userName")
++input-textarea-bind("description", "Description", "A short description", 3, "description")
++input-date-bind("birthday", "Birthday", "Your birthday", "birthday")
+
+pre(data-bind="text: json")

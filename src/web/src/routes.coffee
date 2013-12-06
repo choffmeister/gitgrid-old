@@ -2,11 +2,13 @@ define [
   "viewmodels/TicketViewModels"
   "viewmodels/ProjectViewModels"
   "viewmodels/GitBrowserViewModel"
+  "viewmodels/WidgetTestViewModel"
   "viewmodels/ThrowingViewModel"
 ], (
   TicketViewModels
   ProjectViewModels
   GitBrowserViewModel
+  WidgetTestViewModel
   ThrowingViewModel
 ) -> [
   ["/", "dashboard"]
@@ -21,5 +23,6 @@ define [
   ["/projects/{projectId}", "projects/show", ProjectViewModels.ProjectViewModel]
   ["/projects/{projectId}/tree/{refOrSha}/{*path}", "git/tree", GitBrowserViewModel, { type: "tree" }]
   ["/projects/{projectId}/blob/{refOrSha}/{*path}", "git/blob", GitBrowserViewModel, { type: "blob" }]
+  ["/widgettest", "widgettest", WidgetTestViewModel]
   ["/throw", "throwing", ThrowingViewModel]
 ]
