@@ -1,9 +1,9 @@
 define ["jquery", "knockout", "ViewModelBase"], ($, ko, ViewModelBase) ->
   class WidgetTestViewModel extends ViewModelBase
     init: () ->
-      @foo = @observableArray(["1", "2", "3"])
       @userName = @observable("user")
       @description = @observable("My description.")
+      @isPrivate = @observable(true)
       @birthday = @observable("01.02.2013")
       @tags = @observableArray(["scala", "coffeescript"])
       @tags2 = @observableArray([2])
@@ -18,6 +18,8 @@ define ["jquery", "knockout", "ViewModelBase"], ($, ko, ViewModelBase) ->
             raw[k] = ko.unwrap(v)
         JSON.stringify(raw, true, 4)
 
+    submit: () =>
+      window.alert(@json())
+
     query: (query, callback) =>
-      console.log(query)
       callback([{ value: query + " One", text: query + " One" }, { value: query + " Two", text: query + " Two" }])

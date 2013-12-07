@@ -2,21 +2,24 @@ include ../mixins/inputelements
 
 h1 Widget Test
 
-+input-text-bind("userName1", "User name", "Your user name", "userName")
-+input-text-bind("userName2", "User name", "Your user name", "userName")
-+input-textarea-bind("description1", "Description", "A short description", 3, "description")
-+input-textarea-bind("description2", "Description", "A short description", 3, "description")
-+input-date-bind("birthday1", "Birthday", "Your birthday", "birthday")
-+input-date-bind("birthday2", "Birthday", "Your birthday", "birthday")
-
-+input-select-single-bind("group1", "Group", "Choose a group", "group", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
-+input-select-single-bind("group2", "Group", "Choose a group", "group", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
-+input-select-single-bind("group3", "Group 2", "Choose a group", "group2", "{ load: query }")
-+input-select-multi-bind("tags1", "Tags", "Choose some tags", "tags")
-+input-select-multi-bind("tags2", "Tags", "Choose some tags", "tags")
-+input-select-multi-bind("tags3", "Tags 2", "Choose some tags", "tags2", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
-+input-select-multi-bind("tags4", "Tags 2", "Choose some tags", "tags2", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
-+input-select-multi-bind("tags5", "Tags 3", "Choose some tags", "tags3", "{ load: query }")
-+input-select-multi-bind("tags6", "Tags 3", "Choose some tags", "tags3", "{ load: query }")
-
-pre(data-bind="text: json")
+form.row(data-bind="submit: submit")
+    div.col-md-4
+        +input-text-bind("userName1", "User name", "Your user name", "userName")
+        +input-text-bind("userName2", "User name", "Your user name", "userName")
+        +input-textarea-bind("description1", "Description", "A short description", 3, "description")
+        +input-textarea-bind("description2", "Description", "A short description", 3, "description")
+        +input-checkbox-buttons-bind("isPrivate", "Is private?", "Yes", "No", "isPrivate")
+        +input-date-bind("birthday1", "Birthday", "Your birthday", "birthday")
+        +input-date-bind("birthday2", "Birthday", "Your birthday", "birthday")
+    div.col-md-4
+        +input-select-single-bind("group1", "Group", "Choose a group", "group", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
+        +input-select-single-bind("group2", "Group", "Choose a group", "group", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
+        +input-select-single-bind("group3", "Group 2", "Choose a group", "group2", "{ load: query }")
+        +input-select-multi-bind("tags1", "Tags", "Choose some tags", "tags")
+        +input-select-multi-bind("tags2", "Tags", "Choose some tags", "tags")
+        +input-select-multi-bind("tags3", "Tags 2", "Choose some tags", "tags2", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
+        +input-select-multi-bind("tags4", "Tags 2", "Choose some tags", "tags2", "{ options: [{ value: 1, text: 'First' }, { value: 2, text: 'Second' }, { value: 3, text: 'Third' }] }")
+        +input-select-multi-bind("tags5", "Tags 3", "Choose some tags", "tags3", "{ load: query }")
+        +input-select-multi-bind("tags6", "Tags 3", "Choose some tags", "tags3", "{ load: query }")
+    div.col-md-4
+        pre(data-bind="text: json")
