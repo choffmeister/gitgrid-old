@@ -1,28 +1,24 @@
-define ["jquery", "knockout"], ($, ko) ->
+define ["jquery", "underscore", "knockout"], ($, _, ko) ->
   class ModelBase
     constructor: (data) ->
       # merge default values and given concrete data (concrete data wins)
-      raw = $.extend({}, @default(), data)
+      defaults = _.object(_.map(@config(), (def, name) -> [name, def.default]))
+      raw = $.extend({}, defaults, data)
 
       # wrap raw values in observables
       ko.mapping.fromJS(raw, {}, this)
 
       # annotate with validation rules
-      for property, rule of @validation()
+      validation = _.object(_.map(@config(), (def, name) -> [name, def.validation]))
+      for property, rule of validation
         this[property].extend(rule)
 
     fromJS: (data) => ko.mapping.fromJS(data, this)
     toJS: () => ko.mapping.toJS(this)
 
-    # Implement in subclasses and return a JSON object with default values.
-    # Note that only properties that are available in the default object or
-    # given via the data parameter in the constructor are converted from and
-    # to JSON.
-    default: () -> {}
-
-    # Implement in subclass and return a JSON object with key value pairs
-    # where keys are the property names and values the validation rules
-    validation: () -> {}
+    # Implement in subclasses to configure things like default values,
+    # validation etc.
+    config: () -> {}
 
     validate: () =>
       errors = ko.validation.group(this)

@@ -1,16 +1,19 @@
 define ["ModelBase"], (ModelBase) ->
   class Ticket extends ModelBase
-    default: () ->
-      id: 0
-      title: ""
-      description: ""
-      creatorId: 0
-      createdAt: new Date()
-
-    validation: () ->
+    config: () ->
+      id:
+        default: 0
       title:
-        required: true
-        maxLength: 128
+        default: ""
+        validation:
+          required: true
+          maxLength: 128
       description:
-        required: true
-        maxLength: 65536
+        default: ""
+        validation:
+          required: true
+          maxLength: 65536
+      creatorId:
+        default: 0
+      createdAt:
+        default: new Date()
