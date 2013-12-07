@@ -1,4 +1,4 @@
-define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/MainViewModel"], ($, bs, ko, log, events, http, MainViewModel) ->
+define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "ViewModelBase", "viewmodels/MainViewModel"], ($, bs, ko, log, events, cache, http, ViewModelBase, MainViewModel) ->
   class ViewManagerService
     constructor: () ->
       @templateCache = {}
@@ -174,19 +174,6 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
 
     loadTemplate: (templateName) =>
       log.debug("Load template #{templateName}")
-      deferred = $.Deferred()
-
-      template = @templateCache[templateName]
-      if not template?
-        http.get("/views/#{templateName}.html")
-          .done (template) =>
-            @templateCache[templateName] = template
-            deferred.resolve(template)
-          .fail (error) =>
-            deferred.reject(error)
-      else
-        deferred.resolve(template)
-
-      return deferred.promise()
+      cache.get("#{ViewManagerService}:templateName", () -> http.get("/views/#{templateName}.html"))
 
   return new ViewManagerService()
