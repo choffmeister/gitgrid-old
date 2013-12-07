@@ -1,7 +1,15 @@
 define ["config"], (config) ->
   logLevel = config.logging.verbosity
   levelMap = ["FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"]
-  consoleLevelMap = [
+  consoleLevelMap1 = [
+    (message) -> console.error(message),
+    (message) -> console.error(message),
+    (message) -> console.warn(message),
+    (message) -> console.info(message),
+    (message) -> console.log(message),
+    (message) -> console.log(message)
+  ]
+  consoleLevelMap2 = [
     (message, args) -> console.error(message, args),
     (message, args) -> console.error(message, args),
     (message, args) -> console.warn(message, args),
@@ -18,7 +26,11 @@ define ["config"], (config) ->
     error: (message, args...) => @message.apply(this, [1, message].concat(args))
     fatal: (message, args...) => @message.apply(this, [0, message].concat(args))
     message: (level, message, args...) =>
-      logMethod = consoleLevelMap[level]
-      logMethod("[#{levelMap[level]}] #{message}", args) if level <= logLevel
+      logMethod1 = consoleLevelMap1[level]
+      logMethod2 = consoleLevelMap2[level]
+      switch args.length
+        when 0 then logMethod1("[#{levelMap[level]}] #{message}") if level <= logLevel
+        when 1 then logMethod2("[#{levelMap[level]}] #{message}", args[0]) if level <= logLevel
+        else logMethod2("[#{levelMap[level]}] #{message}", args) if level <= logLevel
 
   return new LoggerService()
