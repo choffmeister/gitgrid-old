@@ -24,7 +24,6 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
       @pathParts = @splitPath(args.path)
       @refs = @observableArray([])
       @ref = @observable()
-      @ref.subscribe (newRef) => @change(newRef)
 
       req1 = switch @objectType
         when "tree" then api.get("/projects/#{@projectId}/git/tree/#{@refOrSha}#{@path}").then (data) => @tree = data
@@ -37,6 +36,10 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
           if left.name < right.name then -1
           else if left.name > right.name then 1
           else 0
+        currentRef = _.find @refs(), (r) => r.id == @refOrSha or r.name == "refs/heads/#{@refOrSha}" or r.name == "refs/tags/#{@refOrSha}"
+        if currentRef?
+          @ref(currentRef.name)
+        @ref.subscribe (newRef) => @change(newRef)
 
     change: (refOrSha) =>
       if (match = refOrSha.match(branchRegex))?
