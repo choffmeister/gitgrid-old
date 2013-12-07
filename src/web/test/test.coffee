@@ -8,7 +8,6 @@ requirejs.config
     jquery: "../bower_components/jquery/jquery"
     jquerytransit: "../bower_components/jquery.transit/jquery.transit"
     underscore: "../bower_components/underscore/underscore"
-    history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     knockout: "../bower_components/knockout-dist/knockout"
     knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
@@ -39,8 +38,6 @@ requirejs.config
       deps: ["jquery"]
     underscore:
       exports: "_"
-    history:
-      exports: "History"
     bootstrap:
       deps: ["jquery"]
 

@@ -1,4 +1,4 @@
-define ["jquery", "knockout", "history", "events"], ($, ko, history, events) ->
+define ["jquery", "knockout", "events"], ($, ko, events) ->
   class ViewModelBase
     # called from the ViewManager after creating the view model
     init: () => @done()
@@ -29,9 +29,6 @@ define ["jquery", "knockout", "history", "events"], ($, ko, history, events) ->
 
     # promise helper methods
     done: () -> $.Deferred().resolve().promise()
-
-    # redirect to new route
-    redirect: (url) => history.pushState(null, null, url)
 
     # validate view model
     validate: () =>

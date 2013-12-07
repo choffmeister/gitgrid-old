@@ -1,4 +1,4 @@
-define ["underscore", "api", "ViewModelBase", "../models/Ticket"], (_, api, ViewModelBase, Ticket) ->
+define ["underscore", "api", "router", "ViewModelBase", "../models/Ticket"], (_, api, router, ViewModelBase, Ticket) ->
   class TicketsViewModel extends ViewModelBase
     init: () =>
       api.get("/tickets").then (data) => @tickets = _.map(data, (t) -> new Ticket(t))
@@ -14,17 +14,17 @@ define ["underscore", "api", "ViewModelBase", "../models/Ticket"], (_, api, View
     add: () => if @validate()
       api.post("/tickets", @ticket.toJS()).then (ticket) =>
         @notifySuccess("Created", "Successfully created new ticket")
-        @redirect("/tickets/#{ticket.id}")
+        router.navigate("/#!/tickets/#{ticket.id}")
 
     modify: () => if @validate()
       api.put("/tickets/#{@ticket.id()}", @ticket.toJS()).then () =>
         @notifySuccess("Edited", "Successfully edited ticket")
-        @redirect("/tickets/#{@ticket.id()}")
+        router.navigate("/#!/tickets/#{@ticket.id()}")
 
     remove: () =>
       api.delete("/tickets/#{@ticket.id()}").then () =>
         @notifySuccess("Deleted", "Successfully deleted ticket")
-        @redirect("/tickets")
+        router.navigate("/#!/tickets")
 
   return {
     TicketsViewModel: TicketsViewModel

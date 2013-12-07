@@ -4,7 +4,6 @@
   "dependencies": {
     "bootstrap": "~3.0.3",
     "bootstrap-datepicker": "~1.2.0",
-    "history.js": "~1.8.0",
     "jquery": "~2.0.3",
     "jquery.transit": "~0.9.9",
     "knockout-dist": "~3.0.0",

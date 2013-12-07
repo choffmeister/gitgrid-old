@@ -1,5 +1,5 @@
 div.pull-right
-    a.btn.btn-default(href="/tickets/create")
+    a.btn.btn-default(href="#!/tickets/create")
         span.glyphicon.glyphicon-plus
         | Create
 
@@ -12,5 +12,5 @@ table.table
             td Title
     tbody(data-bind="foreach: tickets")
         tr
-            td: a(href="#", data-bind="text: id, attr: { href: '/tickets/' + id() }")
+            td: a(href="#", data-bind="text: id, attr: { href: '#!/tickets/' + id() }")
             td(data-bind="text: title")

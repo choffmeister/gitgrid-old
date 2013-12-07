@@ -5,7 +5,6 @@ requirejs.config
     jquery: "../bower_components/jquery/jquery"
     jquerytransit: "../bower_components/jquery.transit/jquery.transit"
     underscore: "../bower_components/underscore/underscore"
-    history: "../bower_components/history.js/scripts/bundled-uncompressed/html4+html5/native.history"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
     bootstrapdatepicker: "../bower_components/bootstrap-datepicker/js/bootstrap-datepicker"
     knockout: "../bower_components/knockout-dist/knockout"
@@ -41,8 +40,6 @@ requirejs.config
       deps: ["jquery"]
     underscore:
       exports: "_"
-    history:
-      exports: "History"
     bootstrap:
       deps: ["jquery"]
     bootstrapdatepicker:
@@ -80,9 +77,8 @@ requirejs [
       .done (user) ->
         log.info("Application initialization done")
         auth.changeState(user)
-        for route in routes
-          router.addRoute(route[0], route[1], route[2], route[3])
-        router.historyInterceptor()
+        router.addRoutes(routes)
+        router.handle()
         $(".cloak").removeClass("cloak")
       .fail (err) ->
         log.fatal("Error while trying to initialize the application", err)

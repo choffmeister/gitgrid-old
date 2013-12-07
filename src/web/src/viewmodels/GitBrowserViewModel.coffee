@@ -40,11 +40,11 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
 
     change: (refOrSha) =>
       if (match = refOrSha.match(branchRegex))?
-        router.redirect(@url(@objectType, match[1], @path))
+        router.navigate(@url(@objectType, match[1], @path))
       else if (match = refOrSha.match(tagRegex))?
-        router.redirect(@url(@objectType, match[1], @path))
+        router.navigate(@url(@objectType, match[1], @path))
       else if (match = refOrSha.match(shaRegex))?
-        router.redirect(@url(@objectType, sha, @path))
+        router.navigate(@url(@objectType, sha, @path))
       else
         @notifyError("Cannot parse reference or SHA '#{refOrSha}'")
 
@@ -52,7 +52,7 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
       @url(entry.objectType, @refOrSha, "#{@path}/#{entry.name}")
 
     url: (objectType, refOrSha, path) =>
-      res = normalizePath("/projects/#{@projectId}/#{objectType}/#{refOrSha}#{path}")
+      res = normalizePath("#!/projects/#{@projectId}/#{objectType}/#{refOrSha}#{path}")
       res = res + "/" if not path? or path == "" or path == "/"
       res
 

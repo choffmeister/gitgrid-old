@@ -84,28 +84,39 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "Vi
       @mainViewModel.init(this)
       ko.applyBindings(@mainViewModel, @body.get(0))
 
+    switchView: (newState) =>
+      if @state?
+        @state.deactivate()
+        @state.deinit()
+        @state = null
+      newState.activate()
+      @state = newState
+
     loadView: (templateName, viewModelType, parameters) =>
+      deferred = $.Deferred()
       newState = new ViewState(this, templateName, viewModelType, parameters)
       newState.init()
         .done () =>
-          if @state?
-            @state.deactivate()
-            @state.deinit()
-            @state = null
-          newState.activate()
-          @state = newState
+          @switchView(newState)
+          deferred.resolve(newState)
         .fail (err) =>
-          log.error("Error while loading view", err)
-          events.emit("notification", "error", { title: "Error", message: "Error while loading view" })
+          log.error("Error while loading view: #{@errorMessage(err)}", err)
+          events.emit("notification", "error", { title: "Error", message: "Error while loading view: #{@errorMessage(err)}" })
+          deferred.reject(err)
+      deferred.promise()
 
     loadDialogView: (modal, templateName, viewModelType, parameters) =>
+      deferred = $.Deferred()
       dialogState = new DialogViewState(this, templateName, viewModelType, parameters)
       dialogState.init()
         .done () =>
           dialogState.activate()
+          deferred.resolve(dialogState)
         .fail (err) =>
-          log.error("Error while loading dialog view", err)
-          events.emit("notification", "error", { title: "Error", message: "Error while loading view" })
+          log.error("Error while loading dialog view: #{@errorMessage(err)}", err)
+          events.emit("notification", "error", { title: "Error", message: "Error while loading dialog view: #{@errorMessage(err)}" })
+          deferred.reject(err)
+      deferred.promise()
 
     initViewModel: (viewModel, parameters) =>
       log.debug("Init view model", viewModel)
@@ -126,6 +137,9 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "Vi
           $.Deferred().reject(ex).promise()
       else
         $.Deferred().resolve().promise()
+
+    errorMessage: (error) ->
+      error.toString()
 
     loadTemplate: (templateName) ->
       log.debug("Load template", "templateName")

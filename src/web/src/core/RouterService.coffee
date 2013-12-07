@@ -1,4 +1,4 @@
-define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, vm) ->
+define ["jquery", "log", "events", "vm"], ($, log, events, vm) ->
   class Route
     constructor: (pattern) ->
       @compile(pattern)
@@ -53,53 +53,24 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
     init: () =>
       log.info("Initializing router")
       @routes = []
-      @historyCount = 0
-      @registerLinkInterceptor()
-      @registerHistoryInterceptor()
+      window.onhashchange = () => @handle()
 
-    registerLinkInterceptor: () =>
-      $("body").on "click", "a", @linkInterceptor
-
-    registerHistoryInterceptor: () =>
-      history.Adapter.bind window, "statechange", @historyInterceptor
-
-    linkInterceptor: (event) =>
-      url = $(event.currentTarget).attr("href")
-
-      if url != "#" and not @isAbsoluteUrl(url)
-        event.preventDefault()
-        log.trace("Intercepted link click to #{url}", event)
-        @redirect(url)
-
-    historyInterceptor: () =>
-      state = history.getState()
-      # fix issue in IE9
-      # TODO find proper solution (this solutions does not solve the problem of ugly urls prefixed with a dot)
-      url = state.hash.match(/^\.?(.*)$/)[1]
-      log.info("Changed location to #{url}", state)
-
-      matchingRoute = @matchRoute(url)
-      promise = null
-      if matchingRoute?
-        promise = vm.loadView(matchingRoute.templateName, matchingRoute.viewModelType, matchingRoute.parameters)
+    handle: () =>
+      deferred = $.Deferred()
+      url = @normalize(window.location.hash)
+      route = @matchRoute(url)
+      if route?
+        vm.loadView(route.templateName, route.viewModelType, route.parameters)
+          .done (state) =>
+            deferred.resolve()
+          .fail (err) =>
+            deferred.reject(err)
       else
-        log.warn("Unknown route #{state.hash}")
-        events.emit("notification", "warning", { title: "Unknown route", message: "The route '#{state.hash}' is unknown" })
-        deferred = $.Deferred()
-        deferred.reject()
-        promise = deferred.promise()
+        events.emit("notification", "warning", { title: "Unknown route", message: "The route '#{url}' is unknown" })
+        deferred.reject("Unknown route '#{url}'")
+      deferred.promise()
 
-      promise.fail (err) =>
-        if @historyCount > 0
-          @historyCount -= 1
-          history.back()
-        else
-          @historyCount = 1
-          history.pushState(null, null, "/")
-
-    redirect: (url) =>
-      @historyCount += 1
-      history.pushState(null, null, url)
+    createRoute: (pattern) => new Route(pattern)
 
     addRoute: (pattern, templateName, viewModelType, defaultParameters) =>
       route = @createRoute(pattern)
@@ -110,28 +81,28 @@ define ["jquery", "history", "log", "events", "vm"], ($, history, log, events, v
         defaultParameters: defaultParameters
       })
 
+    addRoutes: (routes) =>
+      for route in routes
+        @addRoute(route[0], route[1], route[2], route[3])
+
     matchRoute: (url) =>
       for route in @routes
         matching = route.route.match(url)
-
         if matching?
           return {
             templateName: route.templateName,
             viewModelType: route.viewModelType,
             parameters: $.extend({}, matching, route.defaultParameters or {})
           }
-
       return null
 
-    createRoute: (pattern) => new Route(pattern)
+    navigate: (url) =>
+      window.location.hash = "#!" + @normalize(url)
 
-    isAbsoluteUrl: (url) ->
-      absolutePatterns = [/^\w+:\/\//, /^mailto:/]
+    redirect: (url) => navigate(url)
 
-      for pattern in absolutePatterns
-        if url.match(pattern)?
-          return true
-
-      return false
+    normalize: (url) ->
+      match = url.match(/^\/?#?!?\/?(.*)$/)
+      return "/" + match[1].replace(/\/{2,}/g, "/")
 
   return new RouterService()

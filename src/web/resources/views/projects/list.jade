@@ -1,5 +1,5 @@
 div.pull-right
-    a.btn.btn-default(href="/projects/create")
+    a.btn.btn-default(href="#!/projects/create")
         span.glyphicon.glyphicon-plus
         | Create
 
@@ -12,5 +12,5 @@ table.table
             td Name
     tbody(data-bind="foreach: projects")
         tr
-            td: a(href="#", data-bind="text: id, attr: { href: '/projects/' + id() }")
+            td: a(href="#", data-bind="text: id, attr: { href: '#!/projects/' + id() }")
             td(data-bind="text: name")
