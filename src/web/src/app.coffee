@@ -22,6 +22,7 @@ requirejs.config
     # services
     log: "core/LoggerService"
     events: "core/EventService"
+    cache: "core/CacheService"
     http: "core/HttpService"
     api: "core/ApiService"
     auth: "core/AuthService"

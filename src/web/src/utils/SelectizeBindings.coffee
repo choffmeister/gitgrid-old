@@ -76,7 +76,6 @@ define ["jquery", "underscore", "knockout"], ($, _, ko) ->
       selectize.setValue(value)
 
     update: (element, valueAccessor, allBindings) ->
-      console.log("update")
       observable = valueAccessor()
       value = ko.unwrap(observable)
       selectize = element.selectize
