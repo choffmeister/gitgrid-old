@@ -22,7 +22,7 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
       @refOrSha = args.refOrSha
       @path = normalizePath(args.path)
       @pathParts = @splitPath(args.path)
-      @refs = @observableArray([])
+      @refs = []
       @ref = @observable()
 
       req1 = switch @objectType
@@ -36,7 +36,7 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
           if left.name < right.name then -1
           else if left.name > right.name then 1
           else 0
-        currentRef = _.find @refs(), (r) => r.id == @refOrSha or r.name == "refs/heads/#{@refOrSha}" or r.name == "refs/tags/#{@refOrSha}"
+        currentRef = _.find @refs, (r) => r.id == @refOrSha or r.name == "refs/heads/#{@refOrSha}" or r.name == "refs/tags/#{@refOrSha}"
         if currentRef?
           @ref(currentRef.name)
         @ref.subscribe (newRef) => @change(newRef)
