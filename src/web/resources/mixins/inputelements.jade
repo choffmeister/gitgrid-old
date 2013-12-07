@@ -70,9 +70,9 @@ mixin input-date-bind(id, label, placeholder, value)
                     span.glyphicon.glyphicon-calendar
         p.control-label(data-bind="validationMessage: #{value}")
 
-mixin input-select-bind(id, label, value, options)
+mixin input-select-bind(id, label, value, options, valueField, labelField)
     +form-control-bind(id, label, value)
-        select(id="#{id}", data-bind="selectize: #{value}, selectizeOptions: #{options}")
+        select(id="#{id}", data-bind="selectize: #{value}, selectizeOptions: #{options}, selectizeValueField: #{valueField}, selectizeLabelField: #{labelField}", attributes)
         p.control-label(data-bind="validationMessage: #{value}")
 
 mixin input-textmulti-bind(id, label, placeholder, value)

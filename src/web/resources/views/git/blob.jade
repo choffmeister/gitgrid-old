@@ -1,4 +1,11 @@
-h1 Blob
+include ../../mixins/inputelements
+
+div.row
+    div.col-xs-9
+        h1 Blob
+    div.col-xs-3
+        +input-select-bind("ref", "Reference", "ref", "refs", "'name'", "'name'")
+
 ol.breadcrumb(data-bind="foreach: pathParts")
     li: a(href="#", data-bind="text: name, attr: { href: url }")
 

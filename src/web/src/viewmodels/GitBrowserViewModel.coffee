@@ -1,4 +1,8 @@
 define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _, http, api, router, ViewModelBase) ->
+  branchRegex = /^refs\/heads\/(.*)$/
+  tagRegex = /^refs\/tags\/(.*)$/
+  shaRegex = /^[0-9a-f]{40}$/
+
   normalizePath = (url) =>
     # ensure starting with /
     url = if url.length > 0
@@ -18,31 +22,31 @@ define ["jquery", "underscore", "http", "api", "router", "ViewModelBase"], ($, _
       @refOrSha = args.refOrSha
       @path = normalizePath(args.path)
       @pathParts = @splitPath(args.path)
+      @refs = @observableArray([])
+      @ref = @observable()
+      @ref.subscribe (newRef) => @change(newRef)
 
       req1 = switch @objectType
         when "tree" then api.get("/projects/#{@projectId}/git/tree/#{@refOrSha}#{@path}").then (data) => @tree = data
         when "blob" then http.get("/api/projects/#{@projectId}/git/blob/#{@refOrSha}#{@path}").then (data) => @blob = data
         else throw new Error("Unknown type '#{@objectType}'")
-      req2 = api.get("/projects/#{@projectId}/git/branches").then (data) => @branches = data
-      req3 = api.get("/projects/#{@projectId}/git/tags").then (data) => @tags = data
-      $.when(req1, req2, req3)
+      req2 = api.get("/projects/#{@projectId}/git/branches").then (data) => _.each(data, (r) => @refs.push(r))
+      req3 = api.get("/projects/#{@projectId}/git/tags").then (data) =>  _.each(data, (r) => @refs.push(r))
+      $.when(req1, req2, req3).then () =>
+        @refs.sort (left, right) ->
+          if left.name < right.name then -1
+          else if left.name > right.name then 1
+          else 0
 
-    changeToSha: (sha) =>
-      router.redirect(@url(@objectType, sha, @path))
-
-    changeToBranch: (branch) =>
-      match = branch.match(/^refs\/heads\/(.*)$/)
-      if match?
+    change: (refOrSha) =>
+      if (match = refOrSha.match(branchRegex))?
         router.redirect(@url(@objectType, match[1], @path))
-      else
-        @notifyError("Branch '#{branch}' is not a valid branch name")
-
-    changeToTag: (tag) =>
-      match = tag.match(/^refs\/tags\/(.*)$/)
-      if match?
+      else if (match = refOrSha.match(tagRegex))?
         router.redirect(@url(@objectType, match[1], @path))
+      else if (match = refOrSha.match(shaRegex))?
+        router.redirect(@url(@objectType, sha, @path))
       else
-        @notifyError("Tag '#{tag}' is not a valid tag name")
+        @notifyError("Cannot parse reference or SHA '#{refOrSha}'")
 
     entryUrl: (entry) =>
       @url(entry.objectType, @refOrSha, "#{@path}/#{entry.name}")
