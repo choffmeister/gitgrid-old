@@ -1,148 +1,111 @@
 define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "ViewModelBase", "viewmodels/MainViewModel"], ($, bs, ko, log, events, cache, http, ViewModelBase, MainViewModel) ->
+  class ViewState
+    constructor: (@vms, @templateName, @viewModelType, @parameters) ->
+
+    init: () =>
+      log.debug("Init view state", @templateName)
+      deferred = $.Deferred()
+      @viewModel = if @viewModelType? then new @viewModelType() else new ViewModelBase()
+
+      $.when(@vms.loadTemplate(@templateName), @vms.initViewModel(@viewModel, @parameters))
+        .done (template) =>
+            try
+              @dom = @createDom(template)
+              ko.applyBindings(@viewModel, @dom.get(0))
+              deferred.resolve()
+            catch ex
+              @deinit()
+              deferred.reject(ex)
+        .fail (error) =>
+          deferred.reject(error)
+
+      deferred.promise()
+
+    deinit: () =>
+      log.debug("Deinit view state", this)
+      ko.cleanNode(@dom.get(0))
+      @destroyDom(@dom)
+      @vms.deinitViewModel(@viewModel)
+
+    activate: () =>
+      log.debug("Activate view state", this)
+      @viewModel.activate() if @viewModel?
+      $("#content").append(@dom)
+
+    deactivate: () =>
+      log.debug("Deactivate view state", this)
+      $("#shadow").append(@dom)
+      @viewModel.deactivate() if @viewModel?
+
+    createDom: (template) =>
+      log.debug("Create DOM for view state", this)
+      dom = $("<div>#{template}</div>")
+      $("#shadow").append(dom)
+      dom
+
+    destroyDom: (dom) =>
+      log.debug("Destroy DOM for view state", this)
+      $(dom).remove()
+
+  class DialogViewState extends ViewState
+    activate: () =>
+      @viewModel.result()
+      log.debug("Activate view state", this)
+      @dom.modal({ backdrop: true })
+
+    deactivate: () =>
+      @dom.modal("hide")
+
+    createDom: (template) =>
+      log.debug("Create DOM for view state", this)
+      dom = $(template)
+
+      dom.on "hidden.bs.modal", () =>
+        @deactivate()
+        @deinit()
+      dom.on "shown.bs.modal", () =>
+        @viewModel.activate() if @viewModel?
+      if @viewModel?
+        @viewModel.result().always () =>
+          dom.modal("hide")
+
+      $("#dialogs").append(dom)
+      dom
+
   class ViewManagerService
     constructor: () ->
-      @templateCache = {}
-      @viewModel = null
-      @templateName = null
-      @viewModelType = null
+      @state = null
       @loading = false
 
     init: () =>
       log.info("Initializing view manager")
       @body = $("body")
-      @content = $("#content")
-      @dialogs = $("#dialogs")
       @mainViewModel = new MainViewModel()
       @mainViewModel.init(this)
       ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType, parameters) =>
-      return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType and parameters == @parameters
-
-      deferred = $.Deferred()
-      if @loading is false
-        log.debug("Load view", templateName, viewModelType)
-        @loading = true
-        events.emit("viewmanager", "loadingview", true)
-
-        # instantiate view model if type was specified
-        oldViewModel = @viewModel
-        newViewModel = if viewModelType? then new viewModelType() else null
-
-        $.when(@loadTemplate(templateName), @initViewModel(newViewModel, parameters))
-          .done (template) =>
-            # generate DOM node
-            newDom = $("<div style=\"display: none;\">#{template}</div>")
-
-            try
-              # apply bindings
-              $("body").append(newDom)
-              @applyViewModel(newViewModel, newDom)
-
-              # remove old view
-              oldDom = $(@content.children("div"))
-              oldDom.css("display", "none")
-              oldViewModel.deactivate() if oldViewModel?
-              @unapplyViewModel(oldViewModel, oldDom)
-              @deinitViewModel(oldViewModel)
-              oldDom.remove()
-
-              # add new view
-              @content.append(newDom)
-              newDom.css("display", "block")
-              @viewModel = newViewModel
-              @templateName = templateName
-              @viewModelType = viewModelType
-              @parameters = parameters
-              newViewModel.activate() if newViewModel?
-
-              @loading = false
-              events.emit("viewmanager", "loadingview", false)
-              deferred.resolve()
-            catch ex
-              newDom.remove()
-              log.error("Error while applying view: #{ex.toString()}", ex)
-              @loading = false
-              events.emit("viewmanager", "loadingview", false)
-              events.emit("notification", "error", { title: "Error", message: "Error while loading view" })
-              deferred.reject(ex)
-
-          .fail (err) =>
-            log.error("Error while loading view: #{err.toString()}", err)
-            @loading = false
-            events.emit("viewmanager", "loadingview", false)
-            events.emit("notification", "error", { title: "Error", message: "Error while loading view" })
-            deferred.reject(err)
-      else
-        log.error("Already loading a view")
-        events.emit("notification", "warning", { title: "Warning", message: "Already loading a view" })
-        deferred.reject()
-
-      return deferred.promise()
+      newState = new ViewState(this, templateName, viewModelType, parameters)
+      newState.init()
+        .done () =>
+          if @state?
+            @state.deactivate()
+            @state.deinit()
+            @state = null
+          newState.activate()
+          @state = newState
+        .fail (err) =>
+          log.error("Error while loading view", err)
+          events.emit("notification", "error", { title: "Error", message: "Error while loading view" })
 
     loadDialogView: (modal, templateName, viewModelType, parameters) =>
-      log.debug("Load dialog view", templateName, viewModelType)
-      deferred = $.Deferred()
-
-      # instantiate view model if type was specified
-      dialogViewModel = if viewModelType? then new viewModelType() else null
-
-      # load template and initialize view model
-      $.when(@loadTemplate(templateName), @initViewModel(dialogViewModel, parameters))
-        .done (template) =>
-          @openDialogView(modal, template, dialogViewModel)
-            .done (res) -> deferred.resolve(res)
-            .fail (err) -> deferred.reject(err)
-
+      dialogState = new DialogViewState(this, templateName, viewModelType, parameters)
+      dialogState.init()
+        .done () =>
+          dialogState.activate()
         .fail (err) =>
-          log.error("Error while creating dialog view: #{err.toString()}", err)
-          events.emit("notification", "error", { title: "Error", message: "Error while creating dialog view" })
-          deferred.reject(err)
-
-      return deferred.promise()
-
-    openDialogView: (backdrop, template, viewModel) =>
-      deferred = $.Deferred()
-
-      try
-        # wrap dialog template and append to DOM
-        dialog = $(template)
-        wrapper = $("<div></div>").append(dialog)
-        @dialogs.append(wrapper)
-
-        # apply view model
-        @applyViewModel(viewModel, dialog)
-
-        # show dialog
-        dialog.modal({ backdrop: backdrop })
-
-        # register to view models result promise and hide dialog if promise is resolved or rejected
-        if viewModel?
-          viewModel.result().always () =>
-            dialog.modal("hide")
-
-        # register to dialogs hide event and remove dialog from DOM after closing
-        dialog.on "hidden.bs.modal", () =>
-          viewModel.deactivate() if viewModel?
-          @unapplyViewModel(viewModel, wrapper)
-          @deinitViewModel(viewModel)
-          wrapper.remove()
-
-        # register to dialogs show event and notify view model when the view is ready and in place
-        dialog.on "shown.bs.modal", () =>
-          viewModel.activate() if viewModel?
-
-        if viewModel?
-          viewModel.result()
-            .done((res) -> deferred.resolve(res))
-            .fail((err) -> deferred.reject(err))
-        else
-          dialog.on "hidden.bs.modal", () -> deferred.resolve()
-      catch ex
-        log.error("Error while opening dialog view: #{ex.toString()}", ex)
-        deferred.reject(ex)
-
-      return deferred.promise()
+          log.error("Error while loading dialog view", err)
+          events.emit("notification", "error", { title: "Error", message: "Error while loading view" })
 
     initViewModel: (viewModel, parameters) =>
       log.debug("Init view model", viewModel)
@@ -164,16 +127,8 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "Vi
       else
         $.Deferred().resolve().promise()
 
-    applyViewModel: (viewModel, wrapper) =>
-      log.debug("Apply view model", viewModel)
-      ko.applyBindings(viewModel, wrapper.get(0))
-
-    unapplyViewModel: (viewModel, wrapper) =>
-      log.debug("Unapply view model", viewModel)
-      ko.cleanNode(wrapper.get(0))
-
-    loadTemplate: (templateName) =>
-      log.debug("Load template #{templateName}")
-      cache.get("#{ViewManagerService}:templateName", () -> http.get("/views/#{templateName}.html"))
+    loadTemplate: (templateName) ->
+      log.debug("Load template", "templateName")
+      cache.get("templates:#{templateName}", () -> http.get("/views/#{templateName}.html"))
 
   return new ViewManagerService()
