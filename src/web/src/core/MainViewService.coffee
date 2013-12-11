@@ -1,7 +1,6 @@
-define ["jquery", "auth", "ViewModelBase", "viewmodels/LoginDialogViewModel"], ($, auth, ViewModelBase, LoginDialogViewModel) ->
-  class MainViewModel extends ViewModelBase
-    init: (viewManager) =>
-      @viewManager = viewManager
+define ["jquery", "knockout", "auth", "vm", "ViewModelBase", "viewmodels/LoginDialogViewModel"], ($, ko, auth, vm, ViewModelBase, LoginDialogViewModel) ->
+  class MainViewService extends ViewModelBase
+    init: () =>
       @isAuthenticated = @observable(false)
       @messages = @observableArray([])
       @notifications = @observableArray([])
@@ -15,10 +14,11 @@ define ["jquery", "auth", "ViewModelBase", "viewmodels/LoginDialogViewModel"], (
       @listenEvent("notification", "warning", (data) => @addNotification("warning", data.title, data.message))
       @listenEvent("notification", "error", (data) => @addNotification("danger", data.title, data.message))
       @listenEvent("global", "keydown", (event) => @clearNotifications() if event.keyCode == 27)
+      ko.applyBindings(this, $("body").get(0))
       @done()
 
     login: () =>
-      @viewManager.loadDialogView(true, "logindialog", LoginDialogViewModel)
+      vm.loadDialogView(true, "logindialog", LoginDialogViewModel)
 
     logout: () =>
       auth.unauthenticate()
@@ -35,3 +35,5 @@ define ["jquery", "auth", "ViewModelBase", "viewmodels/LoginDialogViewModel"], (
     showNotification: (elem) -> $(elem).css({ opacity: 0, scale: 0.5 }).transition({ opacity: 1, scale: 1 }, 500)
     hideNotification: (elem) -> $(elem).transition({ opacity: 0, scale: 1.5 }, 500, () -> $(elem).remove())
     clearNotifications: () => @notifications.removeAll()
+
+  return new MainViewService()

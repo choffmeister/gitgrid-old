@@ -1,4 +1,4 @@
-define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/MainViewModel"], ($, bs, ko, log, events, http, MainViewModel) ->
+define ["jquery", "bootstrap", "knockout", "log", "events", "http"], ($, bs, ko, log, events, http) ->
   class ViewManagerService
     constructor: () ->
       @templateCache = {}
@@ -12,9 +12,6 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "http", "viewmodels/
       @body = $("body")
       @content = $("#content")
       @dialogs = $("#dialogs")
-      @mainViewModel = new MainViewModel()
-      @mainViewModel.init(this)
-      ko.applyBindings(@mainViewModel, @body.get(0))
 
     loadView: (templateName, viewModelType, parameters) =>
       return $.Deferred().resolve() if templateName == @templateName and viewModelType == @viewModelType and parameters == @parameters
