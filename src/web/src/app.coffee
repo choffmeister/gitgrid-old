@@ -28,6 +28,7 @@ requirejs.config
     auth: "core/AuthService"
     router: "core/RouterService"
     vm: "core/ViewManagerService"
+    mainview: "core/MainViewService"
 
     # base viewmodels
     ViewModelBase: "viewmodels/ViewModelBase"
@@ -62,10 +63,16 @@ requirejs [
   "vm"
   "router"
   "routes"
+  "mainview"
   "utils/SlideVisibleBinding"
   "utils/DateValueBinding"
+<<<<<<< HEAD
   "utils/SelectizeBinding"
 ], ($, $transit, ko, koval, komap, bs, bsdatepicker, selectize, log, auth, vm, router, routes) ->
+=======
+  "utils/SelectizeBindings"
+], ($, $transit, ko, koval, komap, bs, bsdatepicker, selectize, log, auth, vm, router, routes, mainview) ->
+>>>>>>> origin/master
   ko.validation.init
     insertMessages: false
     decorateElement: true
@@ -76,7 +83,7 @@ requirejs [
 
   # bootstrap application
   $(document).ready () ->
-    $.when(auth.checkState(), vm.init(), router.init())
+    $.when(auth.checkState(), vm.init(), router.init(), mainview.init())
       .done (user) ->
         log.info("Application initialization done")
         auth.changeState(user)

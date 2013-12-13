@@ -1,4 +1,4 @@
-define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "ViewModelBase", "viewmodels/MainViewModel"], ($, bs, ko, log, events, cache, http, ViewModelBase, MainViewModel) ->
+define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "ViewModelBase"], ($, bs, ko, log, events, cache, http, ViewModelBase) ->
   class ViewState
     constructor: (@vms, @templateName, @viewModelType, @parameters) ->
 
@@ -80,9 +80,8 @@ define ["jquery", "bootstrap", "knockout", "log", "events", "cache", "http", "Vi
     init: () =>
       log.info("Initializing view manager")
       @body = $("body")
-      @mainViewModel = new MainViewModel()
-      @mainViewModel.init(this)
-      ko.applyBindings(@mainViewModel, @body.get(0))
+      @content = $("#content")
+      @dialogs = $("#dialogs")
 
     loadView: (templateName, viewModelType, parameters) =>
       newState = new ViewState(this, templateName, viewModelType, parameters)
