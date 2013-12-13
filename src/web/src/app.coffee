@@ -66,13 +66,8 @@ requirejs [
   "mainview"
   "utils/SlideVisibleBinding"
   "utils/DateValueBinding"
-<<<<<<< HEAD
   "utils/SelectizeBinding"
-], ($, $transit, ko, koval, komap, bs, bsdatepicker, selectize, log, auth, vm, router, routes) ->
-=======
-  "utils/SelectizeBindings"
 ], ($, $transit, ko, koval, komap, bs, bsdatepicker, selectize, log, auth, vm, router, routes, mainview) ->
->>>>>>> origin/master
   ko.validation.init
     insertMessages: false
     decorateElement: true
