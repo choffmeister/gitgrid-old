@@ -2,14 +2,14 @@ define ["jquery", "underscore", "knockout"], ($, _, ko) ->
   class ModelBase
     constructor: (data) ->
       # merge default values and given concrete data (concrete data wins)
-      defaults = _.object(_.map(@config(), (def, name) -> [name, def.default]))
-      raw = $.extend({}, defaults, data)
+      defaultValues = _.object(_.map(@meta(), (def, name) -> [name, def.defaultValue]))
+      raw = $.extend({}, defaultValues, data)
 
       # wrap raw values in observables
       ko.mapping.fromJS(raw, {}, this)
 
       # annotate with validation rules
-      validation = _.object(_.map(@config(), (def, name) -> [name, def.validation]))
+      validation = _.object(_.map(@meta(), (def, name) -> [name, def.validation]))
       for property, rule of validation
         this[property].extend(rule)
 
@@ -18,7 +18,7 @@ define ["jquery", "underscore", "knockout"], ($, _, ko) ->
 
     # Implement in subclasses to configure things like default values,
     # validation etc.
-    config: () -> {}
+    meta: () -> {}
 
     validate: () =>
       errors = ko.validation.group(this)
