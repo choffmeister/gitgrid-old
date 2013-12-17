@@ -70,6 +70,16 @@ mixin input-date-bind(id, label, placeholder, value)
                     span.glyphicon.glyphicon-calendar
         p.control-label(data-bind="validationMessage: #{value}")
 
+mixin input-checkbox-buttons-bind(id, label, nameOn, nameOff, value)
+    +form-control(id, label)
+        div.btn-group.btn-group-justified
+            label.btn.btn-default(data-bind="css: { active: #{value}() == true }")
+                input(type="radio", id="#{id}-on", name="#{id}", data-bind="checked: #{value}, checkedValue: true", style="display: none;")
+                | #{nameOn}
+            label.btn.btn-default(data-bind="css: { active: #{value}() == false }")
+                input(type="radio", id="#{id}-off", name="#{id}", data-bind="checked: #{value}, checkedValue: false", style="display: none;")
+                | #{nameOff}
+
 mixin input-select-single-bind(id, label, placeholder, value, options)
     +form-control-bind(id, label, value)
         select(id="#{id}", placeholder="#{placeholder}", data-bind="selectize: #{value}, selectizeOptions: #{options}", attributes)
