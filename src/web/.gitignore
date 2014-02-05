@@ -4,6 +4,3 @@ npm_debug.log
 
 # Bower stuff
 bower_components/
-
-# build target
-target/

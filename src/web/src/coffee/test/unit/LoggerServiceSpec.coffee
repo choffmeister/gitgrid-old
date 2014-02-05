@@ -1,4 +1,4 @@
-define ["../../js/core/LoggerService.js"], (log) ->
+define ["../../core/LoggerService.js"], (log) ->
   describe "LoggerService", () ->
     it "should log simple messages", () ->
       log.trace("trace")

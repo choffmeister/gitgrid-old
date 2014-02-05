@@ -1,8 +1,5 @@
-tests = Object.keys(window.__karma__.files).filter (file) =>
-  return /^\/base\/js-test\/unit\/.*Spec\.js$/.test(file)
-
 requirejs.config
-  baseUrl: "/base/js"
+  baseUrl: "/js"
   paths:
     # external libraries
     jquery: "../bower_components/jquery/jquery"
@@ -49,6 +46,42 @@ requirejs.config
     bootstrapdatepicker:
       deps: ["bootstrap"]
 
-  deps: tests
+requirejs [
+  "jquery"
+  "jquerytransit"
+  "knockout"
+  "knockoutvalidation"
+  "knockoutmapping"
+  "bootstrap"
+  "bootstrapdatepicker"
+  "selectize"
+  "log"
+  "auth"
+  "vm"
+  "router"
+  "routes"
+  "mainview"
+  "utils/SlideVisibleBinding"
+  "utils/DateValueBinding"
+  "utils/SelectizeBinding"
+], ($, $transit, ko, koval, komap, bs, bsdatepicker, selectize, log, auth, vm, router, routes, mainview) ->
+  ko.validation.init
+    insertMessages: false
+    decorateElement: true
+    errorElementClass: "has-error"
+    grouping:
+      deep: true
+  ko.mapping = komap
 
-  callback: window.__karma__.start
+  # bootstrap application
+  $(document).ready () ->
+    $.when(auth.checkState(), vm.init(), router.init(), mainview.init())
+      .done (user) ->
+        log.info("Application initialization done")
+        auth.changeState(user)
+        router.addRoutes(routes)
+        router.handle()
+        $(".cloak").removeClass("cloak")
+      .fail (err) ->
+        log.fatal("Error while trying to initialize the application", err)
+        window.alert("Error while trying to initialize the application")

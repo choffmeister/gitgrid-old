@@ -1,4 +1,4 @@
-define ["../../js/core/RouterService.js"], (router) ->
+define ["jquery", "../../core/RouterService.js"], ($, router) ->
   describe "Route", () ->
     it "compile routes", () ->
       r1 = router.createRoute("/")

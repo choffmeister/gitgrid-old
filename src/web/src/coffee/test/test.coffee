@@ -1,5 +1,5 @@
 tests = Object.keys(window.__karma__.files).filter (file) =>
-  return /^\/base\/js-test\/unit\/.*Spec\.js$/.test(file)
+  return /^\/base\/js\/test\/unit\/.*Spec\.js$/.test(file)
 
 requirejs.config
   baseUrl: "/base/js"
@@ -9,13 +9,9 @@ requirejs.config
     jquerytransit: "../bower_components/jquery.transit/jquery.transit"
     underscore: "../bower_components/underscore/underscore"
     bootstrap: "../bower_components/bootstrap/dist/js/bootstrap"
-    bootstrapdatepicker: "../bower_components/bootstrap-datepicker/js/bootstrap-datepicker"
     knockout: "../bower_components/knockout-dist/knockout"
     knockoutvalidation: "../bower_components/knockout.validation/Dist/knockout.validation"
     knockoutmapping: "../bower_components/knockout-mapping/build/output/knockout.mapping-latest.debug"
-    microplugin: "../bower_components/microplugin/src/microplugin"
-    sifter: "../bower_components/sifter/sifter"
-    selectize: "../bower_components/selectize/dist/js/selectize"
 
     # configuration
     config: "config"
@@ -24,13 +20,11 @@ requirejs.config
     # services
     log: "core/LoggerService"
     events: "core/EventService"
-    cache: "core/CacheService"
     http: "core/HttpService"
     api: "core/ApiService"
     auth: "core/AuthService"
     router: "core/RouterService"
     vm: "core/ViewManagerService"
-    mainview: "core/MainViewService"
 
     # base viewmodels
     ViewModelBase: "viewmodels/ViewModelBase"
@@ -46,8 +40,6 @@ requirejs.config
       exports: "_"
     bootstrap:
       deps: ["jquery"]
-    bootstrapdatepicker:
-      deps: ["bootstrap"]
 
   deps: tests
 

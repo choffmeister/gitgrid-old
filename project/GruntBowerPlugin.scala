@@ -15,35 +15,11 @@ object GruntBowerPlugin extends Plugin {
   val gruntBowerWebDir = settingKey[File]("grunt-webdir")
 
   lazy val gruntSettings = Seq[Def.Setting[_]](
-    grunt := {
-      val webDir: File = gruntBowerWebDir.value
-
-      runGrunt(webDir, "default")
-    },
-
-    gruntTest := {
-      val webDir: File = gruntBowerWebDir.value
-
-      runGrunt(webDir, "test")
-    },
-
-    gruntDist := {
-      val webDir: File = gruntBowerWebDir.value
-
-      runGrunt(webDir, "prod-build")
-    },
-
-    gruntStart := {
-      val webDir: File = gruntBowerWebDir.value
-
-      startGrunt(webDir, "default")
-    },
-
-    gruntStop := {
-      val webDir: File = gruntBowerWebDir.value
-
-      stopGrunt()
-    },
+    grunt := { runGrunt(gruntBowerWebDir.value, "default") },
+    gruntTest := { runGrunt(gruntBowerWebDir.value, "test") },
+    gruntDist := { runGrunt(gruntBowerWebDir.value, "dist") },
+    gruntStart := { startGrunt(gruntBowerWebDir.value, "default") },
+    gruntStop := { stopGrunt() },
 
     gruntBowerVersions := {
       def getVersion(name: String): Option[VersionString] = {

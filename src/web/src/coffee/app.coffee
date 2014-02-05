@@ -1,5 +1,5 @@
 requirejs.config
-  baseUrl: "/src"
+  baseUrl: "/js"
   paths:
     # external libraries
     jquery: "../bower_components/jquery/jquery"

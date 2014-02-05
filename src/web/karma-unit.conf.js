@@ -5,10 +5,10 @@ module.exports = function (config) {
 
 		// list of files / patterns to load in the browser
 		files: [
-			'test/test.js',
+			'js-test/test.js',
 			{pattern: 'bower_components/**/*.js', included: false},
-			{pattern: 'src/**/*.js', included: false},
-			{pattern: 'test/unit/**/*Spec.js', included: false}
+			{pattern: 'js/**/*.js', included: false},
+			{pattern: 'js-test/unit/**/*Spec.js', included: false}
 		],
 
 		frameworks: [
@@ -18,7 +18,7 @@ module.exports = function (config) {
 
 		// list of files to exclude
 		exclude: [
-		  'src/app.js'
+		  'js/app.js'
 		],
 
 		// test results reporter to use

@@ -1,4 +1,4 @@
-define ["../../js/core/EventService.js"], (events) ->
+define ["../../core/EventService.js"], (events) ->
   describe "EventService", () ->
     it "should notify listeners", () ->
       notificationData = null

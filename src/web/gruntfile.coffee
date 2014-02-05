@@ -11,31 +11,31 @@ module.exports = (grunt) ->
     requirejs:
       prod:
         options:
-          baseUrl: "#{targetDev}/src"
-          mainConfigFile: "#{targetDev}/src/app.js"
+          baseUrl: "#{targetDev}/js"
+          mainConfigFile: "#{targetDev}/js/app.js"
           name: "app"
-          out: "#{targetProd}/src/app.js"
+          out: "#{targetProd}/js/app.js"
           optimize: "uglify"
 
     coffee:
       dev:
         expand: true
-        cwd: "src"
+        cwd: "src/coffee"
         src: ["**/*.coffee"]
-        dest: "#{targetDev}/src"
+        dest: "#{targetDev}/js"
         ext: ".js"
       test:
         expand: true
         cwd: "test"
         src: ["**/*.coffee"]
-        dest: "#{targetDev}/test"
+        dest: "#{targetDev}/js-test"
         ext: ".js"
 
     jade:
       dev:
         files: [
           expand: true
-          cwd: "resources"
+          cwd: "src/jade"
           src: "**/*.jade"
           dest: "#{targetDev}"
           ext: ".html"
@@ -48,7 +48,7 @@ module.exports = (grunt) ->
       prod:
         files: [
           expand: true
-          cwd: "resources"
+          cwd: "src/jade"
           src: "**/*.jade"
           dest: "#{targetProd}"
           ext: ".html"
@@ -59,36 +59,38 @@ module.exports = (grunt) ->
     less:
       dev:
         files: [
-          src: "resources/styles/main.less"
-          dest: "#{targetDev}/styles/main.css"
+          src: "src/less/main.less"
+          dest: "#{targetDev}/css/main.css"
         ]
         options:
-          paths: ["resources/styles"]
-          yuicompress: false
+          paths: ["src/less"]
+          compress: false
 
       prod:
         files: [
-          src: "resources/styles/main.less"
-          dest: "#{targetProd}/styles/main.css"
+          src: "src/less/main.less"
+          dest: "#{targetProd}/css/main.css"
         ]
         options:
-          paths: ["resources/styles"]
-          yuicompress: true
+          paths: ["src/less"]
+          compress: true
 
     copy:
       dev:
         files: [
-          src: "resources/favicon.ico"
-          dest: "#{targetDev}/favicon.ico"
-        ,
           expand: true
-          cwd: "resources/images"
+          cwd: "src/resources"
           src: "**/*.*"
-          dest: "#{targetDev}/images"
+          dest: "#{targetDev}"
         ]
 
       prod:
         files: [
+          expand: true
+          cwd: "src/resources"
+          src: "**/*.*"
+          dest: "#{targetProd}"
+        ,
           expand: true
           cwd: "bower_components"
           src: "**/*"
@@ -98,20 +100,6 @@ module.exports = (grunt) ->
           cwd: "bower_components"
           src: "**/*"
           dest: "#{targetProd}/bower_components"
-        ,
-          src: "resources/favicon.ico"
-          dest: "#{targetProd}/favicon.ico"
-        ,
-          src: "resources/robots.txt"
-          dest: "#{targetProd}/robots.txt"
-        ,
-          src: "resources/.htaccess"
-          dest: "#{targetProd}/.htaccess"
-        ,
-          expand: true
-          cwd: "resources/images"
-          src: "**/*.*"
-          dest: "#{targetProd}/images"
         ]
 
       test:
@@ -161,19 +149,19 @@ module.exports = (grunt) ->
         livereload: true
 
       coffeedev:
-        files: ["src/**/*.coffee"]
+        files: ["src/coffee/**/*.coffee"]
         tasks: ["coffee:dev"]
 
       jade:
-        files: ["resources/**/*.jade"]
+        files: ["src/jade/**/*.jade"]
         tasks: ["jade:dev"]
 
       less:
-        files: ["resources/styles/**/*.less"]
+        files: ["src/less/**/*.less"]
         tasks: ["less:dev"]
 
       images:
-        files: ["resources/images/**/*.*"]
+        files: ["src/resources/**/*.*"]
         tasks: ["copy:dev"]
 
     karma:
@@ -190,9 +178,7 @@ module.exports = (grunt) ->
       prod: ["#{targetProd}/"]
 
   require("matchdep").filterDev("grunt-*").forEach grunt.loadNpmTasks
-  grunt.registerTask "dev-build", ["clean:dev", "coffee:dev", "jade:dev", "less:dev", "copy:dev"]
-  grunt.registerTask "prod-build", ["dev-build", "clean:prod", "copy:prod", "requirejs:prod", "jade:prod", "less:prod"]
-  grunt.registerTask "test-build", ["dev-build", "coffee:test", "copy:test"]
-  grunt.registerTask "dev-server", ["dev-build", "configureProxies", "connect:dev"]
-  grunt.registerTask "test", ["test-build", "karma:unit"]
-  grunt.registerTask "default", ["dev-server", "watch"]
+  grunt.registerTask "dev", ["clean:dev", "coffee:dev", "jade:dev", "less:dev", "copy:dev"]
+  grunt.registerTask "test", ["clean:dev", "coffee:dev", "coffee:test", "copy:test", "karma:unit"]
+  grunt.registerTask "dist", ["dev", "clean:prod", "copy:prod", "requirejs:prod", "jade:prod", "less:prod"]
+  grunt.registerTask "default", ["dev", "configureProxies", "connect:dev", "watch"]
