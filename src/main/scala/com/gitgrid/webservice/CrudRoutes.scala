@@ -1,4 +1,4 @@
-package com.gitgrid.routes
+package com.gitgrid.webservice
 
 import com.gitgrid.models._
 import com.gitgrid.managers.AuthManager

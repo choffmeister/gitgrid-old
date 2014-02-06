@@ -4,7 +4,7 @@ import java.security.SecureRandom
 import scala.collection.mutable.Map
 import org.apache.commons.codec.binary.Base64
 import com.gitgrid.models.User
-import com.gitgrid.JsonProtocol._
+import com.gitgrid.webservice.JsonProtocol._
 import spray.http.DateTime
 import spray.routing.Directive1
 import spray.routing._

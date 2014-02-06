@@ -1,4 +1,4 @@
-package com.gitgrid
+package com.gitgrid.webservice
 
 import com.gitgrid.models._
 import spray.httpx._

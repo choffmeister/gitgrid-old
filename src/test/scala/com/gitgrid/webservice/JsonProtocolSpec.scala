@@ -1,13 +1,14 @@
-package com.gitgrid
+package com.gitgrid.webservice
 
 import org.specs2.mutable._
-import com.gitgrid.JsonProtocol._
 import com.gitgrid.models._
 import spray.json._
 import java.sql.Timestamp
 import java.util.Date
 
 class JsonProtocolSpec extends SpecificationWithJUnit {
+  import JsonProtocol._
+
   "JsonProtocol" should {
     "properly convert User objects" in {
       val original = User(1L, "USERNAME", "2", "3", "4", "5", "6", "7")

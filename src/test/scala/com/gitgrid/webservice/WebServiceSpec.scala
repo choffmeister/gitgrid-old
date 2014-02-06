@@ -1,15 +1,15 @@
-package com.gitgrid
+package com.gitgrid.webservice
 
 import org.specs2.mutable._
 import com.gitgrid.models._
 import com.gitgrid.models.Dsl.transaction
-import com.gitgrid.JsonProtocol._
+import com.gitgrid.webservice.JsonProtocol._
 import spray.testkit._
 import spray.http._
 import spray.routing._
 import spray.routing.authentication.UserPass
-import spray.http.parser.HttpParser
-import StatusCodes._
+import spray.http.StatusCodes._
+import com.gitgrid.WithDatabase
 
 class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with WebService {
   def actorRefFactory = system
@@ -108,21 +108,6 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
           res.user must beSome
         }
       }
-    }
-
-    "map non API requests to static HTML filenames" in {
-      staticContentPathMapper("") === Some("index.html")
-      staticContentPathMapper("index.html") === Some("index.html")
-      staticContentPathMapper("about") === Some("index.html")
-      staticContentPathMapper("api") === Some("index.html")
-      staticContentPathMapper("foo/bar/test.it/route") === Some("index.html")
-      staticContentPathMapper("styles/main.css") === Some("styles/main.css")
-
-      staticContentPathMapper("api/") must beNone
-      staticContentPathMapper("api/index.html") must beNone
-      staticContentPathMapper("api/about") must beNone
-      staticContentPathMapper("api/foo/bar/test.it/route") must beNone
-      staticContentPathMapper("api/styles/main.css") must beNone
     }
   }
 

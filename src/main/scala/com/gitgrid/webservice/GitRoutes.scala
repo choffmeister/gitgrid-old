@@ -1,10 +1,10 @@
-package com.gitgrid.routes
+package com.gitgrid.webservice
 
 import java.io._
 import scala.collection.JavaConversions._
 import spray.routing._
 import spray.routing.Directives._
-import com.gitgrid.JsonProtocol._
+import com.gitgrid.webservice.JsonProtocol._
 import com.gitgrid.util._
 import com.gitgrid.Config
 import org.eclipse.jgit.storage.file._

@@ -6,6 +6,7 @@ import akka.actor.Props
 import akka.io.IO
 import com.gitgrid.models._
 import spray.can.Http
+import com.gitgrid.webservice.WebServiceActor
 
 object Application extends App {
   // bootstrap database
