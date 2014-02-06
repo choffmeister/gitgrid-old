@@ -19,7 +19,7 @@ libraryDependencies ++= {
     "ch.qos.logback" % "logback-classic" % "1.0.13",
     "com.h2database" % "h2" % "1.2.127",
     "com.jcraft" % "jsch" % "0.1.50",
-    "com.typesafe" % "config" % "1.0.2",
+    "com.typesafe" % "config" % "1.2.0",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
@@ -33,7 +33,7 @@ libraryDependencies ++= {
     "mysql" % "mysql-connector-java" % "5.1.12",
     "org.eclipse.jgit" % "org.eclipse.jgit" % "3.1.0.201310021548-r",
     "org.specs2" %% "specs2" % "2.2.3" % "test",
-    "org.squeryl" %% "squeryl" % "0.9.6-RC1"
+    "org.squeryl" %% "squeryl" % "0.9.6-RC2"
   )
 }
 
