@@ -2,23 +2,18 @@ package de.choffmeister.asserthub.util
 
 import org.specs2.mutable._
 import spray.json._
-import java.io.File
-import java.util.UUID
+import de.choffmeister.asserthub.WithTemporaryDirectory
 
 class GitRepositorySpec extends SpecificationWithJUnit {
-  def tmp = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID.toString)
-
-  "create repository" in {
-    val dir = tmp
-    GitRepository.init(dir, true)
+  "create repository" in new WithTemporaryDirectory(false) {
+    GitRepository.init(directory, true)
     ok
   }
 
-  "allow reading in repository" in {
-    val dir = tmp
-    ZipHelper.unzip(classOf[GitRepositorySpec].getResourceAsStream("/gitignore.zip"), dir)
+  "allow reading in repository" in new WithTemporaryDirectory(false) {
+    ZipHelper.unzip(classOf[GitRepositorySpec].getResourceAsStream("/gitignore.zip"), directory)
 
-    GitRepository(dir) { repo =>
+    GitRepository(directory) { repo =>
       val commitId = repo.resolve("master")
       commitId === "7b684c28663c20a287d67b2879db83957391c23b"
       val commit = repo.commit(commitId)
