@@ -14,7 +14,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= {
   val akkaVersion = "2.2.3"
-  val sprayVersion = "1.2-RC4"
+  val sprayVersion = "1.2.0"
   Seq(
     "ch.qos.logback" % "logback-classic" % "1.0.13",
     "com.h2database" % "h2" % "1.2.127",
