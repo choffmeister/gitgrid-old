@@ -1,4 +1,4 @@
-name := "asserthub"
+name := "gitgrid"
 
 version := "0.0.0"
 
@@ -44,11 +44,11 @@ CoveragePlugin.coverageSettings
 
 packSettings
 
-packMain := Map("asserthub" -> "de.choffmeister.asserthub.Application")
+packMain := Map("gitgrid" -> "com.gitgrid.Application")
 
 gruntSettings
 
-packExtraClasspath := Map("asserthub" -> Seq("${PROG_HOME}/res", "${PROG_HOME}/conf"))
+packExtraClasspath := Map("gitgrid" -> Seq("${PROG_HOME}/res", "${PROG_HOME}/conf"))
 
 pack <<= pack dependsOn(gruntDist)
 

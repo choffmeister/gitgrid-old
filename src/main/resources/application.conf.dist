@@ -7,6 +7,6 @@ spray.can.server {
   request-timeout = 5s
 }
 
-asserthub {
+gitgrid {
   repositoriesDir = "repositories"
 }

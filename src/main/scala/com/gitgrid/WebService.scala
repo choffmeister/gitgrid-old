@@ -1,0 +1,90 @@
+package com.gitgrid
+
+import scala.concurrent.duration._
+import scala.util.matching.Regex
+import akka.actor._
+import akka.util.Timeout
+import com.gitgrid.JsonProtocol._
+import com.gitgrid.managers._
+import com.gitgrid.models._
+import com.gitgrid.routes._
+import spray.http._
+import spray.http.StatusCodes._
+import spray.routing._
+import spray.httpx.unmarshalling.Unmarshaller
+import spray.httpx.unmarshalling.Deserializer
+import spray.http.Uri.Path
+import java.sql.Timestamp
+import CacheDirectives._
+
+case class AuthenticationResponse(message: String, user: Option[User])
+
+class WebServiceActor extends Actor with WebService {
+  def actorRefFactory = context
+  def receive = runRoute(route)
+}
+
+trait WebService extends HttpService {
+  implicit val timeout = Timeout(5 seconds)
+  implicit def executionContext = actorRefFactory.dispatcher
+
+  def staticContentPathMapper(path: String): Option[String] = path match {
+    case path if !path.startsWith("api/") =>
+      val extensionRegex = "\\.([^/\\.]+)$".r
+      val extension = extensionRegex.findFirstIn(path)
+
+      extension match {
+        case Some(ext) => Some(path)
+        case _ => Some("index.html")
+      }
+    case _ => None
+  }
+
+  val staticContentPathMatcher: PathMatcher1[String] = Rest flatMap(staticContentPathMapper)
+
+  val route =
+    pathPrefix("api") {
+      respondWithHeader(HttpHeaders.`Cache-Control`(`no-cache`, `max-age`(0))) {
+        pathPrefix("auth") {
+          path("login") {
+            post {
+              AuthManager.global.authLogin { pass =>
+                pass match {
+                  case Some(AuthenticationPass(u, s)) =>
+                    setCookie(HttpCookie("gitgrid-sid", s.id, expires = s.expires, path = Some("/"))) {
+                      complete(AuthenticationResponse("Logged in", Some(u)))
+                    }
+                  case _ =>
+                    complete(AuthenticationResponse("Invalid credentials", None))
+                }
+              }
+            }
+          } ~
+          path("logout") {
+            post {
+              deleteCookie("gitgrid-sid", path = "/") {
+                complete(AuthenticationResponse("Logged out", None))
+              }
+            }
+          } ~
+          path("state") {
+            get {
+              AuthManager.global.authCookie { user =>
+                user match {
+                  case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
+                  case None => complete(AuthenticationResponse("No or invalid session", None))
+                }
+              }
+            }
+          }
+        } ~
+        pathPrefix("projects" / LongNumber / "git")(projectId => GitRoutes.create(projectId)) ~
+        CrudRoutes.create("users", UserManager) ~
+        CrudRoutes.create("projects", ProjectManager) ~
+        CrudRoutes.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
+      }
+    } ~
+    path(staticContentPathMatcher) { filePath =>
+      getFromResource("web/" + filePath)
+    }
+}
