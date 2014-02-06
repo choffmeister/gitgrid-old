@@ -17,20 +17,20 @@ libraryDependencies ++= {
   val sprayVersion = "1.2.0"
   Seq(
     "ch.qos.logback" % "logback-classic" % "1.0.13",
-    "com.h2database" % "h2" % "1.2.127",
+    "com.h2database" % "h2" % "1.3.175",
     "com.jcraft" % "jsch" % "0.1.50",
     "com.typesafe" % "config" % "1.2.0",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
-    "commons-codec" % "commons-codec" % "1.8",
+    "commons-codec" % "commons-codec" % "1.9",
     "io.spray" % "spray-can" % sprayVersion,
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" % "spray-testkit" % sprayVersion % "test",
     "io.spray" %% "spray-json" % "1.2.5",
     "junit" % "junit" % "4.11" % "test",
-    "mysql" % "mysql-connector-java" % "5.1.12",
-    "org.eclipse.jgit" % "org.eclipse.jgit" % "3.1.0.201310021548-r",
+    "mysql" % "mysql-connector-java" % "5.1.28",
+    "org.eclipse.jgit" % "org.eclipse.jgit" % "3.2.0.201312181205-r",
     "org.specs2" %% "specs2" % "2.2.3" % "test",
     "org.squeryl" %% "squeryl" % "0.9.6-RC2"
   )
