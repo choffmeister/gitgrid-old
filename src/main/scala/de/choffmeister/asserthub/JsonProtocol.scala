@@ -7,51 +7,40 @@ import spray.routing.authentication.UserPass
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.{Date, TimeZone}
-import org.joda.time.format.ISODateTimeFormat
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.lib._
 import de.choffmeister.asserthub.util._
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object DateFormat extends JsonFormat[Date] {
-    val formatWrite = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-    formatWrite.setTimeZone(TimeZone.getTimeZone("UTC"))
-    val formatRead = ISODateTimeFormat.dateTimeParser()
-
-    def write(d: Date) = {
-      JsString(formatWrite.format(d.getTime) + "Z")
+    def write(date: Date) = {
+      JsNumber(date.getTime)
     }
-
     def read(value: JsValue) =
       value match {
-        case JsString(s) =>
+        case JsNumber(time) =>
           try {
-            new Date(formatRead.parseMillis(s))
+            new Date(time.toLong)
           } catch {
-            case e: Throwable => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value, e)
+            case e: Throwable => deserializationError("Timestamp in seconds since 1970-01-01 00:00:00 UTC expected. Got " + value, e)
           }
-        case _ => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value)
+        case _ => deserializationError("Timestamp in seconds since 1970-01-01 00:00:00 UTC expected. Got " + value)
       }
   }
 
   implicit object TimestampFormat extends JsonFormat[Timestamp] {
-    val formatWrite = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    formatWrite.setTimeZone(TimeZone.getTimeZone("UTC"))
-    val formatRead = ISODateTimeFormat.dateTimeParser()
-
-    def write(d: Timestamp) = {
-      JsString(formatWrite.format(d.getTime))
+    def write(timestamp: Timestamp) = {
+      JsNumber(timestamp.getTime)
     }
-
     def read(value: JsValue) =
       value match {
-        case JsString(s) =>
+        case JsNumber(time) =>
           try {
-            new Timestamp(formatRead.parseMillis(s))
+            new Timestamp(time.toLong)
           } catch {
-            case e: Throwable => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value, e)
+            case e: Throwable => deserializationError("Timestamp in seconds since 1970-01-01 00:00:00 UTC expected. Got " + value, e)
           }
-        case _ => deserializationError("Timestamp in ISO8601 UTC format expected. Got " + value)
+        case _ => deserializationError("Timestamp in seconds since 1970-01-01 00:00:00 UTC expected. Got " + value)
       }
   }
 

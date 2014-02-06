@@ -28,7 +28,6 @@ libraryDependencies ++= {
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" % "spray-testkit" % sprayVersion % "test",
     "io.spray" %% "spray-json" % "1.2.5",
-    "joda-time" % "joda-time" % "2.3",
     "junit" % "junit" % "4.11" % "test",
     "mysql" % "mysql-connector-java" % "5.1.12",
     "org.eclipse.jgit" % "org.eclipse.jgit" % "3.1.0.201310021548-r",
