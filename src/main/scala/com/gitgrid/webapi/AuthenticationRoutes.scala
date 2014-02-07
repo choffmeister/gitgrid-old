@@ -1,8 +1,8 @@
-package com.gitgrid.webservice
+package com.gitgrid.webapi
 
 import com.gitgrid.managers._
 import com.gitgrid.models._
-import com.gitgrid.webservice.directives._
+import com.gitgrid.webapi.directives._
 import spray.http._
 import spray.routing._
 

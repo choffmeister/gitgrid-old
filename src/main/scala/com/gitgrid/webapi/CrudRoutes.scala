@@ -1,8 +1,8 @@
-package com.gitgrid.webservice
+package com.gitgrid.webapi
 
 import com.gitgrid.models._
 import com.gitgrid.managers._
-import com.gitgrid.webservice.directives._
+import com.gitgrid.webapi.directives._
 import spray.routing._
 import spray.http.StatusCodes._
 import com.gitgrid.models.Dsl.{get => _, _}

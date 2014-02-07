@@ -1,4 +1,4 @@
-package com.gitgrid.webservice
+package com.gitgrid.webapi
 
 import akka.actor._
 import com.gitgrid.managers._
@@ -6,15 +6,13 @@ import com.gitgrid.models._
 import spray.http._
 import spray.http.CacheDirectives._
 import spray.routing._
-import com.gitgrid.git.SmartHttpService
-import com.gitgrid.git.SmartHttpRequest
 
-class WebServiceActor extends Actor with WebService {
+class WebApiServiceActor extends Actor with WebApiService {
   val actorRefFactory = context
   def receive = runRoute(route)
 }
 
-trait WebService extends HttpService {
+trait WebApiService extends HttpService {
   import JsonProtocol._
   implicit val authManager = new AuthManager(new InMemorySessionManager())
 

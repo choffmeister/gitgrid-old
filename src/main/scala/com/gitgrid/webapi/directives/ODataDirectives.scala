@@ -1,4 +1,4 @@
-package com.gitgrid.webservice.directives
+package com.gitgrid.webapi.directives
 
 import spray.routing._
 import spray.routing.Directives._

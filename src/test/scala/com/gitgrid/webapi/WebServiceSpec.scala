@@ -1,9 +1,9 @@
-package com.gitgrid.webservice
+package com.gitgrid.webapi
 
 import org.specs2.mutable._
 import com.gitgrid.models._
 import com.gitgrid.models.Dsl.transaction
-import com.gitgrid.webservice.JsonProtocol._
+import com.gitgrid.webapi.JsonProtocol._
 import spray.testkit._
 import spray.http._
 import spray.routing._
@@ -11,10 +11,10 @@ import spray.routing.authentication.UserPass
 import spray.http.StatusCodes._
 import com.gitgrid.WithDatabase
 
-class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with WebService {
+class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with WebApiService {
   def actorRefFactory = system
 
-  "WebService" should {
+  "WebApiService" should {
     "accept valid login credentials" in new WithDatabase {
       transaction {
         db.drop

@@ -1,4 +1,4 @@
-package com.gitgrid.webservice
+package com.gitgrid.webapi
 
 import org.specs2.mutable._
 import com.gitgrid.models._

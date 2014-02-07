@@ -1,4 +1,4 @@
-package com.gitgrid.webservice.directives
+package com.gitgrid.webapi.directives
 
 import spray.http._
 import spray.routing._
@@ -12,7 +12,7 @@ import com.gitgrid.managers.Session
 import com.gitgrid.models.User
 
 trait AuthDirectives {
-  import com.gitgrid.webservice.JsonProtocol._
+  import com.gitgrid.webapi.JsonProtocol._
 
   val cookieName = "gitgrid-sid"
 

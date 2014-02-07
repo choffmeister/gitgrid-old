@@ -17,7 +17,7 @@ import java.io._
 import org.eclipse.jgit.transport.{UploadPack, ReceivePack}
 import com.gitgrid.util.ZipHelper
 
-class SmartHttpService extends Actor {
+class GitHttpServiceActor extends Actor {
   val repoDir1 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
   val repoDir2 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
   ZipHelper.unzip(this.getClass.getResourceAsStream("/gitignore.zip"), repoDir1)
@@ -30,28 +30,28 @@ class SmartHttpService extends Actor {
     case _: Http.Connected =>
       sender ! Http.Register(self)
 
-    case req@SmartHttpRequest(_, _, "info/refs", None) =>
+    case req@GitHttpRequest(_, _, "info/refs", None) =>
       sender ! HttpResponse(status = 403, entity = "Git dump HTTP protocol is not supported")
 
-    case req@SmartHttpRequest(namespace, name, "info/refs", Some("git-upload-pack")) =>
+    case req@GitHttpRequest(namespace, name, "info/refs", Some("git-upload-pack")) =>
       val in = req.entity.data.toByteArray
       val out = GitRepository(repoDirMap(name))(repo => uploadPack(repo, in, true)) // must be true, since else sendAdvertisedRefs is not invoked
-      sender ! HttpResponse(entity = HttpEntity(SmartHttpService.gitUploadPackAdvertisement, SmartHttpService.gitUploadPackHeader ++ out), headers = noCacheHeaders)
+      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackAdvertisement, GitHttpService.gitUploadPackHeader ++ out), headers = noCacheHeaders)
 
-    case req@SmartHttpRequest(namespace, name, "info/refs", Some("git-receive-pack")) =>
+    case req@GitHttpRequest(namespace, name, "info/refs", Some("git-receive-pack")) =>
       val in = req.entity.data.toByteArray
       val out = GitRepository(repoDirMap(name))(repo => receivePack(repo, in, true)) // must be true, since else sendAdvertisedRefs is not invoked
-      sender ! HttpResponse(entity = HttpEntity(SmartHttpService.gitReceivePackAdvertisement, SmartHttpService.gitReceivePackHeader ++ out), headers = noCacheHeaders)
+      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitReceivePackAdvertisement, GitHttpService.gitReceivePackHeader ++ out), headers = noCacheHeaders)
 
-    case req@SmartHttpRequest(namespace, name, "git-upload-pack", None) =>
+    case req@GitHttpRequest(namespace, name, "git-upload-pack", None) =>
       val in = req.entity.data.toByteArray
       val out = GitRepository(repoDirMap(name))(repo => uploadPack(repo, in, false))
-      sender ! HttpResponse(entity = HttpEntity(SmartHttpService.gitUploadPackResult, out), headers = noCacheHeaders)
+      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = noCacheHeaders)
 
-    case req@SmartHttpRequest(namespace, name, "git-receive-pack", None) =>
+    case req@GitHttpRequest(namespace, name, "git-receive-pack", None) =>
       val in = req.entity.data.toByteArray
       val out = GitRepository(repoDirMap(name))(repo => receivePack(repo, in, false))
-      sender ! HttpResponse(entity = HttpEntity(SmartHttpService.gitUploadPackResult, out), headers = noCacheHeaders)
+      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = noCacheHeaders)
 
     case _ =>
       sender ! HttpResponse(status = 404)
@@ -76,7 +76,7 @@ class SmartHttpService extends Actor {
   }
 }
 
-object SmartHttpService {
+object GitHttpService {
   val gitUploadPackHeader = "001e# service=git-upload-pack\n0000".getBytes("ASCII")
   val gitReceivePackHeader = "001f# service=git-receive-pack\n0000".getBytes("ASCII")
   val gitUploadPackAdvertisement = spray.http.MediaTypes.register(
@@ -109,7 +109,7 @@ object SmartHttpService {
       fileExtensions = Seq()))
 }
 
-object SmartHttpRequest {
+object GitHttpRequest {
   val pattern = """^/([a-zA-Z0-9\-\_]+)/([a-zA-Z0-9\-\_]+)\.git/(.*)$""".r
 
   def unapply(req: HttpRequest): Option[(String, String, String, Option[String])] = {

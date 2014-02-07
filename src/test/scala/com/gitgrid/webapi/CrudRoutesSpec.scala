@@ -1,4 +1,4 @@
-package com.gitgrid.webservice
+package com.gitgrid.webapi
 
 import org.specs2.mutable._
 import org.specs2.matcher._
@@ -10,7 +10,7 @@ import org.squeryl.Table
 import com.gitgrid._
 import com.gitgrid.models.Dsl.transaction
 import com.gitgrid.models._
-import com.gitgrid.webservice.JsonProtocol._
+import com.gitgrid.webapi.JsonProtocol._
 import spray.http.StatusCodes._
 import spray.httpx.marshalling._
 import spray.httpx.unmarshalling._
@@ -22,7 +22,7 @@ import spray.routing.authentication.UserPass
 import spray.http.HttpCookie
 import spray.http.HttpHeaders
 
-object CrudRoutesSpec extends FragmentsBuilder with MustThrownMatchers with Specs2RouteTest with WebService {
+object CrudRoutesSpec extends FragmentsBuilder with MustThrownMatchers with Specs2RouteTest with WebApiService {
   def actorRefFactory = system
 
   def userBefore(): Unit = {}

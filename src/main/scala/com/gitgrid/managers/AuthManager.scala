@@ -1,7 +1,7 @@
 package com.gitgrid.managers
 
 import com.gitgrid.models.User
-import com.gitgrid.webservice.JsonProtocol._
+import com.gitgrid.webapi.JsonProtocol._
 import spray.http.DateTime
 
 case class AuthenticationPass(user: User, session: Session)
