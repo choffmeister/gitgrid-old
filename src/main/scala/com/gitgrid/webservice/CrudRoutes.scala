@@ -47,7 +47,7 @@ object CrudRoutes {
     } ~
     create {
       entity(as[T]) { e =>
-        authCookieForce(authManager) { user =>
+        ensureAuthCookie(authManager) { user =>
           beforeCreate match {
             case Some(f) => complete(repo.insert(f(e, user)))
             case None => complete(repo.insert(e))
@@ -58,7 +58,7 @@ object CrudRoutes {
     update { id =>
       entity(as[T]) { e =>
         if (e.id == id) {
-          authCookieForce(authManager) { user =>
+          ensureAuthCookie(authManager) { user =>
             beforeUpdate match {
               case Some(f) => complete(repo.update(f(e, user)))
               case None => complete(repo.update(e))
@@ -68,7 +68,7 @@ object CrudRoutes {
       }
     } ~
     remove { id =>
-      authCookieForce(authManager) { user =>
+      ensureAuthCookie(authManager) { user =>
         complete {
           repo.delete(id) match {
             case Some(e) => e

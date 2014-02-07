@@ -14,10 +14,10 @@ object AuthenticationRoutes extends HttpServiceBase {
   def route(implicit authManager: AuthManager) =
     path("login") {
       post {
-        authLogin(authManager) { pass =>
+        loginByCredentials(authManager) { pass =>
           pass match {
             case Some(AuthenticationPass(u, s)) =>
-              setCookie(HttpCookie("gitgrid-sid", s.id, expires = s.expires, path = Some("/"))) {
+              createAuthCookie(authManager, s) {
                 complete(AuthenticationResponse("Logged in", Some(u)))
               }
             case _ =>
@@ -28,14 +28,14 @@ object AuthenticationRoutes extends HttpServiceBase {
     } ~
     path("logout") {
       post {
-        deleteCookie("gitgrid-sid", path = "/") {
+        removeAuthCookie(authManager) {
           complete(AuthenticationResponse("Logged out", None))
         }
       }
     } ~
     path("state") {
       get {
-        authCookie(authManager) { user =>
+        checkAuthCookie(authManager) { user =>
           user match {
             case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
             case None => complete(AuthenticationResponse("Invalid session", None))
