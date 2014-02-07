@@ -1,8 +1,9 @@
-package com.gitgrid.util
+package com.gitgrid.git
 
 import org.specs2.mutable._
 import spray.json._
 import com.gitgrid.WithTemporaryDirectory
+import com.gitgrid.util.ZipHelper
 
 class GitRepositorySpec extends SpecificationWithJUnit {
   "create repository" in new WithTemporaryDirectory(false) {

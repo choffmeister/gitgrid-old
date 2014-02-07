@@ -10,6 +10,7 @@ import java.util.{Date, TimeZone}
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.lib._
 import com.gitgrid.util._
+import com.gitgrid.git._
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit object DateFormat extends JsonFormat[Date] {

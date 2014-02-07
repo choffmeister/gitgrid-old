@@ -13,6 +13,9 @@ import org.eclipse.jgit.lib._
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.treewalk._
 import java.util.Date
+import com.gitgrid.git.GitTree
+import com.gitgrid.git.GitRepository
+import com.gitgrid.git.GitBlob
 
 object GitRoutes {
   def create(projectId: Long): Route =
