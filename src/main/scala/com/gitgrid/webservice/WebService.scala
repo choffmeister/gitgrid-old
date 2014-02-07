@@ -6,9 +6,11 @@ import com.gitgrid.models._
 import spray.http._
 import spray.http.CacheDirectives._
 import spray.routing._
+import com.gitgrid.git.SmartHttpService
+import com.gitgrid.git.SmartHttpRequest
 
 class WebServiceActor extends Actor with WebService {
-  def actorRefFactory = context
+  val actorRefFactory = context
   def receive = runRoute(route)
 }
 

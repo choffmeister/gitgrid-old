@@ -18,8 +18,6 @@ import org.eclipse.jgit.transport.{UploadPack, ReceivePack}
 import com.gitgrid.util.ZipHelper
 
 class SmartHttpService extends Actor {
-  import context.dispatcher // ExecutionContext for the futures and scheduler
-
   val repoDir1 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
   val repoDir2 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
   ZipHelper.unzip(this.getClass.getResourceAsStream("/gitignore.zip"), repoDir1)
