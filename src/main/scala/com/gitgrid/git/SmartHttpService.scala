@@ -18,7 +18,6 @@ import org.eclipse.jgit.transport.{UploadPack, ReceivePack}
 import com.gitgrid.util.ZipHelper
 
 class SmartHttpService extends Actor {
-  implicit val timeout: Timeout = 1.second // for the actor 'asks'
   import context.dispatcher // ExecutionContext for the futures and scheduler
 
   val repoDir1 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
