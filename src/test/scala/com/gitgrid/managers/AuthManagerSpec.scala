@@ -85,13 +85,6 @@ class AuthManagerSpec extends SpecificationWithJUnit {
       }
     }
 
-    "create random session IDs" in {
-      val auth = new AuthManager()
-      val picks = (1 to 5).map(i => auth.generateSessionId())
-
-      picks.distinct must haveSize(5)
-    }
-
     "authenticate" in new WithDatabase {
       transaction {
         db.drop

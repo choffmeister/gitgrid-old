@@ -65,46 +65,11 @@ class AuthManager {
     expiredSessions.foreach(s => sessions.remove(s.id))
   }
 
-  def generateSessionId(): String = {
+  private def generateSessionId(): String = {
     val bin = new Array[Byte](32)
     random.nextBytes(bin)
     val str = Base64.encodeBase64String(bin)
 
     str
   }
-
-  val authLogin: Directive1[Option[AuthenticationPass]] = {
-    entity(as[UserPass]).flatMap {
-      case UserPass(userName, password) =>
-        authenticate(userName, password) match {
-          case Some(AuthenticationPass(u, s)) => hprovide(Some(AuthenticationPass(u, s)) :: HNil)
-          case _ => hprovide(None :: HNil)
-        }
-      case _ =>
-        hprovide(None :: HNil)
-    }
-  }
-
-  val authCookie: Directive1[Option[User]] = {
-    extract { ctx =>
-      val cookie = ctx.request.cookies.find(c => c.name == "gitgrid-sid")
-      cookie match {
-        case Some(c) => loadSession(c.content) match {
-          case Some(s) => Some(s.user)
-          case _ => None
-        }
-        case _ => None
-      }
-    }
-  }
-
-  val authCookieForce: Directive1[User] =
-    authCookie.flatMap {
-      case Some(u) => hprovide(u :: HNil)
-      case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
-    }
-}
-
-object AuthManager {
-  lazy val global = new AuthManager()
 }

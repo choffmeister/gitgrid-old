@@ -1,11 +1,11 @@
-package com.gitgrid.webservice
+package com.gitgrid.webservice.directives
 
 import spray.routing._
 import spray.routing.Directives._
 
 case class ODataParameters(top: Option[Int], skip: Option[Int])
 
-object ODataDirective {
+trait ODataDirectives {
   lazy val odata: Directive1[ODataParameters] = {
     def parseInt(str: Option[String]): Option[Int] = str match {
       case Some(s) => Some(s.toInt)
@@ -20,3 +20,5 @@ object ODataDirective {
     }
   }
 }
+
+object ODataDirectives extends ODataDirectives

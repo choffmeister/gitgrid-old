@@ -16,6 +16,7 @@ trait WebService extends HttpService {
   import JsonProtocol._
   implicit val timeout = akka.util.Timeout(1000)
   implicit def executionContext = actorRefFactory.dispatcher
+  implicit val authManager = new AuthManager()
 
   val route =
     pathPrefix("api") {
