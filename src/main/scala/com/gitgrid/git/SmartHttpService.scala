@@ -33,6 +33,9 @@ class SmartHttpService extends Actor {
     case _: Http.Connected =>
       sender ! Http.Register(self)
 
+    case req@SmartHttpRequest(_, _, "info/refs", None) =>
+      sender ! HttpResponse(status = 403, entity = "Git dump HTTP protocol is not supported")
+
     case req@SmartHttpRequest(namespace, name, "info/refs", Some("git-upload-pack")) =>
       val in = req.entity.data.toByteArray
       val out = GitRepository(repoDirMap(name))(repo => uploadPack(repo, in, true)) // must be true, since else sendAdvertisedRefs is not invoked
