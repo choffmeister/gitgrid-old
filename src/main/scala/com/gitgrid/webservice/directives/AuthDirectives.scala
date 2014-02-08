@@ -1,57 +1,46 @@
 package com.gitgrid.webservice.directives
 
+import scala.util.Success
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 import spray.http._
 import spray.routing._
 import spray.routing.authentication._
 import spray.routing.AuthenticationFailedRejection._
 import spray.routing.Directives._
-import shapeless.HNil
 import com.gitgrid.managers.AuthManager
 import com.gitgrid.managers.AuthenticationPass
 import com.gitgrid.managers.Session
-import com.gitgrid.models.User
+import com.gitgrid.mongodb.User
 
 trait AuthDirectives {
   import com.gitgrid.webservice.JsonProtocol._
 
+  implicit val authManager: AuthManager
+  implicit val executor: ExecutionContext
+
   val cookieName = "gitgrid-sid"
 
-  def loginByCredentials(authManager: AuthManager): Directive1[Option[AuthenticationPass]] = {
-    entity(as[UserPass]).flatMap {
-      case UserPass(userName, password) =>
-        authManager.authenticate(userName, password) match {
-          case Some(AuthenticationPass(u, s)) => hprovide(Some(AuthenticationPass(u, s)) :: HNil)
-          case _ => hprovide(None :: HNil)
-        }
-      case _ =>
-        hprovide(None :: HNil)
+  def checkAuthCookie: Directive1[Option[User]] = {
+    extract(_.request.cookies.find(c => c.name == cookieName)).flatMap {
+      case Some(cookie) =>
+       	onComplete(authManager.loadSession(cookie.content)).map {
+       	  case Success(Some(authPass)) => Some(authPass.user)
+       	  case _ => None
+       	}
+      case _ => provide(None)
     }
   }
 
-  def checkAuthCookie(authManager: AuthManager): Directive1[Option[User]] = {
-    extract { ctx =>
-      val cookie = ctx.request.cookies.find(c => c.name == cookieName)
-      cookie match {
-        case Some(c) => authManager.loadSession(c.content) match {
-          case Some(s) => Some(s.user)
-          case _ => None
-        }
-        case _ => None
-      }
-    }
-  }
-
-  def ensureAuthCookie(authManager: AuthManager): Directive1[User] =
-    checkAuthCookie(authManager).flatMap {
-      case Some(u) => hprovide(u :: HNil)
+  def ensureAuthCookie: Directive1[User] =
+    checkAuthCookie.flatMap {
+      case Some(u) => provide(u)
       case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
     }
 
-  def createAuthCookie(authManager: AuthManager, session: Session): Directive0 =
+  def createAuthCookie(session: Session): Directive0 =
     setCookie(HttpCookie(cookieName, session.id, expires = session.expires, path = Some("/")))
 
-  def removeAuthCookie(authManager: AuthManager): Directive0 =
+  def removeAuthCookie: Directive0 =
     deleteCookie(cookieName, path = "/")
 }
-
-object AuthDirectives extends AuthDirectives

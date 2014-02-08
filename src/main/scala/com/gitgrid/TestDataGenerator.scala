@@ -1,32 +1,58 @@
 package com.gitgrid
 
 import com.gitgrid.managers._
-import com.gitgrid.models._
-import com.gitgrid.models.Dsl._
+import com.gitgrid.mongodb._
 import scala.util.Random
 import scala.io.Source
 import com.gitgrid.util.ZipHelper
 
 class TestDataGenerator
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 object TestDataGenerator {
   def generate(userCount: Int = 5, projectCount: Int = 10, ticketCount: Int = 50) {
-    transaction {
-      Database.drop
-      Database.create
+    val users = (1 to userCount).map { i =>
+      User(
+        id = Some(Entity.generateId()),
+        userName = s"user${i}",
+        passwordHash = s"pass${i}"
+      )
+    }.toList
 
-      val users = (1 to userCount).map(i => UserManager.createUser(s"user${i}", s"user${i}@invalid.domain.tld", s"pass${i}"))
-      val projects = (1 to projectCount).map(i => ProjectManager.createProject(s"P${i}", s"Project ${i}", s"This is project ${i}. ${loremipsum(random.nextInt(5000) + 1000)}", random.nextInt(userCount) + 1))
-      for (i <- 1 to projectCount) {
-        val dir = new java.io.File(Config.repositoriesDir, i.toString)
-        dir.delete()
-        ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream("/highlightjs.zip"), dir)
-      }
-      val tickets = (1 to ticketCount).map(i => TicketManager.createTicket(s"Ticket #${i}", s"This is ticket ${i}. ${loremipsum(random.nextInt(5000) + 1000)}", random.nextInt(userCount) + 1))
+    val projects = (1 to projectCount).map { i =>
+      Project(
+        id = Some(Entity.generateId()),
+        userId = chooseRandom(users).id.get,
+        canonicalName = s"project${i}",
+        displayName = s"Project ${i}"
+      )
+    }.toList
+
+    val tickets = (1 to ticketCount).map { i =>
+      Ticket(
+        id = Some(Entity.generateId()),
+        projectId = chooseRandom(projects).id.get,
+        userId = chooseRandom(users).id.get,
+        title = s"Ticket ${i}",
+        description = loremipsum(random.nextInt.abs % 10000)
+      )
+    }
+
+    users.foreach(Users.insert(_).map(le => println(s"Added user")))
+    projects.foreach(Projects.insert(_).map(le => println(s"Added project")))
+    tickets.foreach(Tickets.insert(_).map(le => println(s"Added tickets")))
+
+    tickets.foreach { t =>
+      val dir = new java.io.File(Config.repositoriesDir, t.id.get.stringify)
+      dir.delete()
+      ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream("/highlightjs.zip"), dir)
     }
   }
 
   lazy val random = new Random()
+
+  def chooseRandom[T](l: List[T]): T = l(random.nextInt.abs % l.length)
 
   def loremipsum(size: Int): String = if (size / loremipsum.length > 0) loremipsum + loremipsum(size - loremipsum.length) else loremipsum.substring(0, size)
 

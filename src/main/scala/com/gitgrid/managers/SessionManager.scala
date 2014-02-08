@@ -4,10 +4,10 @@ import java.security.SecureRandom
 import spray.http.DateTime
 import org.apache.commons.codec.binary.Base64
 
-case class Session(id: String, userId: Long, expires: Option[DateTime])
+case class Session(id: String, userId: String, expires: Option[DateTime])
 
 trait SessionManager {
-  def createSession(userId: Long, expires: Option[DateTime]): Session
+  def createSession(userId: String, expires: Option[DateTime]): Session
   def loadSession(sessionId: String, now: Option[DateTime] = None): Option[Session]
   def cleanExpiredSessions(now: Option[DateTime]): Unit
 }
@@ -16,7 +16,7 @@ class InMemorySessionManager extends SessionManager {
   private val random = new SecureRandom()
   val sessions = scala.collection.mutable.Map.empty[String, Session]
 
-  def createSession(userId: Long, expires: Option[DateTime]): Session = {
+  def createSession(userId: String, expires: Option[DateTime]): Session = {
     val sessionId = generateSessionId()
     val session = Session(sessionId, userId, expires)
     sessions(sessionId) = session

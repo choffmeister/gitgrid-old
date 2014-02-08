@@ -2,7 +2,7 @@ package com.gitgrid.webservice
 
 import akka.actor._
 import com.gitgrid.managers._
-import com.gitgrid.models._
+import com.gitgrid.mongodb._
 import spray.http._
 import spray.http.CacheDirectives._
 import spray.routing._
@@ -15,17 +15,23 @@ class WebServiceActor extends Actor with WebService {
 trait WebService extends HttpService {
   import JsonProtocol._
   implicit val timeout = akka.util.Timeout(1000)
-  implicit def executionContext = actorRefFactory.dispatcher
+  implicit val executionContext = actorRefFactory.dispatcher
   implicit val authManager = new AuthManager(new InMemorySessionManager())
+
+  val authRoutes = new AuthenticationRoutes()
+  val usersCrudRoutes = new CrudRoutes("users", Users)
+  val projectsCrudRoutes = new CrudRoutes("projects", Projects)
+  val ticketsCrudRoutes = new CrudRoutes("tickets", Tickets)
+  val gitRepositoryRoutes = new GitRoutes()
 
   val route =
     pathPrefix("api") {
       respondWithHeader(HttpHeaders.`Cache-Control`(`no-cache`, `max-age`(0))) {
-        pathPrefix("auth")(AuthenticationRoutes.route) ~
-        pathPrefix("projects" / LongNumber / "git")(projectId => GitRoutes.create(projectId)) ~
-        CrudRoutes.create("users", UserManager) ~
-        CrudRoutes.create("projects", ProjectManager) ~
-        CrudRoutes.create("tickets", TicketManager, beforeCreate = Some((t: Ticket, u: User) => t.copy(creatorId = u.id, createdAt = UserManager.now)))
+        authRoutes.route ~
+        usersCrudRoutes.route ~
+        projectsCrudRoutes.route ~
+        ticketsCrudRoutes.route ~
+        gitRepositoryRoutes.route
       }
     } ~
     path(Rest) {

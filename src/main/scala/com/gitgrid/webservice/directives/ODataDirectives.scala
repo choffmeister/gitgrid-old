@@ -20,5 +20,3 @@ trait ODataDirectives {
     }
   }
 }
-
-object ODataDirectives extends ODataDirectives

@@ -9,7 +9,8 @@ scalaVersion := "2.10.3"
 scalacOptions := Seq("-unchecked", "-feature", "-deprecation", "-language:postfixOps", "-encoding", "utf8")
 
 resolvers ++= Seq(
-  "spray repo" at "http://repo.spray.io"
+  "spray repo" at "http://repo.spray.io",
+  "typesafe repo" at "http://repo.typesafe.com/typesafe/releases/"
 )
 
 libraryDependencies ++= {
@@ -17,7 +18,6 @@ libraryDependencies ++= {
   val sprayVersion = "1.2.0"
   Seq(
     "ch.qos.logback" % "logback-classic" % "1.0.13",
-    "com.h2database" % "h2" % "1.3.175",
     "com.jcraft" % "jsch" % "0.1.50",
     "com.typesafe" % "config" % "1.2.0",
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -29,10 +29,9 @@ libraryDependencies ++= {
     "io.spray" % "spray-testkit" % sprayVersion % "test",
     "io.spray" %% "spray-json" % "1.2.5",
     "junit" % "junit" % "4.11" % "test",
-    "mysql" % "mysql-connector-java" % "5.1.28",
     "org.eclipse.jgit" % "org.eclipse.jgit" % "3.2.0.201312181205-r",
-    "org.specs2" %% "specs2" % "2.2.3" % "test",
-    "org.squeryl" %% "squeryl" % "0.9.6-RC2"
+    "org.reactivemongo" %% "reactivemongo" % "0.10.0",
+    "org.specs2" %% "specs2" % "2.2.3" % "test"
   )
 }
 

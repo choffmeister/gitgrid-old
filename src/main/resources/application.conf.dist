@@ -10,3 +10,9 @@ spray.can.server {
 gitgrid {
   repositoriesDir = "repositories"
 }
+
+gitgrid.mongodb {
+  host = "localhost"
+  port = 27017
+  database = "gitgrid-production"
+}
