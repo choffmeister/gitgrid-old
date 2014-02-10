@@ -2,8 +2,6 @@ package com.gitgrid.webservice
 
 import com.gitgrid.managers._
 import com.gitgrid.mongodb._
-import com.gitgrid.webservice.directives._
-import spray.routing._
 import spray.http.StatusCodes._
 import spray.httpx.marshalling.ToResponseMarshaller
 import spray.httpx.unmarshalling.FromRequestUnmarshaller
@@ -19,7 +17,7 @@ class CrudRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
   entityUnmarshaller: FromRequestUnmarshaller[T],
   entityListUnmarshaller: FromRequestUnmarshaller[List[T]],
   entityOptionUnmarshaller: FromRequestUnmarshaller[Option[T]]
-) extends Directives with AuthDirectives with ODataDirectives {
+) extends Directives {
   val list = path(name) & get
   val retrieve = path(name / Segment).map(id => BSONObjectID(id)) & get
   val create = path(name) & post
@@ -28,7 +26,7 @@ class CrudRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
 
   val route =
     list {
-      odata { query =>
+      pagable { query =>
         // TODO: respect OData paging parameters
         onSuccess(repo.all) { l =>
           complete(l)
@@ -43,7 +41,7 @@ class CrudRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
     } ~
     create {
       entity(as[T]) { e =>
-        ensureAuthCookie { user =>
+        authenticate { user =>
           onSuccess(repo.insert(e)) { le =>
             complete(e)
           }
@@ -53,7 +51,7 @@ class CrudRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
     update { id =>
       entity(as[T]) { e =>
         if (e.id == Some(id)) {
-          ensureAuthCookie { user =>
+          authenticate { user =>
             onSuccess(repo.update(e)) { le =>
               complete(e)
             }
@@ -62,7 +60,7 @@ class CrudRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
       }
     } ~
     remove { id =>
-      ensureAuthCookie { user =>
+      authenticate { user =>
         onSuccess(repo.delete(id)) { le =>
           complete(OK)
         }

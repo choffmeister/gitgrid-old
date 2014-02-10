@@ -21,7 +21,7 @@ trait AuthDirectives {
 
   val cookieName = "gitgrid-sid"
 
-  def checkAuthCookie: Directive1[Option[User]] = {
+  def authenticateOption: Directive1[Option[User]] = {
     extract(_.request.cookies.find(c => c.name == cookieName)).flatMap {
       case Some(cookie) =>
        	onComplete(authManager.loadSession(cookie.content)).map {
@@ -32,15 +32,15 @@ trait AuthDirectives {
     }
   }
 
-  def ensureAuthCookie: Directive1[User] =
-    checkAuthCookie.flatMap {
+  def authenticate: Directive1[User] =
+    authenticateOption.flatMap {
       case Some(u) => provide(u)
       case _ => reject(AuthenticationFailedRejection(CredentialsRejected, Nil))
     }
 
-  def createAuthCookie(session: Session): Directive0 =
+  def createAuthenticationCookie(session: Session): Directive0 =
     setCookie(HttpCookie(cookieName, session.id, expires = session.expires, path = Some("/")))
 
-  def removeAuthCookie: Directive0 =
+  def removeAuthenticationCookie: Directive0 =
     deleteCookie(cookieName, path = "/")
 }

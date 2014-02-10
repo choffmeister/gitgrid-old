@@ -21,7 +21,7 @@ class AuthenticationRoutes(implicit val authManager: AuthManager, val executor: 
           entity(as[UserPass]) { userPass =>
             onComplete(authManager.authenticate(userPass.user, userPass.pass)) {
               case scala.util.Success(Some(authPass)) =>
-                createAuthCookie(authPass.session) {
+                createAuthenticationCookie(authPass.session) {
                   complete(AuthenticationResponse("Logged in", Some(authPass.user)))
                 }
               case _ =>
@@ -32,14 +32,14 @@ class AuthenticationRoutes(implicit val authManager: AuthManager, val executor: 
       } ~
       path("logout") {
         post {
-          removeAuthCookie {
+          removeAuthenticationCookie {
             complete(AuthenticationResponse("Logged out", None))
           }
         }
       } ~
       path("state") {
         get {
-          checkAuthCookie { user =>
+          authenticateOption { user =>
             user match {
               case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
               case None => complete(AuthenticationResponse("Invalid session", None))

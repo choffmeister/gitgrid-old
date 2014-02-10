@@ -2,8 +2,6 @@ package com.gitgrid.webservice
 
 import java.io._
 import scala.collection.JavaConversions._
-import spray.routing._
-import com.gitgrid.webservice.directives._
 import com.gitgrid.webservice.JsonProtocol._
 import com.gitgrid.util._
 import com.gitgrid.Config
@@ -13,21 +11,21 @@ import org.eclipse.jgit.lib._
 import org.eclipse.jgit.revwalk._
 import org.eclipse.jgit.treewalk._
 import java.util.Date
-import com.gitgrid.git.GitTree
-import com.gitgrid.git.GitRepository
-import com.gitgrid.git.GitBlob
+import com.gitgrid.git._
+import scala.concurrent._
+import com.gitgrid.managers._
 
-class GitRoutes extends Directives with ODataDirectives {
+class GitRoutes(implicit val authManager: AuthManager, val executor: ExecutionContext) extends Directives {
   val route =
     pathPrefix("projects" / LongNumber / "git") { projectId =>
       path("branches") {
-        odata(query => complete(gitRepository(projectId)(repo => repo.branches(query.skip, query.top))))
+        pagable(page => complete(gitRepository(projectId)(repo => repo.branches(page.skip, page.top))))
       } ~
       path("tags") {
-        odata(query => complete(gitRepository(projectId)(repo => repo.tags(query.skip, query.top))))
+        pagable(page => complete(gitRepository(projectId)(repo => repo.tags(page.skip, page.top))))
       } ~
       path("commits") {
-        odata(query => complete(gitRepository(projectId)(repo => repo.commits(query.skip, query.top))))
+        pagable(page => complete(gitRepository(projectId)(repo => repo.commits(page.skip, page.top))))
       } ~
       path("commit" / Segment) { refOrSha =>
         complete(gitRepository(projectId)(repo => repo.commit(repo.resolve(refOrSha))))
