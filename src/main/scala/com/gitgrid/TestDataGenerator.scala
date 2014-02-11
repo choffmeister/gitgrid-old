@@ -26,7 +26,7 @@ object TestDataGenerator {
     val projects = (1 to projectCount).map { i =>
       Project(
         id = Some(Entity.generateId()),
-        userId = chooseRandom(users).id.get,
+        userId = choose(users, i).id.get,
         canonicalName = s"project${i}",
         displayName = s"Project ${i}"
       )
@@ -42,18 +42,25 @@ object TestDataGenerator {
       )
     }
 
-    users.foreach(Users.insert(_).map(le => println(s"Added user")))
-    projects.foreach(Projects.insert(_).map(le => println(s"Added project")))
-    tickets.foreach(Tickets.insert(_).map(le => println(s"Added tickets")))
+    users.foreach(Users.insert(_))
+    projects.foreach(Projects.insert(_))
+    tickets.foreach(Tickets.insert(_))
 
-    tickets.foreach { t =>
-      val dir = new java.io.File(Config.repositoriesDir, t.id.get.stringify)
+    val repoNames = List("gitignore", "highlightjs")
+
+    (1 to projects.length).foreach { i =>
+      val project = choose(projects, i)
+      val dir = new java.io.File(Config.repositoriesDir, project.id.get.stringify)
+      val repoName = choose(repoNames, i)
+
       dir.delete()
-      ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream("/highlightjs.zip"), dir)
+      ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream(s"/${repoName}.zip"), dir)
     }
   }
 
   lazy val random = new Random()
+
+  def choose[T](l: List[T], i: Int): T = l((i - 1).abs % l.length)
 
   def chooseRandom[T](l: List[T]): T = l(random.nextInt.abs % l.length)
 

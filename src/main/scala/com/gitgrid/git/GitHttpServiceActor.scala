@@ -8,6 +8,7 @@ import spray.can.Http
 import spray.can.server.Stats
 import spray.util._
 import spray.http._
+import spray.http.StatusCodes._
 import HttpMethods._
 import HttpHeaders._
 import spray.http.ContentType
@@ -16,15 +17,11 @@ import CacheDirectives._
 import java.io._
 import org.eclipse.jgit.transport.{UploadPack, ReceivePack}
 import com.gitgrid.util.ZipHelper
+import com.gitgrid.mongodb._
+import com.gitgrid.Config
 
 class GitHttpServiceActor extends Actor {
-  val repoDir1 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
-  val repoDir2 = new File(System.getProperty("java.io.tmpdir"), java.util.UUID.randomUUID.toString)
-  ZipHelper.unzip(this.getClass.getResourceAsStream("/gitignore.zip"), repoDir1)
-  ZipHelper.unzip(this.getClass.getResourceAsStream("/highlightjs.zip"), repoDir2)
-  val repoDirMap = Map("gitignore" -> repoDir1, "highlightjs" -> repoDir2)
-
-  val noCacheHeaders = List(`Cache-Control`(`no-cache`, `max-age`(0), `must-revalidate`))
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   def receive = {
     case _: Http.Connected =>
@@ -34,27 +31,48 @@ class GitHttpServiceActor extends Actor {
       sender ! HttpResponse(status = 403, entity = "Git dump HTTP protocol is not supported")
 
     case req@GitHttpRequest(namespace, name, "info/refs", Some("git-upload-pack")) =>
-      val in = req.entity.data.toByteArray
-      val out = GitRepository(repoDirMap(name))(repo => uploadPack(repo, in, true)) // must be true, since else sendAdvertisedRefs is not invoked
-      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackAdvertisement, GitHttpService.gitUploadPackHeader ++ out), headers = noCacheHeaders)
+      openRepository(namespace, name, sender) { repo =>
+        val in = req.entity.data.toByteArray
+        val out = uploadPack(repo, in, true) // must be true, since else sendAdvertisedRefs is not invoked
+        HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackAdvertisement, GitHttpService.gitUploadPackHeader ++ out), headers = GitHttpService.noCacheHeaders)
+      }
 
     case req@GitHttpRequest(namespace, name, "info/refs", Some("git-receive-pack")) =>
-      val in = req.entity.data.toByteArray
-      val out = GitRepository(repoDirMap(name))(repo => receivePack(repo, in, true)) // must be true, since else sendAdvertisedRefs is not invoked
-      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitReceivePackAdvertisement, GitHttpService.gitReceivePackHeader ++ out), headers = noCacheHeaders)
+      openRepository(namespace, name, sender) { repo =>
+        val in = req.entity.data.toByteArray
+        val out = receivePack(repo, in, true) // must be true, since else sendAdvertisedRefs is not invoked
+        HttpResponse(entity = HttpEntity(GitHttpService.gitReceivePackAdvertisement, GitHttpService.gitReceivePackHeader ++ out), headers = GitHttpService.noCacheHeaders)
+      }
 
     case req@GitHttpRequest(namespace, name, "git-upload-pack", None) =>
-      val in = req.entity.data.toByteArray
-      val out = GitRepository(repoDirMap(name))(repo => uploadPack(repo, in, false))
-      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = noCacheHeaders)
+      openRepository(namespace, name, sender) { repo =>
+        val in = req.entity.data.toByteArray
+        val out = uploadPack(repo, in, false)
+        HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders)
+      }
 
     case req@GitHttpRequest(namespace, name, "git-receive-pack", None) =>
-      val in = req.entity.data.toByteArray
-      val out = GitRepository(repoDirMap(name))(repo => receivePack(repo, in, false))
-      sender ! HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = noCacheHeaders)
+      openRepository(namespace, name, sender) { repo =>
+        val in = req.entity.data.toByteArray
+        val out = receivePack(repo, in, false)
+        HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders)
+      }
 
     case _ =>
-      sender ! HttpResponse(status = 404)
+      sender ! HttpResponse(BadRequest)
+  }
+
+  private def openRepository(userName: String, canonicalName: String, sender: ActorRef)(inner: GitRepository => HttpResponse) = {
+    Projects.findByFullQualifiedName(userName, canonicalName).map { project =>
+      project match {
+        case Some(project) =>
+          val dir = new File(Config.repositoriesDir, project.id.get.stringify)
+          if (dir.exists()) sender ! GitRepository(dir)(inner)
+          else sender ! HttpResponse(InternalServerError)
+        case _ =>
+          sender ! HttpResponse(NotFound)
+      }
+    }
   }
 
   private def uploadPack(repo: GitRepository, in: Array[Byte], biDirectionalPipe: Boolean): Array[Byte] = {
@@ -77,6 +95,7 @@ class GitHttpServiceActor extends Actor {
 }
 
 object GitHttpService {
+  val noCacheHeaders = List(`Cache-Control`(`no-cache`, `max-age`(0), `must-revalidate`))
   val gitUploadPackHeader = "001e# service=git-upload-pack\n0000".getBytes("ASCII")
   val gitReceivePackHeader = "001f# service=git-receive-pack\n0000".getBytes("ASCII")
   val gitUploadPackAdvertisement = spray.http.MediaTypes.register(
