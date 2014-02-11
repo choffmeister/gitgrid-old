@@ -8,7 +8,7 @@ import spray.http.CacheDirectives._
 import spray.routing._
 
 class WebApiServiceActor extends Actor with WebApiService {
-  val actorRefFactory = context
+  def actorRefFactory = context
   def receive = runRoute(route)
 }
 
