@@ -26,7 +26,7 @@ trait EntityRepository[E <: Entity] {
   def beforeUpdate(entity: E): E = entity
 }
 
-abstract class ReactiveMongoEntityRepository[E <: Entity](collectionName: String) extends EntityRepository[E] {
+abstract class ReactiveMongoEntityRepository[E <: Entity](val collectionName: String) extends EntityRepository[E] {
   implicit val reader: BSONDocumentReader[E]
   implicit val writer: BSONDocumentWriter[E]
   protected val coll = DefaultDatabase.database(collectionName)
@@ -52,4 +52,6 @@ abstract class ReactiveMongoEntityRepository[E <: Entity](collectionName: String
   def delete(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Unit] = {
     coll.remove(BSONDocument("_id" -> id)).map(_ => Unit)
   }
+
+  def indexes(implicit ec: ExecutionContext): Future[Boolean] = Future(true)
 }

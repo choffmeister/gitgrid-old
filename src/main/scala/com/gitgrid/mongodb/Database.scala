@@ -14,8 +14,16 @@ class Database(overrideServer: Option[List[String]] = None, overrideDatabase: Op
   val connection = Database.driver.connection(overrideServer getOrElse Config.mongoDbServers)
   val database = connection(overrideDatabase getOrElse Config.mongoDbDatabase)
 
+  def create() = {
+    Await.ready(Users.indexes, Inf)
+    Await.ready(Projects.indexes, Inf)
+    Await.ready(Tickets.indexes, Inf)
+  }
+
   def drop() = {
-    Await.result(database("users").remove(BSONDocument.empty), Inf)
+    Await.ready(database(Users.collectionName).remove(BSONDocument.empty), Inf)
+    Await.ready(database(Projects.collectionName).remove(BSONDocument.empty), Inf)
+    Await.ready(database(Tickets.collectionName).remove(BSONDocument.empty), Inf)
   }
 }
 

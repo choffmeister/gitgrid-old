@@ -12,6 +12,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object TestDataGenerator {
   def generate(userCount: Int = 3, projectCount: Int = 5, ticketCount: Int = 10) {
+    DefaultDatabase.drop()
+    DefaultDatabase.create()
+
     val users = (1 to userCount).map { i =>
       User(
         id = Some(Entity.generateId()),

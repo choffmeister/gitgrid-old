@@ -1,6 +1,7 @@
 package com.gitgrid.mongodb
 
 import reactivemongo.bson._
+import reactivemongo.api.indexes._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import spray.json._
@@ -25,6 +26,10 @@ object Users extends ReactiveMongoEntityRepository[User]("users") {
     else entity.copy(id = Some(BSONObjectID.generate))
   override def beforeUpdate(entity: User): User =
     entity
+
+  override def indexes(implicit ec: ExecutionContext) = {
+    coll.indexesManager.ensure(Index(List("userName" -> IndexType.Ascending), unique = true))
+  }
 }
 
 object UserBSONFormat {
