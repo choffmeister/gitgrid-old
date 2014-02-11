@@ -37,6 +37,8 @@ libraryDependencies ++= {
 
 testOptions in Test += Tests.Argument("junitxml", "console")
 
+parallelExecution in Test := false
+
 ScctPlugin.instrumentSettings
 
 CoveragePlugin.coverageSettings

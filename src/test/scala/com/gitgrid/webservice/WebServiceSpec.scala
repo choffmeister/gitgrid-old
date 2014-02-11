@@ -3,25 +3,31 @@ package com.gitgrid.webservice
 import org.specs2.mutable._
 import com.gitgrid.mongodb._
 import com.gitgrid.webservice.JsonProtocol._
+import com.gitgrid.WithPreparedDatabase
 import spray.testkit._
 import spray.http._
 import spray.routing._
 import spray.routing.authentication.UserPass
 import spray.http.StatusCodes._
-import com.gitgrid.WithTemporaryDatabase
+import akka.actor._
 
-class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with WebService {
-  def actorRefFactory = system
+class WebServiceImpl(actorRefFactory2: => ActorRefFactory) extends WebService {
+  def actorRefFactory = actorRefFactory2
+}
+
+class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest {
+  def webService = new WebServiceImpl(system)
+  def sealRoute = webService.sealRoute _
+  val route = webService.route
+
+  sequential
 
   "WebService" should {
-    "accept valid login credentials" in new WithTemporaryDatabase {
-      //val users = (1 to 5).map(i => db.users.insert(createUser(i)))
-
+    "accept valid login credentials" in new WithPreparedDatabase {
       Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
         val res = responseAs[AuthenticationResponse]
 
         status === OK
-        //res.user.get.id === 1
         res.user.get.userName == "user1"
         headers.find(h => h.name.toLowerCase == "set-cookie") must beSome
       }
@@ -30,15 +36,12 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
         val res = responseAs[AuthenticationResponse]
 
         status === OK
-        //res.user.get.id === 2
         res.user.get.userName == "user2"
         headers.find(h => h.name.toLowerCase == "set-cookie") must beSome
       }
     }
 
-    "reject invalid login credentials" in new WithTemporaryDatabase {
-      //val users = (1 to 5).map(i => db.users.insert(createUser(i)))
-
+    "reject invalid login credentials" in new WithPreparedDatabase {
       Post("/api/auth/login") ~> route ~> check {
         rejection
       }
@@ -61,7 +64,7 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
       }
     }
 
-    "handle auth logout requests" in {
+    "handle auth logout requests" in new WithPreparedDatabase {
       Post("/api/auth/logout") ~> route ~> check {
         val res = responseAs[AuthenticationResponse]
 
@@ -69,16 +72,15 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
       }
     }
 
-    "handle auth state requests" in new WithTemporaryDatabase {
-      //val users = (1 to 5).map(i => Database.users.insert(createUser(i)))
-      var sessionId = ""
-
+    "handle auth state requests" in new WithPreparedDatabase {
       Get("/api/auth/state") ~> route ~> check {
         val res = responseAs[AuthenticationResponse]
 
         status === OK
         res.user must beNone
       }
+
+      var sessionId = ""
 
       Post("/api/auth/login", UserPass("user1", "pass1")) ~> route ~> check {
         val res = responseAs[AuthenticationResponse]
@@ -97,12 +99,4 @@ class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest with We
       }
     }
   }
-
-  def createUser(i: Long) = new User(
-    userName = s"user${i}",
-    passwordHash = s"pass${i}",
-    passwordSalt = "",
-    firstName = s"First${i}",
-    lastName = s"Last${i}"
-  )
 }

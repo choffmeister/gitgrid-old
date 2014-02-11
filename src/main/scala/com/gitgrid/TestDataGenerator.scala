@@ -11,7 +11,7 @@ class TestDataGenerator
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object TestDataGenerator {
-  def generate(userCount: Int = 5, projectCount: Int = 10, ticketCount: Int = 50) {
+  def generate(userCount: Int = 3, projectCount: Int = 5, ticketCount: Int = 10) {
     val users = (1 to userCount).map { i =>
       User(
         id = Some(Entity.generateId()),
