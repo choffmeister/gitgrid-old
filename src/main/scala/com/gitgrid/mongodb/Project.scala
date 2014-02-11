@@ -17,7 +17,12 @@ object Projects extends ReactiveMongoEntityRepository[Project]("projects") {
   implicit val reader = ProjectBSONFormat.ProjectBSONReader
   implicit val writer = ProjectBSONFormat.ProjectBSONWriter
 
-  def findByCanonicalName(canonicalName: String)(implicit ec: ExecutionContext): Future[Option[Project]] = coll.find(BSONDocument("canonicalName" -> canonicalName)).one[Project]
+  def findByFullQualifiedName(userName: String, canonicalName: String)(implicit ec: ExecutionContext): Future[Option[Project]] = {
+    Users.findByUserName(userName).flatMap(_ match {
+      case Some(user) => coll.find(BSONDocument("userId" -> user.id.get, "canonicalName" -> canonicalName)).one[Project]
+      case _ => Future(None)
+    })
+  }
 
   override def beforeInsert(entity: Project): Project =
     if (entity.id.isDefined) entity

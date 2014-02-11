@@ -1,17 +1,15 @@
 package com.gitgrid
 
 import org.specs2.specification.Scope
-import scala.concurrent._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration.Inf
 import com.gitgrid.mongodb._
 
-class WithPreparedDatabase extends Scope {
+class WithPreparedDatabase extends Scope with FutureHelpers {
   DefaultDatabase.drop()
 
   val users = await((1 to 5).map(i => Users.insert(createUser(i))))
+  val projects = await((1 to 10).map(i => Projects.insert(createProject(i))))
 
-  def createUser(i: Long) = new User(
+  def createUser(i: Int) = new User(
     userName = s"user${i}",
     passwordHash = s"pass${i}",
     passwordSalt = "",
@@ -19,6 +17,10 @@ class WithPreparedDatabase extends Scope {
     lastName = s"Last${i}"
   )
 
-  def await[T](future: Future[T]): T = Await.result(future, Inf)
-  def await[T](futures: Seq[Future[T]]): Seq[T] = futures.map(f => Await.result(f, Inf))
+  def createProject(i: Int) = new Project(
+    userId = users((i - 1) % users.length).id.get,
+    canonicalName = s"project${i}",
+    displayName = s"Project ${i}",
+    description = s"This is the project #${i}."
+  )
 }
