@@ -1,6 +1,8 @@
 package com.gitgrid.webservice
 
 import org.specs2.mutable._
+import org.junit.runner.RunWith
+import org.specs2.runner.JUnitRunner
 import com.gitgrid.mongodb._
 import com.gitgrid.webservice.JsonProtocol._
 import com.gitgrid.WithPreparedDatabase
@@ -15,7 +17,8 @@ class WebServiceImpl(actorRefFactory2: => ActorRefFactory) extends WebService {
   def actorRefFactory = actorRefFactory2
 }
 
-class WebServiceSpec extends SpecificationWithJUnit with Specs2RouteTest {
+@RunWith(classOf[JUnitRunner])
+class WebServiceSpec extends Specification with Specs2RouteTest {
   def webService = new WebServiceImpl(system)
   def sealRoute = webService.sealRoute _
   val route = webService.route

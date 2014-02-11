@@ -1,9 +1,12 @@
 package com.gitgrid.managers
 
 import org.specs2.mutable._
+import org.junit.runner.RunWith
+import org.specs2.runner.JUnitRunner
 import spray.http.DateTime
 
-class InMemorySessionManagerSpec extends SpecificationWithJUnit {
+@RunWith(classOf[JUnitRunner])
+class InMemorySessionManagerSpec extends Specification {
   val now = DateTime(2013, 1, 1, 12, 0, 0)
 
   "InMemorySessionManager" should {
