@@ -1,44 +1,48 @@
 package com.gitgrid.webapi
 
 import com.gitgrid.managers._
-import com.gitgrid.models._
-import com.gitgrid.webapi.directives._
+import com.gitgrid.mongodb._
+import com.gitgrid.webapi.JsonProtocol._
 import spray.http._
 import spray.routing._
+import spray.routing.authentication.UserPass
+import scala.concurrent._
 
 case class AuthenticationResponse(message: String, user: Option[User])
 
-object AuthenticationRoutes extends HttpServiceBase {
+class AuthenticationRoutes(implicit val authManager: AuthManager, val executor: ExecutionContext) extends Directives {
   import JsonProtocol._
 
-  def route(implicit authManager: AuthManager) =
-    path("login") {
-      post {
-        loginByCredentials(authManager) { pass =>
-          pass match {
-            case Some(AuthenticationPass(u, s)) =>
-              createAuthCookie(authManager, s) {
-                complete(AuthenticationResponse("Logged in", Some(u)))
-              }
-            case _ =>
-              complete(AuthenticationResponse("Invalid credentials", None))
+  def route =
+    pathPrefix("auth") {
+      path("login") {
+        post {
+          entity(as[UserPass]) { userPass =>
+            onComplete(authManager.authenticate(userPass.user, userPass.pass)) {
+              case scala.util.Success(Some(authPass)) =>
+                createAuthenticationCookie(authPass.session) {
+                  complete(AuthenticationResponse("Logged in", Some(authPass.user)))
+                }
+              case _ =>
+                complete(AuthenticationResponse("Invalid credentials", None))
+            }
           }
         }
-      }
-    } ~
-    path("logout") {
-      post {
-        removeAuthCookie(authManager) {
-          complete(AuthenticationResponse("Logged out", None))
+      } ~
+      path("logout") {
+        post {
+          removeAuthenticationCookie {
+            complete(AuthenticationResponse("Logged out", None))
+          }
         }
-      }
-    } ~
-    path("state") {
-      get {
-        checkAuthCookie(authManager) { user =>
-          user match {
-            case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
-            case None => complete(AuthenticationResponse("Invalid session", None))
+      } ~
+      path("state") {
+        get {
+          authenticateOption { user =>
+            user match {
+              case Some(u) => complete(AuthenticationResponse("Valid session", Some(u)))
+              case None => complete(AuthenticationResponse("Invalid session", None))
+            }
           }
         }
       }

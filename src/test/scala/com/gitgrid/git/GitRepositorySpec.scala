@@ -1,11 +1,14 @@
 package com.gitgrid.git
 
 import org.specs2.mutable._
+import org.junit.runner.RunWith
+import org.specs2.runner.JUnitRunner
 import spray.json._
 import com.gitgrid.WithTemporaryDirectory
 import com.gitgrid.util.ZipHelper
 
-class GitRepositorySpec extends SpecificationWithJUnit {
+@RunWith(classOf[JUnitRunner])
+class GitRepositorySpec extends Specification {
   "create repository" in new WithTemporaryDirectory(false) {
     GitRepository.init(directory, true)
     ok

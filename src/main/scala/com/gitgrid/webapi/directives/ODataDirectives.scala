@@ -6,7 +6,7 @@ import spray.routing.Directives._
 case class ODataParameters(top: Option[Int], skip: Option[Int])
 
 trait ODataDirectives {
-  lazy val odata: Directive1[ODataParameters] = {
+  lazy val pagable: Directive1[ODataParameters] = {
     def parseInt(str: Option[String]): Option[Int] = str match {
       case Some(s) => Some(s.toInt)
       case _ => None
@@ -20,5 +20,3 @@ trait ODataDirectives {
     }
   }
 }
-
-object ODataDirectives extends ODataDirectives
