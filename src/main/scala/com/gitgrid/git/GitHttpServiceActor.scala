@@ -35,28 +35,28 @@ class GitHttpServiceActor extends Actor {
       openRepository(namespace, name, sender) { repo =>
         val in = decodeRequest(req).entity.data.toByteArray
         val out = uploadPack(repo, in, true) // must be true, since else sendAdvertisedRefs is not invoked
-        HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackAdvertisement, GitHttpService.gitUploadPackHeader ++ out), headers = GitHttpService.noCacheHeaders)
+        encodeResponse(HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackAdvertisement, GitHttpService.gitUploadPackHeader ++ out), headers = GitHttpService.noCacheHeaders), req.acceptedEncodingRanges)
       }
 
     case req@GitHttpRequest(namespace, name, "info/refs", Some("git-receive-pack")) =>
       openRepository(namespace, name, sender) { repo =>
         val in = decodeRequest(req).entity.data.toByteArray
         val out = receivePack(repo, in, true) // must be true, since else sendAdvertisedRefs is not invoked
-        HttpResponse(entity = HttpEntity(GitHttpService.gitReceivePackAdvertisement, GitHttpService.gitReceivePackHeader ++ out), headers = GitHttpService.noCacheHeaders)
+        encodeResponse(HttpResponse(entity = HttpEntity(GitHttpService.gitReceivePackAdvertisement, GitHttpService.gitReceivePackHeader ++ out), headers = GitHttpService.noCacheHeaders), req.acceptedEncodingRanges)
       }
 
     case req@GitHttpRequest(namespace, name, "git-upload-pack", None) =>
       openRepository(namespace, name, sender) { repo =>
         val in = decodeRequest(req).entity.data.toByteArray
         val out = uploadPack(repo, in, false)
-        HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders)
+        encodeResponse(HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders), req.acceptedEncodingRanges)
       }
 
     case req@GitHttpRequest(namespace, name, "git-receive-pack", None) =>
       openRepository(namespace, name, sender) { repo =>
         val in = decodeRequest(req).entity.data.toByteArray
         val out = receivePack(repo, in, false)
-        HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders)
+        encodeResponse(HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders), req.acceptedEncodingRanges)
       }
 
     case _ =>
@@ -92,6 +92,17 @@ class GitHttpServiceActor extends Actor {
     val os = new ByteArrayOutputStream()
     rp.receive(is, os, null)
     os.toByteArray
+  }
+
+  private def encodeResponse(res: HttpResponse, acceptedEncodingRanges: List[HttpEncodingRange]): HttpResponse = {
+    @scala.annotation.tailrec
+    def encode(res: HttpResponse, encoders: List[Encoder]): HttpResponse = encoders match {
+      case first :: more if acceptedEncodingRanges.exists(_.matches(first.encoding)) => first.encode(res)
+      case first :: more => encode(res, more)
+      case Nil => res
+    }
+
+    encode(res, List(Gzip, Deflate))
   }
 
   private def decodeRequest(req: HttpRequest): HttpRequest = {
