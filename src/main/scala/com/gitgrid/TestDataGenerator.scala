@@ -5,6 +5,7 @@ import com.gitgrid.mongodb._
 import scala.util.Random
 import scala.io.Source
 import com.gitgrid.util.ZipHelper
+import com.gitgrid.git.GitRepository
 
 class TestDataGenerator
 
@@ -46,15 +47,19 @@ object TestDataGenerator {
     projects.foreach(Projects.insert(_))
     tickets.foreach(Tickets.insert(_))
 
-    val repoNames = List("gitignore", "highlightjs")
+    val repoNames = List("", "gitignore", "highlightjs")
 
     (1 to projects.length).foreach { i =>
       val project = choose(projects, i)
       val dir = new java.io.File(Config.repositoriesDir, project.id.get.stringify)
       val repoName = choose(repoNames, i)
-
       dir.delete()
-      ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream(s"/${repoName}.zip"), dir)
+
+      repoName match {
+        case "" => GitRepository.init(dir, true)
+        case _ => ZipHelper.unzip(classOf[TestDataGenerator].getResourceAsStream(s"/${repoName}.zip"), dir)
+      }
+
     }
   }
 
