@@ -9,6 +9,7 @@ import spray.can.server.Stats
 import spray.util._
 import spray.http._
 import spray.http.StatusCodes._
+import spray.httpx.encoding._
 import HttpMethods._
 import HttpHeaders._
 import spray.http.ContentType
@@ -32,28 +33,28 @@ class GitHttpServiceActor extends Actor {
 
     case req@GitHttpRequest(namespace, name, "info/refs", Some("git-upload-pack")) =>
       openRepository(namespace, name, sender) { repo =>
-        val in = req.entity.data.toByteArray
+        val in = decodeRequest(req).entity.data.toByteArray
         val out = uploadPack(repo, in, true) // must be true, since else sendAdvertisedRefs is not invoked
         HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackAdvertisement, GitHttpService.gitUploadPackHeader ++ out), headers = GitHttpService.noCacheHeaders)
       }
 
     case req@GitHttpRequest(namespace, name, "info/refs", Some("git-receive-pack")) =>
       openRepository(namespace, name, sender) { repo =>
-        val in = req.entity.data.toByteArray
+        val in = decodeRequest(req).entity.data.toByteArray
         val out = receivePack(repo, in, true) // must be true, since else sendAdvertisedRefs is not invoked
         HttpResponse(entity = HttpEntity(GitHttpService.gitReceivePackAdvertisement, GitHttpService.gitReceivePackHeader ++ out), headers = GitHttpService.noCacheHeaders)
       }
 
     case req@GitHttpRequest(namespace, name, "git-upload-pack", None) =>
       openRepository(namespace, name, sender) { repo =>
-        val in = req.entity.data.toByteArray
+        val in = decodeRequest(req).entity.data.toByteArray
         val out = uploadPack(repo, in, false)
         HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders)
       }
 
     case req@GitHttpRequest(namespace, name, "git-receive-pack", None) =>
       openRepository(namespace, name, sender) { repo =>
-        val in = req.entity.data.toByteArray
+        val in = decodeRequest(req).entity.data.toByteArray
         val out = receivePack(repo, in, false)
         HttpResponse(entity = HttpEntity(GitHttpService.gitUploadPackResult, out), headers = GitHttpService.noCacheHeaders)
       }
@@ -91,6 +92,17 @@ class GitHttpServiceActor extends Actor {
     val os = new ByteArrayOutputStream()
     rp.receive(is, os, null)
     os.toByteArray
+  }
+
+  private def decodeRequest(req: HttpRequest): HttpRequest = {
+    @scala.annotation.tailrec
+    def decode(req: HttpRequest, decoders: List[Decoder]): HttpRequest = decoders match {
+      case first :: more if first.encoding == req.encoding => first.decode(req)
+      case first :: more => decode(req, more)
+      case Nil => throw new Exception(s"Encoding '${req.encoding}' is not supported")
+    }
+
+    decode(req, List(Gzip, Deflate, NoEncoding))
   }
 }
 
