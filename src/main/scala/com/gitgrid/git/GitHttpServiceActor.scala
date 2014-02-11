@@ -21,6 +21,12 @@ import com.gitgrid.util.ZipHelper
 import com.gitgrid.mongodb._
 import com.gitgrid.Config
 
+import java.io._
+import spray.io._
+import scala.concurrent._
+import scala.concurrent.duration._
+import spray.can.Http.RegisterChunkHandler
+
 class GitHttpServiceActor extends Actor {
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -151,3 +157,62 @@ object GitHttpRequest {
     }
   }
 }
+
+class GitHttpRequestHandler(client: ActorRef, start: ChunkedRequestStart) extends Actor with ActorLogging {
+  import scala.concurrent.ExecutionContext.Implicits.global
+  import start.request._
+
+  // cancel timeout
+  client ! CommandWrapper(SetRequestTimeout(Duration.Inf))
+
+  val req = GitHttpRequest.unapply(start.request).get
+  val repo = openRepository(req._1, req._2)
+
+  def receive = {
+    case c: MessageChunk =>
+    case e: ChunkedMessageEnd =>
+      context.stop(self)
+  }
+
+  private def openRepository(userName: String, canonicalName: String): GitRepository = {
+    val project = Await.result(Projects.findByFullQualifiedName(userName, canonicalName), Duration.Inf)
+    project match {
+      case Some(project) =>
+        val dir = new File(Config.repositoriesDir, project.id.get.stringify)
+        if (dir.exists()) new GitRepository(dir)
+        else throw new Exception("Cannot open GIT repository")
+      case _ =>
+        throw new Exception("Unknown project")
+    }
+  }
+
+  private def uploadPack(repo: GitRepository, in: Array[Byte], biDirectionalPipe: Boolean): Array[Byte] = {
+    val up = new UploadPack(repo.jgit)
+    up.setBiDirectionalPipe(biDirectionalPipe)
+    val is = new ByteArrayInputStream(in)
+    val os = new ByteArrayOutputStream()
+    up.upload(is, os, null)
+    os.toByteArray
+  }
+
+  private def receivePack(repo: GitRepository, in: Array[Byte], biDirectionalPipe: Boolean): Array[Byte] = {
+    val rp = new ReceivePack(repo.jgit)
+    rp.setBiDirectionalPipe(biDirectionalPipe)
+    val is = new ByteArrayInputStream(in)
+    val os = new ByteArrayOutputStream()
+    rp.receive(is, os, null)
+    os.toByteArray
+  }
+
+  private def decodeRequest(req: HttpRequest): HttpRequest = {
+    @scala.annotation.tailrec
+    def decode(req: HttpRequest, decoders: List[Decoder]): HttpRequest = decoders match {
+      case first :: more if first.encoding == req.encoding => first.decode(req)
+      case first :: more => decode(req, more)
+      case Nil => throw new Exception(s"Encoding '${req.encoding}' is not supported")
+    }
+
+    decode(req, List(Gzip, Deflate, NoEncoding))
+  }
+}
+

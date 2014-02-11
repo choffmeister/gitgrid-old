@@ -4,9 +4,9 @@ akka {
 }
 
 spray.can.server {
-  idle-timeout = 60s
-  request-timeout = 30s
-  request-chunk-aggregation-limit = 256m
+  idle-timeout = 15s
+  request-timeout = 5s
+  request-chunk-aggregation-limit = 0
 }
 
 gitgrid {
