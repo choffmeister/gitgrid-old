@@ -4,11 +4,10 @@ import org.specs2.mutable._
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import com.gitgrid.mongodb._
-import com.gitgrid.WithPreparedDatabase
-import com.gitgrid.FutureHelpers
+import com.gitgrid.testutils._
 
 @RunWith(classOf[JUnitRunner])
-class ProjectSpec extends Specification with FutureHelpers {
+class ProjectSpec extends Specification with AsyncUtils {
   sequential
 
   "Projects" should {

@@ -1,4 +1,4 @@
-package com.gitgrid
+package com.gitgrid.testutils
 
 import java.io.File
 import java.util.UUID

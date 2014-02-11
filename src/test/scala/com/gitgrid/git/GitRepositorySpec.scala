@@ -4,7 +4,7 @@ import org.specs2.mutable._
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import spray.json._
-import com.gitgrid.WithTemporaryDirectory
+import com.gitgrid.testutils._
 import com.gitgrid.util.ZipHelper
 
 @RunWith(classOf[JUnitRunner])

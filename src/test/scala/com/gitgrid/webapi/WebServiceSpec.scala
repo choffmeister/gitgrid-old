@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import com.gitgrid.webapi.JsonProtocol._
 import com.gitgrid.mongodb._
-import com.gitgrid.WithPreparedDatabase
+import com.gitgrid.testutils._
 import spray.testkit._
 import spray.http._
 import spray.routing._

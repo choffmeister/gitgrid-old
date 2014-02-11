@@ -1,9 +1,9 @@
-package com.gitgrid
+package com.gitgrid.testutils
 
 import scala.concurrent._
 import scala.concurrent.duration.Duration.Inf
 
-trait FutureHelpers {
+trait AsyncUtils {
   implicit val executor = scala.concurrent.ExecutionContext.Implicits.global
 
   def await[T](future: Future[T]): T = Await.result(future, Inf)

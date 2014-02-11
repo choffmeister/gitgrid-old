@@ -1,9 +1,9 @@
-package com.gitgrid
+package com.gitgrid.testutils
 
 import org.specs2.specification.Scope
 import com.gitgrid.mongodb._
 
-class WithPreparedDatabase extends Scope with FutureHelpers {
+class WithPreparedDatabase extends Scope with AsyncUtils {
   DefaultDatabase.drop()
 
   val users = await((1 to 5).map(i => Users.insert(createUser(i))))
