@@ -13,5 +13,5 @@ object Application extends App {
   // start webservice
   implicit val system = ActorSystem("gitgrid")
   val httpService = system.actorOf(Props[HttpServiceActor], "http-service")
-  IO(Http) ! Http.Bind(httpService, interface = "localhost", port = 8080)
+  IO(Http) ! Http.Bind(httpService, interface = Config.httpInterface, port = Config.httpPort)
 }

@@ -66,6 +66,7 @@ pack <<= (baseDirectory, pack, streams) map { (baseDirectory: File, value: File,
   val confTargetDir = baseDirectory / "target/pack/conf"
   confTargetDir.mkdirs()
   IO.copyFile(confSourceDir / "application.conf.dist", confTargetDir / "application.conf")
+  IO.copyFile(confSourceDir / "logback.xml.dist", confTargetDir / "logback.xml")
   s.log.info("done.")
   value
 }
