@@ -12,8 +12,8 @@ import spray.http.HttpHeaders._
 import spray.http.StatusCodes._
 import spray.httpx.encoding._
 
-class GitHttpServiceActor extends Actor {
-  import scala.concurrent.ExecutionContext.Implicits.global
+class GitHttpServiceActor extends Actor with ActorLogging {
+  implicit val executionContext = context.dispatcher
 
   def receive = {
     case _: Http.Connected =>

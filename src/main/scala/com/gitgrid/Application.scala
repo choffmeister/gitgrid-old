@@ -10,7 +10,7 @@ import spray.can.Http
 import spray.http._
 
 class ApplicationActor extends Actor with ActorLogging {
-  val actorRefFactory = context
+  implicit val executionContext = context.dispatcher
   val webApiHttpService = context.actorOf(Props[WebApiServiceActor], "webapi-http-service")
   val gitHttpService = context.actorOf(Props[GitHttpServiceActor], "git-http-service")
 
