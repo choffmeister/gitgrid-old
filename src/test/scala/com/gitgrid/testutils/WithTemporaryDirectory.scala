@@ -12,6 +12,7 @@ class WithTemporaryDirectory(create: Boolean) extends Scope {
   val directory = {
     val dir = new File(System.getProperty("java.io.tmpdir"), UUID.randomUUID.toString)
     if (create) dir.mkdirs()
+    dir.deleteOnExit()
     dir
   }
 }
