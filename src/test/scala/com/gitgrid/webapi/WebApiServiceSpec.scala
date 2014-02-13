@@ -1,17 +1,16 @@
 package com.gitgrid.webapi
 
-import org.specs2.mutable._
-import org.junit.runner.RunWith
-import org.specs2.runner.JUnitRunner
-import com.gitgrid.webapi.JsonProtocol._
-import com.gitgrid.mongodb._
+import akka.actor._
 import com.gitgrid.testutils._
-import spray.testkit._
+import com.gitgrid.webapi.JsonProtocol._
+import org.junit.runner.RunWith
+import org.specs2.mutable._
+import org.specs2.runner.JUnitRunner
 import spray.http._
+import spray.http.StatusCodes._
 import spray.routing._
 import spray.routing.authentication.UserPass
-import spray.http.StatusCodes._
-import akka.actor._
+import spray.testkit._
 
 class WebApiServiceImpl(actorRefFactory2: => ActorRefFactory) extends WebApiService {
   def actorRefFactory = actorRefFactory2

@@ -1,22 +1,15 @@
 package com.gitgrid.webapi
 
-import java.io._
-import scala.collection.JavaConversions._
-import spray.routing._
-import com.gitgrid.webapi.JsonProtocol._
-import com.gitgrid.util._
 import com.gitgrid.Config
-import org.eclipse.jgit.storage.file._
-import org.eclipse.jgit.internal.storage.pack._
-import org.eclipse.jgit.lib._
-import org.eclipse.jgit.revwalk._
-import org.eclipse.jgit.treewalk._
-import java.util.Date
 import com.gitgrid.git._
-import scala.concurrent._
 import com.gitgrid.managers._
+import java.io._
+import scala.concurrent._
+import spray.routing._
 
 class GitRoutes(implicit val authManager: AuthManager, val executor: ExecutionContext) extends Directives {
+  import com.gitgrid.webapi.JsonProtocol._
+
   val route =
     pathPrefix("projects" / LongNumber / "git") { projectId =>
       path("branches") {

@@ -1,25 +1,16 @@
 package com.gitgrid.git
 
-import scala.concurrent.duration._
-import akka.pattern.ask
-import akka.util.Timeout
 import akka.actor._
-import spray.can.Http
-import spray.can.server.Stats
-import spray.util._
-import spray.http._
-import spray.http.StatusCodes._
-import spray.httpx.encoding._
-import HttpMethods._
-import HttpHeaders._
-import spray.http.ContentType
-import spray.can.Http.RegisterChunkHandler
-import CacheDirectives._
+import com.gitgrid.Config
+import com.gitgrid.mongodb._
 import java.io._
 import org.eclipse.jgit.transport.{UploadPack, ReceivePack}
-import com.gitgrid.util.ZipHelper
-import com.gitgrid.mongodb._
-import com.gitgrid.Config
+import spray.can._
+import spray.http._
+import spray.http.CacheDirectives._
+import spray.http.HttpHeaders._
+import spray.http.StatusCodes._
+import spray.httpx.encoding._
 
 class GitHttpServiceActor extends Actor {
   import scala.concurrent.ExecutionContext.Implicits.global

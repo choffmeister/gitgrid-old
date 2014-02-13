@@ -1,11 +1,11 @@
 package com.gitgrid
 
+import com.gitgrid.git.GitRepository
 import com.gitgrid.managers._
 import com.gitgrid.mongodb._
-import scala.util.Random
-import scala.io.Source
 import com.gitgrid.util.ZipHelper
-import com.gitgrid.git.GitRepository
+import scala.io.Source
+import scala.util.Random
 
 class TestDataGenerator
 

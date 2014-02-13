@@ -1,10 +1,10 @@
 package com.gitgrid.mongodb
 
 import com.gitgrid.Config
-import scala.concurrent._
-import scala.concurrent.duration.Duration.Inf
 import reactivemongo.api._
 import reactivemongo.bson._
+import scala.concurrent._
+import scala.concurrent.duration.Duration.Inf
 
 class Database(overrideServer: Option[List[String]] = None, overrideDatabase: Option[String] = None)(implicit val executor: ExecutionContext) {
   import UserBSONFormat._

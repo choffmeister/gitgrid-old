@@ -1,17 +1,14 @@
 package com.gitgrid.webapi.directives
 
+import com.gitgrid.managers._
+import com.gitgrid.mongodb._
+import scala.concurrent._
 import scala.util.Success
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
 import spray.http._
 import spray.routing._
 import spray.routing.authentication._
 import spray.routing.AuthenticationFailedRejection._
 import spray.routing.Directives._
-import com.gitgrid.managers.AuthManager
-import com.gitgrid.managers.AuthenticationPass
-import com.gitgrid.managers.Session
-import com.gitgrid.mongodb.User
 
 trait AuthDirectives {
   import com.gitgrid.webapi.JsonProtocol._

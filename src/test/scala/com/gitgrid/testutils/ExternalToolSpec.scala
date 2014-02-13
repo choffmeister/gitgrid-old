@@ -1,8 +1,8 @@
 package com.gitgrid.testutils
 
 import java.io._
-import scala.sys.process._
 import org.specs2.mutable._
+import scala.sys.process._
 
 case class ExternalToolException(cmd: Seq[String], exitCode: Int, stdOut: String, stdErr: String) extends Exception(
   s"Executing ${cmd.mkString(" ")} failed with exit code ${exitCode}:\n${stdErr}"

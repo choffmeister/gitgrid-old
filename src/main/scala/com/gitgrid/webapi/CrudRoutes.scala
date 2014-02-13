@@ -2,12 +2,12 @@ package com.gitgrid.webapi
 
 import com.gitgrid.managers._
 import com.gitgrid.mongodb._
-import spray.routing._
+import reactivemongo.bson._
+import scala.concurrent.ExecutionContext
 import spray.http.StatusCodes._
 import spray.httpx.marshalling.ToResponseMarshaller
 import spray.httpx.unmarshalling.FromRequestUnmarshaller
-import scala.concurrent.ExecutionContext
-import reactivemongo.bson._
+import spray.routing._
 
 class CrudRoutes[T <: Entity](name: String, repo: EntityRepository[T])(implicit
   val authManager: AuthManager,

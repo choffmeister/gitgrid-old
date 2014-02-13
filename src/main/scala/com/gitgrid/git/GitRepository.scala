@@ -1,13 +1,12 @@
 package com.gitgrid.git
 
 import java.io._
-import scala.collection.JavaConversions._
-import org.eclipse.jgit.storage.file._
-import org.eclipse.jgit.internal.storage.pack._
+import org.eclipse.jgit.api._
 import org.eclipse.jgit.lib._
 import org.eclipse.jgit.revwalk._
+import org.eclipse.jgit.storage.file._
 import org.eclipse.jgit.treewalk._
-import org.eclipse.jgit.api._
+import scala.collection.JavaConversions._
 
 class GitRepository(val dir: File) {
   val builder = new FileRepositoryBuilder()

@@ -1,8 +1,8 @@
 package com.gitgrid.managers
 
 import java.security.SecureRandom
-import spray.http.DateTime
 import org.apache.commons.codec.binary.Base64
+import spray.http.DateTime
 
 case class Session(id: String, userId: String, expires: Option[DateTime])
 

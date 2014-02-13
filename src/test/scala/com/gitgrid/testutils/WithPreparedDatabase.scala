@@ -1,7 +1,7 @@
 package com.gitgrid.testutils
 
-import org.specs2.specification.Scope
 import com.gitgrid.mongodb._
+import org.specs2.specification.Scope
 
 class WithPreparedDatabase extends Scope with AsyncUtils {
   DefaultDatabase.drop()

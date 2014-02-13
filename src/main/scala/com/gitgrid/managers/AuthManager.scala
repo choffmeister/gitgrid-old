@@ -2,9 +2,8 @@ package com.gitgrid.managers
 
 import com.gitgrid.mongodb._
 import reactivemongo.bson._
+import scala.concurrent._
 import spray.http.DateTime
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
 
 case class AuthenticationPass(user: User, session: Session)
 

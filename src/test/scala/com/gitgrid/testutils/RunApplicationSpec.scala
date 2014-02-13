@@ -1,7 +1,7 @@
 package com.gitgrid.testutils
 
-import org.specs2.mutable._
 import com.gitgrid.Application
+import org.specs2.mutable._
 
 trait RunApplicationSpec extends Specification {
   def runApplication[T](inner: Application => T): T = {

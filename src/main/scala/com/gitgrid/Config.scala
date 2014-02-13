@@ -1,7 +1,7 @@
 package com.gitgrid
 
-import java.io.File
 import com.typesafe.config.ConfigFactory
+import java.io.File
 
 object Config {
   lazy val raw = ConfigFactory.load("application")

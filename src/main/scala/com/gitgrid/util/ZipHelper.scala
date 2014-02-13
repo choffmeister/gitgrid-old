@@ -1,13 +1,7 @@
 package com.gitgrid.util
 
-import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.util.List
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
+import java.io._
+import java.util.zip._
 
 object ZipHelper {
   def unzip(zipStream: InputStream, targetDir: File) {

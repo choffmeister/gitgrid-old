@@ -1,11 +1,10 @@
 package com.gitgrid.git
 
-import org.specs2.mutable._
-import org.junit.runner.RunWith
-import org.specs2.runner.JUnitRunner
-import spray.json._
 import com.gitgrid.testutils._
 import com.gitgrid.util.ZipHelper
+import org.junit.runner.RunWith
+import org.specs2.mutable._
+import org.specs2.runner.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class GitRepositorySpec extends Specification {

@@ -9,7 +9,6 @@ import spray.json._
 import spray.routing.authentication.UserPass
 
 object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
-
   implicit object DateFormat extends JsonFormat[Date] {
     def write(date: Date) = {
       JsNumber(date.getTime)

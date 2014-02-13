@@ -1,10 +1,7 @@
 package com.gitgrid.mongodb
 
 import reactivemongo.bson._
-import reactivemongo.core.commands.LastError
-import scala.util.Success
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+import scala.concurrent._
 
 trait Entity {
   val id: Option[BSONObjectID]

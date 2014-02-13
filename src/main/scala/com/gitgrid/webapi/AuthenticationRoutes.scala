@@ -3,10 +3,10 @@ package com.gitgrid.webapi
 import com.gitgrid.managers._
 import com.gitgrid.mongodb._
 import com.gitgrid.webapi.JsonProtocol._
+import scala.concurrent._
 import spray.http._
 import spray.routing._
 import spray.routing.authentication.UserPass
-import scala.concurrent._
 
 case class AuthenticationResponse(message: String, user: Option[User])
 

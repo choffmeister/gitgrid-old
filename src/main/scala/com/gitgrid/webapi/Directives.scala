@@ -1,8 +1,8 @@
 package com.gitgrid.webapi
 
+import com.gitgrid.webapi.directives._
 import spray.routing._
 import spray.routing.directives._
-import com.gitgrid.webapi.directives._
 
 trait Directives extends RouteConcatenation
   with AnyParamDirectives

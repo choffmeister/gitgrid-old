@@ -2,12 +2,12 @@ package com.gitgrid
 
 import akka.actor._
 import akka.io.IO
-import scala.concurrent.duration._
-import spray.can.Http
-import spray.http._
 import com.gitgrid.git.GitHttpRequest
 import com.gitgrid.git.GitHttpServiceActor
 import com.gitgrid.webapi.WebApiServiceActor
+import scala.concurrent.duration._
+import spray.can.Http
+import spray.http._
 
 class ApplicationActor extends Actor with ActorLogging {
   val actorRefFactory = context

@@ -1,12 +1,11 @@
 package com.gitgrid.webapi
 
-import org.specs2.mutable._
-import org.junit.runner.RunWith
-import org.specs2.runner.JUnitRunner
 import com.gitgrid.mongodb._
-import spray.json._
-import java.sql.Timestamp
 import java.util.Date
+import org.junit.runner.RunWith
+import org.specs2.mutable._
+import org.specs2.runner.JUnitRunner
+import spray.json._
 
 @RunWith(classOf[JUnitRunner])
 class JsonProtocolSpec extends Specification {

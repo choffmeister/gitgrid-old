@@ -1,10 +1,8 @@
 package com.gitgrid.mongodb
 
-import reactivemongo.bson._
 import reactivemongo.api.indexes._
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-import spray.json._
+import reactivemongo.bson._
+import scala.concurrent._
 
 case class User(
   id: Option[BSONObjectID] = None,

@@ -1,8 +1,8 @@
 package com.gitgrid
 
-import scala.concurrent._
 import reactivemongo.api._
 import reactivemongo.bson._
+import scala.concurrent._
 
 package object mongodb {
   val DefaultDatabase = new Database(None, None)(ExecutionContext.Implicits.global)

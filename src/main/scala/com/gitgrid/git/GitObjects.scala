@@ -2,13 +2,7 @@ package com.gitgrid.git
 
 import java.io._
 import java.util.Date
-import scala.collection.JavaConversions._
-import org.eclipse.jgit.storage.file._
-import org.eclipse.jgit.internal.storage.pack._
 import org.eclipse.jgit.lib._
-import org.eclipse.jgit.revwalk._
-import org.eclipse.jgit.treewalk._
-import org.eclipse.jgit.api._
 
 abstract class GitObject {
   val id: String
