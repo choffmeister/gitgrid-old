@@ -13,14 +13,11 @@ class GitHttpServiceActorSpec extends Specification with ExternalToolSpec with R
     if (!checkExecute(Seq("git", "--version"))) skipped("Command git is not in PATH")
 
     runApplication { app =>
-      val (exitCode1, stdOut1) = execute(Seq("git", "clone", "http://localhost:8080/user1/project1.git"), Some(directory))
-      exitCode1 === 0
+      execute(Seq("git", "clone", "http://localhost:8080/user1/project1.git"), Some(directory))
+      execute(Seq("git", "clone", "http://localhost:8080/user2/project2.git"), Some(directory))
+      execute(Seq("git", "clone", "http://localhost:8080/user0/project0.git"), Some(directory)) must throwA[ExternalToolException]
 
-      val (exitCode2, stdOut2) = execute(Seq("git", "clone", "http://localhost:8080/user2/project2.git"), Some(directory))
-      exitCode2 === 0
-
-      val (exitCode3, stdOut3) = execute(Seq("git", "clone", "http://localhost:8080/user0/project0.git"), Some(directory))
-      exitCode3 === 128
+      ok
     }
   }
 }
