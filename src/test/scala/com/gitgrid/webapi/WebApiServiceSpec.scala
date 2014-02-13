@@ -13,13 +13,13 @@ import spray.routing.authentication.UserPass
 import spray.http.StatusCodes._
 import akka.actor._
 
-class WebServiceImpl(actorRefFactory2: => ActorRefFactory) extends WebApiService {
+class WebApiServiceImpl(actorRefFactory2: => ActorRefFactory) extends WebApiService {
   def actorRefFactory = actorRefFactory2
 }
 
 @RunWith(classOf[JUnitRunner])
-class WebServiceSpec extends Specification with Specs2RouteTest {
-  def webService = new WebServiceImpl(system)
+class WebApiServiceSpec extends Specification with Specs2RouteTest {
+  def webService = new WebApiServiceImpl(system)
   def sealRoute = webService.sealRoute _
   val route = webService.route
 
