@@ -71,4 +71,6 @@ pack <<= (baseDirectory, pack, streams) map { (baseDirectory: File, value: File,
   value
 }
 
+org.scalastyle.sbt.ScalastylePlugin.Settings
+
 EclipseKeys.withSource := true
