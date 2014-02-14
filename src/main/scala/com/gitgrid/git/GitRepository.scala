@@ -156,6 +156,7 @@ class GitRepository(val dir: File) {
 
 object GitRepository {
   def apply[T](dir: File)(inner: GitRepository => T): T = {
+    if (!dir.exists()) throw new IOException(s"Repository dir '${dir}' does not exist")
     val repo = new GitRepository(dir)
     try {
       inner(repo)

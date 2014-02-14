@@ -59,11 +59,16 @@ class GitHttpServiceActor extends Actor with ActorLogging {
       project match {
         case Some(project) =>
           val dir = new File(Config.repositoriesDir, project.id.get.stringify)
-          if (dir.exists()) sender ! GitRepository(dir)(inner)
-          else sender ! HttpResponse(InternalServerError)
+          GitRepository(dir)(inner)
         case _ =>
-          sender ! HttpResponse(NotFound)
+          HttpResponse(NotFound)
       }
+    }.onComplete {
+      case scala.util.Success(res: HttpResponse) =>
+        sender ! res
+      case scala.util.Failure(ex: Throwable) =>
+        log.error(ex, "Error while accessing git repository")
+        sender ! HttpResponse(InternalServerError)
     }
   }
 
