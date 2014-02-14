@@ -1,6 +1,17 @@
 akka {
   loggers = ["akka.event.slf4j.Slf4jLogger"]
   loglevel = "INFO" # ERROR, WARNING, INFO, DEBUG
+
+  actor.deployment {
+    /httpservice/webapi {
+      router = round-robin
+      nr-of-instances = 2
+    }
+    /httpservice/git {
+      router = round-robin
+      nr-of-instances = 2
+    }
+  }
 }
 
 spray.can.server {
