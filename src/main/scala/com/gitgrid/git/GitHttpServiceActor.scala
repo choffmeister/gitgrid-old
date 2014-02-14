@@ -20,7 +20,7 @@ class GitHttpServiceActor extends Actor with ActorLogging {
       sender ! Http.Register(self)
 
     case req@GitHttpRequest(_, _, "info/refs", None) =>
-      sender ! HttpResponse(status = 403, entity = "Git dump HTTP protocol is not supported")
+      sender ! HttpResponse(status = NotFound, entity = "Git dump HTTP protocol is not supported")
 
     case req@GitHttpRequest(namespace, name, "info/refs", Some("git-upload-pack")) =>
       openRepository(namespace, name, sender) { repo =>

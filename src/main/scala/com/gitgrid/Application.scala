@@ -8,6 +8,7 @@ import com.gitgrid.webapi.WebApiServiceActor
 import scala.concurrent.duration._
 import spray.can.Http
 import spray.http._
+import spray.http.StatusCodes._
 
 class ApplicationActor extends Actor with ActorLogging {
   implicit val executionContext = context.dispatcher
@@ -25,7 +26,7 @@ class ApplicationActor extends Actor with ActorLogging {
       gitHttpService.tell(req, sender)
     case o =>
       log.debug("Unknown message received: " + o.toString())
-      sender ! HttpResponse(status = 404)
+      sender ! HttpResponse(status = NotFound)
   }
 }
 
