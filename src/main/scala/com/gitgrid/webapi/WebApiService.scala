@@ -33,9 +33,5 @@ trait WebApiService extends HttpService {
         ticketsCrudRoutes.route ~
         gitRepositoryRoutes.route
       }
-    } ~
-    path(Rest) {
-      case filePath if filePath.length > 0 => getFromResource("web/" + filePath)
-      case _ => getFromResource("web/index.html")
     }
 }

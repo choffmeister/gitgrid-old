@@ -11,6 +11,10 @@ akka {
       router = round-robin
       nr-of-instances = 2
     }
+    /httpservice/staticcontent {
+      router = round-robin
+      nr-of-instances = 2
+    }
   }
 }
 

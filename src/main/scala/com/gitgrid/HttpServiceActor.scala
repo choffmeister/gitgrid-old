@@ -5,6 +5,7 @@ import akka.routing._
 import com.gitgrid.git._
 import com.gitgrid.webapi._
 import spray.http._
+import spray.http.HttpMethods._
 import spray.http.StatusCodes._
 
 class HttpServiceActor extends Actor with ActorLogging {
@@ -12,6 +13,7 @@ class HttpServiceActor extends Actor with ActorLogging {
 
   val webApiServiceActor = context.actorOf(Props[WebApiServiceActor].withRouter(FromConfig), "webapi")
   val gitHttpServiceActor = context.actorOf(Props[GitHttpServiceActor].withRouter(FromConfig), "git")
+  val staticContentHttpServiceActor = context.actorOf(Props[StaticContentHttpServiceActor].withRouter(FromConfig), "staticcontent")
 
   def receive = {
     case akka.io.Tcp.Connected(_, _) =>
@@ -22,6 +24,9 @@ class HttpServiceActor extends Actor with ActorLogging {
     case req@GitHttpRequest(_, _, _, _) =>
       log.debug(req.toString())
       gitHttpServiceActor.tell(req, sender)
+    case req@HttpRequest(GET, _, _, _, _) =>
+      log.debug(req.toString())
+      staticContentHttpServiceActor.tell(req, sender)
     case o =>
       log.debug("Unknown message received: " + o.toString())
       sender ! HttpResponse(status = NotFound)
