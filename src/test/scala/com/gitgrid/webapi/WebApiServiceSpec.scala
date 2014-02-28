@@ -3,9 +3,7 @@ package com.gitgrid.webapi
 import akka.actor._
 import com.gitgrid.testutils._
 import com.gitgrid.webapi.JsonProtocol._
-import org.junit.runner.RunWith
 import org.specs2.mutable._
-import org.specs2.runner.JUnitRunner
 import spray.http._
 import spray.http.StatusCodes._
 import spray.routing._
@@ -16,7 +14,6 @@ class WebApiServiceImpl(actorRefFactory2: => ActorRefFactory) extends WebApiServ
   def actorRefFactory = actorRefFactory2
 }
 
-@RunWith(classOf[JUnitRunner])
 class WebApiServiceSpec extends Specification with Specs2RouteTest {
   def webService = new WebApiServiceImpl(system)
   def sealRoute = webService.sealRoute _

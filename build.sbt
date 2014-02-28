@@ -28,10 +28,9 @@ libraryDependencies ++= {
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" % "spray-testkit" % sprayVersion % "test",
     "io.spray" %% "spray-json" % "1.2.5",
-    "junit" % "junit" % "4.11" % "test",
     "org.eclipse.jgit" % "org.eclipse.jgit" % "3.2.0.201312181205-r",
     "org.reactivemongo" %% "reactivemongo" % "0.10.0",
-    "org.specs2" %% "specs2" % "2.2.3" % "test"
+    "org.specs2" %% "specs2" % "2.3.8" % "test"
   )
 }
 

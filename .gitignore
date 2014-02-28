@@ -7,11 +7,6 @@ target/
 # Repositories
 /repositories/
 
-# Eclipse
-.classpath
-.project
-.settings/
-
 # IDEA
 .idea/
 .idea_modules/

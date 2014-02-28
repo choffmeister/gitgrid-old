@@ -2,11 +2,8 @@ package com.gitgrid.git
 
 import com.gitgrid.testutils._
 import com.gitgrid.util.ZipHelper
-import org.junit.runner.RunWith
 import org.specs2.mutable._
-import org.specs2.runner.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class GitRepositorySpec extends Specification {
   "create repository" in new WithTemporaryDirectory(false) {
     GitRepository.init(directory, true)
