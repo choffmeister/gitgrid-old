@@ -5,6 +5,7 @@ import com.gitgrid.managers._
 import com.gitgrid.mongodb._
 import spray.http._
 import spray.http.CacheDirectives._
+import spray.http.StatusCodes._
 import spray.routing._
 
 class WebApiServiceActor extends Actor with WebApiService {
@@ -27,6 +28,12 @@ trait WebApiService extends HttpService {
   val route =
     pathPrefix("api") {
       respondWithHeader(HttpHeaders.`Cache-Control`(`no-cache`, `max-age`(0))) {
+        pathPrefix("projects" / Segment / Segment) { (userName, projectCanonicalName) =>
+          onSuccess(Projects.findByFullQualifiedName(userName, projectCanonicalName)) {
+            case Some(project) => complete(project.toString)
+            case _ => complete(NotFound)
+          }
+        } ~
         authRoutes.route ~
         usersCrudRoutes.route ~
         projectsCrudRoutes.route ~
